@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>滑雪包套報價試算 — Seaya Snow Club</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf3e6;
+      --surface: #fffaf3;
+      --border: #ecdfc8;
+      --accent: #f1703b;
+      --accent-soft: rgba(241,112,59,0.12);
+      --text: #5a4636;
+      --muted: #a4907b;
+      --success: #6f8c5f;
+      --success-soft: rgba(111,140,95,0.12);
+      --warn: #d98a3d;
+      --warn-soft: rgba(217,138,61,0.12);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Hiragino Sans", "PingFang TC", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px 80px;
+    }
+
+    .container { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
+
+    header { padding: 8px 0 20px; }
+    .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
+    header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+    header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    .gallery-scroll {
+      display: flex; gap: 10px; overflow-x: auto;
+      margin-top: 16px; padding-bottom: 6px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .gallery-scroll::-webkit-scrollbar { height: 5px; }
+    .gallery-scroll::-webkit-scrollbar-track { background: transparent; }
+    .gallery-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .gallery-scroll img {
+      flex: 0 0 auto; width: 200px; height: 140px; object-fit: cover;
+      border-radius: 12px; border: 1px solid var(--border);
+      scroll-snap-align: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+    }
+
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .btn-group:last-child { margin-bottom: 0; }
+    .group-label { width: 100%; font-size: 13px; color: var(--muted); margin-bottom: 2px; }
+
+    .opt-btn {
+      flex: 1; min-width: 80px;
+      padding: 10px 8px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--muted);
+      font-size: 14px; font-family: inherit;
+      cursor: pointer; text-align: center;
+      transition: all 0.15s; line-height: 1.4;
+    }
+    .opt-btn:hover { border-color: var(--accent); color: var(--text); }
+    .opt-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+    .opt-btn small { display: block; font-size: 11px; font-weight: 400; margin-top: 2px; opacity: 0.75; }
+
+    .opt-btn.room-card {
+      flex-direction: column; align-items: stretch; text-align: left;
+      padding: 0; overflow: hidden; min-width: 0;
+    }
+    .opt-btn.room-card img { width: 100%; height: 96px; object-fit: cover; display: block; }
+    .opt-btn.room-card .room-info { padding: 8px 10px; }
+    .opt-btn.room-card .room-info .name { font-size: 13px; font-weight: 600; }
+    .opt-btn.room-card .room-info small { display: block; margin-top: 2px; font-size: 11px; opacity: 0.75; }
+
+    .stepper-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .stepper-row:last-child { margin-bottom: 0; }
+    .stepper-row label { font-size: 14px; }
+
+    .stepper {
+      display: flex; align-items: center;
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .step-btn {
+      width: 38px; height: 38px; border: none;
+      background: var(--bg); color: var(--muted);
+      font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+    .step-btn:hover { background: var(--border); color: var(--text); }
+    .step-val {
+      min-width: 42px; text-align: center;
+      font-size: 15px; font-weight: 600; color: var(--text);
+      background: var(--bg);
+      border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+      height: 38px; display: flex; align-items: center; justify-content: center;
+    }
+    .unit { font-size: 14px; color: var(--muted); margin-left: 8px; }
+
+    .stat-bar {
+      margin-top: 14px; padding: 10px 14px;
+      background: var(--bg); border-radius: 10px;
+      display: flex; gap: 16px;
+      font-size: 13px; color: var(--muted);
+    }
+    .stat-val { color: var(--accent); font-weight: 600; }
+
+    .toggle-row {
+      display: flex; align-items: center;
+      justify-content: space-between;
+      cursor: pointer; user-select: none;
+    }
+    .toggle-label-main { font-size: 14px; }
+    .toggle-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+    .toggle {
+      width: 44px; height: 26px; border-radius: 13px;
+      background: var(--border); position: relative;
+      transition: background 0.2s; flex-shrink: 0;
+    }
+    .toggle::after {
+      content: ''; width: 20px; height: 20px; border-radius: 50%;
+      background: #fff; position: absolute; top: 3px; left: 3px;
+      transition: transform 0.2s;
+    }
+    .toggle.on { background: var(--accent); }
+    .toggle.on::after { transform: translateX(18px); }
+
+    .gear-detail {
+      display: none; margin-top: 16px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .gear-detail.visible { display: block; }
+
+    .note {
+      margin-top: 10px; font-size: 12px; color: var(--muted);
+      padding: 10px 14px; background: var(--bg); border-radius: 10px;
+      line-height: 1.6;
+    }
+
+    /* 比價結果卡 */
+    .result-card {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .result-header {
+      background: var(--surface);
+      padding: 16px 20px 12px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .tier-row {
+      padding: 16px 20px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      gap: 12px;
+    }
+
+    .tier-row.super-row {
+      background: var(--success-soft);
+      border-color: var(--success);
+    }
+
+    .tier-left { display: flex; flex-direction: column; gap: 3px; }
+    .tier-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .tier-date { font-size: 12px; color: var(--muted); }
+
+    .tier-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .tier-price { font-size: 20px; font-weight: 700; color: var(--text); }
+    .tier-row.super-row .tier-price { color: var(--success); font-size: 22px; }
+
+    .tier-saving {
+      font-size: 12px; font-weight: 600;
+      color: var(--success);
+    }
+    .tier-saving.mid { color: var(--warn); }
+
+    .tier-pp { font-size: 11px; color: var(--muted); }
+
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 7px; border-radius: 6px;
+      margin-left: 4px; vertical-align: middle;
+    }
+    .badge-green { background: var(--success-soft); color: var(--success); }
+    .badge-yellow { background: var(--warn-soft); color: var(--warn); }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
+    <h1>滑雪包套報價試算</h1>
+    <p>Seaya Snow Club × 旅館 ロッカ</p>
+    <div class="gallery-scroll">
+      <img src="images/gallery_entrance.jpg" alt="六花民宿外觀雪景">
+      <img src="images/gallery_common1.jpg" alt="六花民宿公共空間">
+      <img src="images/gallery_genkan.jpg" alt="六花民宿玄關">
+      <img src="images/gallery_common5.jpg" alt="六花民宿交誼空間">
+      <img src="images/gallery_common6.jpg" alt="六花民宿用品間">
+    </div>
+  </header>
+
+  <!-- 課程 -->
+  <div class="card">
+    <div class="card-title">課程</div>
+    <div class="btn-group">
+      <div class="group-label">人數</div>
+      <button class="opt-btn active" data-group="persons" data-val="1">一對一</button>
+      <button class="opt-btn" data-group="persons" data-val="2">一對二</button>
+      <button class="opt-btn" data-group="persons" data-val="3">一對三</button>
+      <button class="opt-btn" data-group="persons" data-val="4">一對四</button>
+    </div>
+    <div class="stepper-row">
+      <label>全日課</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="fullDays">−</button>
+          <div class="step-val" id="fullDaysVal">1</div>
+          <button class="step-btn" data-action="inc" data-target="fullDays">+</button>
+        </div>
+        <span class="unit">天</span>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <label>半日課</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="halfDays">−</button>
+          <div class="step-val" id="halfDaysVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="halfDays">+</button>
+        </div>
+        <span class="unit">天</span>
+      </div>
+    </div>
+    <div class="stat-bar">
+      共 <span class="stat-val" id="sumDays">1</span> 天課程
+    </div>
+    <div class="note">提醒：「超早鳥雪具優惠」需課程總天數達 1.5 天以上，且同時有訂住宿，才會自動套用。</div>
+  </div>
+
+  <!-- 住宿 -->
+  <div class="card">
+    <div class="card-title">住宿 — 旅館 ロッカ</div>
+    <div class="btn-group">
+      <div class="group-label">房型（點圖選擇）</div>
+      <button class="opt-btn room-card active" data-group="roomType" data-val="rokka_6" style="min-width:110px">
+        <img src="images/room_6jo.jpg" alt="六疊房">
+        <div class="room-info">
+          <div class="name">六疊房</div>
+          <small>1–3 人 · 共 8 間</small>
+        </div>
+      </button>
+      <button class="opt-btn room-card" data-group="roomType" data-val="rokka_8" style="min-width:110px">
+        <img src="images/room_8jo.jpg" alt="八疊房">
+        <div class="room-info">
+          <div class="name">八疊房</div>
+          <small>2–4 人 · 共 1 間</small>
+        </div>
+      </button>
+      <button class="opt-btn room-card" data-group="roomType" data-val="rokka_wa" style="min-width:110px">
+        <img src="images/room_washitsu.jpg" alt="大和室">
+        <div class="room-info">
+          <div class="name">大和室</div>
+          <small>4–6 人 · 共 1 間</small>
+        </div>
+      </button>
+    </div>
+    <div class="stepper-row">
+      <label>間數</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
+          <div class="step-val" id="roomCountVal">1</div>
+          <button class="step-btn" data-action="inc" data-target="roomCount">+</button>
+        </div>
+        <span class="unit">間</span>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <label>住宿天數</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomNights">−</button>
+          <div class="step-val" id="roomNightsVal">2</div>
+          <button class="step-btn" data-action="inc" data-target="roomNights">+</button>
+        </div>
+        <span class="unit">晚</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 雪具加購 -->
+  <div class="card">
+    <div class="card-title">雪具加購</div>
+    <div class="toggle-row" id="gearToggleRow">
+      <div>
+        <div class="toggle-label-main">加購全套雪具</div>
+        <div class="toggle-sub">超早鳥 2,100 ／ 早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
+      </div>
+      <div class="toggle" id="toggleGear"></div>
+    </div>
+    <div class="gear-detail" id="gearDetail">
+      <div class="stepper-row">
+        <label>加購人數</label>
+        <div style="display:flex;align-items:center">
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
+            <div class="step-val" id="gearPersonsVal">1</div>
+            <button class="step-btn" data-action="inc" data-target="gearPersons">+</button>
+          </div>
+          <span class="unit">人</span>
+        </div>
+      </div>
+      <div class="stepper-row" style="margin-bottom:0">
+        <label>租借天數</label>
+        <div style="display:flex;align-items:center">
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearDays">−</button>
+            <div class="step-val" id="gearDaysVal">2</div>
+            <button class="step-btn" data-action="inc" data-target="gearDays">+</button>
+          </div>
+          <span class="unit">天</span>
+        </div>
+      </div>
+      <div class="note">超早鳥雪具費用於訂金確認時收取，恕不退款。早鳥・原價可選現場以日幣付款（9折）。</div>
+    </div>
+  </div>
+
+  <!-- 費用明細比價 -->
+  <div class="result-card">
+    <div class="result-header">費用明細</div>
+
+    <div class="tier-row super-row">
+      <div class="tier-left">
+        <div class="tier-name">超早鳥 <span class="badge badge-green">最優惠</span></div>
+        <div class="tier-date">6/30 前預訂</div>
+      </div>
+      <div class="tier-right">
+        <div class="tier-price" id="superTotal">—</div>
+        <div class="tier-saving" id="superSaving"></div>
+        <div class="tier-pp" id="superPP"></div>
+      </div>
+    </div>
+
+    <div class="tier-row">
+      <div class="tier-left">
+        <div class="tier-name">早鳥</div>
+        <div class="tier-date">7/1–9/30 預訂</div>
+      </div>
+      <div class="tier-right">
+        <div class="tier-price" id="earlyTotal">—</div>
+        <div class="tier-saving mid" id="earlySaving"></div>
+        <div class="tier-pp" id="earlyPP"></div>
+      </div>
+    </div>
+
+    <div class="tier-row">
+      <div class="tier-left">
+        <div class="tier-name" style="color:var(--muted)">原價</div>
+        <div class="tier-date">9/30 後</div>
+      </div>
+      <div class="tier-right">
+        <div class="tier-price" style="color:var(--muted);font-size:16px" id="regularTotal">—</div>
+        <div class="tier-pp" id="regularPP"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+<script>
+  const COURSE = {
+    full: {
+      earlyBird: [13900, 15100, 16300, 17500],
+      regular:   [14900, 16100, 17500, 18500]
+    },
+    half: {
+      earlyBird: [8700, 9500, 10300, 11100],
+      regular:   [9500, 10300, 11100, 11900]
+    }
+  };
+
+  const ROOM = {
+    super:   { rokka_6: 5600, rokka_8: 6400, rokka_wa: 11000 },
+    regular: { rokka_6: 6500, rokka_8: 7500, rokka_wa: 13000 }
+  };
+
+  const ROOM_STOCK = { rokka_6: 8, rokka_8: 1, rokka_wa: 1 };
+  const GEAR_SUPER   = 2100;
+  const GEAR_PREPAY  = 2350;
+  const GEAR_REGULAR = 2600;
+
+  const S = {
+    persons: 1,
+    fullDays: 1, halfDays: 0,
+    roomType: 'rokka_6', roomCount: 1, roomNights: 2,
+    includeGear: false, gearPersons: 1, gearDays: 2
+  };
+
+  const stepCfg = {
+    fullDays:    { min: 0, max: 14 },
+    halfDays:    { min: 0, max: 14 },
+    roomCount:   { min: 1, max: 8  },
+    roomNights:  { min: 1, max: 14 },
+    gearPersons: { min: 1, max: 4  },
+    gearDays:    { min: 1, max: 14 }
+  };
+
+  function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
+  function el(id) { return document.getElementById(id); }
+
+  function superGearOk() {
+    const totalDays = S.fullDays + S.halfDays * 0.5;
+    return S.roomNights >= 1 && totalDays >= 1.5;
+  }
+
+  function calcTier(courseTier, roomTier, gearPrice, gearIncluded) {
+    const fullC = COURSE.full[courseTier][S.persons - 1] * S.fullDays;
+    const halfC = COURSE.half[courseTier][S.persons - 1] * S.halfDays;
+    const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
+    const gearC = (gearIncluded && S.includeGear)
+      ? gearPrice * S.gearPersons * S.gearDays : 0;
+    return fullC + halfC + roomC + gearC;
+  }
+
+  function calculate() {
+    // 課程天數統計
+    const totalDays = S.fullDays + S.halfDays * 0.5;
+    el('sumDays').textContent = totalDays % 1 === 0 ? totalDays : totalDays.toFixed(1);
+
+    // 三個 tier 各自計算
+    const gearOk = superGearOk();
+    const superTotal   = calcTier('regular',  'super',   GEAR_SUPER,  gearOk);
+    const earlyTotal   = calcTier('earlyBird','regular',  GEAR_PREPAY, true);
+    const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR, true);
+
+    // 省了多少（vs 原價）
+    const superSave   = regularTotal - superTotal;
+    const earlySave   = regularTotal - earlyTotal;
+    const superPct    = Math.round(superSave / regularTotal * 100);
+    const earlyPct    = Math.round(earlySave / regularTotal * 100);
+
+    el('superTotal').textContent   = fmt(superTotal);
+    el('earlyTotal').textContent   = fmt(earlyTotal);
+    el('regularTotal').textContent = fmt(regularTotal);
+
+    el('superSaving').textContent = superSave > 0
+      ? `現省 NT$ ${superSave.toLocaleString('zh-TW')}（${superPct}%）` : '';
+    el('earlySaving').textContent = earlySave > 0
+      ? `現省 NT$ ${earlySave.toLocaleString('zh-TW')}（${earlyPct}%）` : '';
+
+    // 平均每人費用（以課程人數計算，僅供參考）
+    const pp = n => `平均每人約 ${fmt(Math.round(n / S.persons))}`;
+    el('superPP').textContent   = pp(superTotal);
+    el('earlyPP').textContent   = pp(earlyTotal);
+    el('regularPP').textContent = pp(regularTotal);
+
+    // 超早鳥雪具備注
+    if (S.includeGear && !gearOk) {
+      el('superTotal').title = '超早鳥雪具需住宿＋課程天數≥1.5天，已排除雪具費用';
+    }
+  }
+
+  // 按鈕群組
+  document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.dataset.group;
+      document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.val;
+      S[group] = (group === 'persons') ? parseInt(val) : val;
+      if (group === 'roomType') {
+        const max = ROOM_STOCK[val];
+        stepCfg.roomCount.max = max;
+        if (S.roomCount > max) { S.roomCount = max; el('roomCountVal').textContent = max; }
+      }
+      calculate();
+    });
+  });
+
+  // 步進器
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.target;
+      let val = btn.dataset.action === 'inc'
+        ? Math.min(S[t] + 1, stepCfg[t].max)
+        : Math.max(S[t] - 1, stepCfg[t].min);
+      S[t] = val;
+      el(t + 'Val').textContent = val;
+      calculate();
+    });
+  });
+
+  // 雪具 toggle
+  el('gearToggleRow').addEventListener('click', () => {
+    S.includeGear = !S.includeGear;
+    el('toggleGear').classList.toggle('on', S.includeGear);
+    el('gearDetail').classList.toggle('visible', S.includeGear);
+    calculate();
+  });
+
+  calculate();
+</script>
+</body>
+</html>
