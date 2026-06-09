@@ -444,7 +444,8 @@
 
     // 三個 tier 各自計算
     const gearOk = superGearOk();
-    const superTotal   = calcTier('regular',  'super',   GEAR_SUPER,  gearOk);
+    const superGearPrice = gearOk ? GEAR_SUPER : GEAR_REGULAR;
+    const superTotal   = calcTier('regular',  'super',   superGearPrice, true);
     const earlyTotal   = calcTier('earlyBird','regular',  GEAR_PREPAY, true);
     const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR, true);
 
@@ -470,9 +471,9 @@
     el('regularPP').textContent = pp(regularTotal);
 
     // 超早鳥雪具備注
-    if (S.includeGear && !gearOk) {
-      el('superTotal').title = '超早鳥雪具需住宿＋全日課達 2 天以上，已排除雪具費用';
-    }
+    el('superTotal').title = (S.includeGear && !gearOk)
+      ? '全日課未達 2 天，雪具以原價 2,600/天計算（非超早鳥優惠價）'
+      : '';
   }
 
   // 按鈕群組
