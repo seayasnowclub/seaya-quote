@@ -160,6 +160,16 @@
     }
     .note.accent { color: var(--accent); font-weight: 500; }
 
+    .lodge-info { margin-top: 14px; font-size: 12px; color: var(--muted); line-height: 1.8; }
+    .lodge-info .address { margin-bottom: 8px; }
+    .lodge-info .dist-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px;
+      margin-bottom: 8px;
+    }
+    .lodge-info .dist-item { display: flex; justify-content: space-between; }
+    .lodge-info .dist-place { color: var(--text); font-weight: 500; }
+    .lodge-info .shuttle { color: var(--accent); font-weight: 600; font-size: 13px; }
+
     /* 比價結果卡 */
     .result-card {
       border-radius: 14px; overflow: hidden;
@@ -271,6 +281,16 @@
       <img src="images/gallery_common5.jpg" alt="六花民宿交誼空間">
       <img src="images/gallery_common6.jpg" alt="六花民宿用品間">
     </div>
+    <div class="lodge-info">
+      <div class="address">📍 〒949-6103 新潟縣南魚沼郡湯澤町土樽 346-2</div>
+      <div class="dist-grid">
+        <div class="dist-item"><span class="dist-place">越後湯澤車站</span><span>約 ? 分鐘</span></div>
+        <div class="dist-item"><span class="dist-place">岩原雪場</span><span>約 ? 分鐘</span></div>
+        <div class="dist-item"><span class="dist-place">神立雪場</span><span>約 ? 分鐘</span></div>
+        <div class="dist-item"><span class="dist-place">神樂雪場</span><span>約 ? 分鐘</span></div>
+      </div>
+      <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
+    </div>
     <div class="btn-group" style="margin-top:16px">
       <div class="group-label">房型（點圖選擇）</div>
       <button class="opt-btn room-card active" data-group="roomType" data-val="rokka_6" style="min-width:110px">
@@ -321,7 +341,7 @@
 
   <!-- 雪具加購 -->
   <div class="card">
-    <div class="card-title">雪具加購</div>
+    <div class="card-title">雪具加購 — Good Good 好好雪倉</div>
     <div class="gallery-scroll">
       <img src="images/gear_boots.jpg" alt="雪具店鞋架">
       <img src="images/gear_boards.jpg" alt="雪板">
@@ -361,6 +381,7 @@
         </div>
       </div>
       <div class="note">超早鳥雪具費用於訂金確認時收取，恕不退款。早鳥・原價可選現場以日幣付款（9折）。</div>
+      <div class="note">雪具於旅館 ロッカ 直接領取與歸還，不需另外跑租借店。</div>
     </div>
   </div>
 
