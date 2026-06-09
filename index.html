@@ -202,6 +202,7 @@
     .tier-saving.mid { color: var(--warn); }
 
     .tier-pp { font-size: 11px; color: var(--muted); }
+    .tier-note { font-size: 11px; color: var(--warn); margin-top: 3px; }
 
     .badge {
       display: inline-block; font-size: 11px; font-weight: 600;
@@ -357,6 +358,7 @@
       <div class="tier-left">
         <div class="tier-name">超早鳥 <span class="badge badge-green">最優惠</span></div>
         <div class="tier-date">6/30 前預訂</div>
+        <div class="tier-note" id="superGearNote" style="display:none">⚠ 雪具未達優惠條件，以原價計算</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" id="superTotal">—</div>
@@ -471,9 +473,10 @@
     el('regularPP').textContent = pp(regularTotal);
 
     // 超早鳥雪具備注
-    el('superTotal').title = (S.includeGear && !gearOk)
-      ? '全日課未達 2 天，雪具以原價 2,600/天計算（非超早鳥優惠價）'
-      : '';
+    const showGearNote = S.includeGear && !gearOk;
+    el('superGearNote').style.display = showGearNote ? 'block' : 'none';
+    el('superTotal').title = showGearNote
+      ? '全日課未達 2 天，雪具以原價 2,600/天計算（非超早鳥優惠價）' : '';
   }
 
   // 按鈕群組
