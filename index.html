@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>滑雪包套報價試算 — Seaya Snow Club</title>
+  <title>滑雪懶人包報價試算 — Seaya Snow Club</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -217,7 +217,8 @@
 
   <header>
     <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
-    <h1>滑雪包套報價試算</h1>
+    <h1>滑雪懶人包報價試算</h1>
+    <p>提供課程＋雪具＋住宿＋雪場往返交通，一次搞定</p>
     <p>Seaya Snow Club × 旅館 ロッカ</p>
     <div class="gallery-scroll">
       <img src="images/gallery_entrance.jpg" alt="六花民宿外觀雪景">
@@ -241,7 +242,7 @@
     <div class="stepper-row">
       <div>
         <label>全日課</label>
-        <div class="toggle-sub">5＋1 小時・共 6H（含 1 小時午休）</div>
+        <div class="toggle-sub">9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
       </div>
       <div style="display:flex;align-items:center">
         <div class="stepper">
@@ -252,25 +253,11 @@
         <span class="unit">天</span>
       </div>
     </div>
-    <div class="stepper-row">
-      <div>
-        <label>半日課</label>
-        <div class="toggle-sub">共 3 小時</div>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="halfDays">−</button>
-          <div class="step-val" id="halfDaysVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="halfDays">+</button>
-        </div>
-        <span class="unit">天</span>
-      </div>
-    </div>
     <div class="stat-bar">
       共 <span class="stat-val" id="sumDays">1</span> 天課程
     </div>
     <div class="note">課程建議：新手建議安排 2～3 天全日課比較紮實。人數越多，建議拉長天數 —— 像一對二跟一對四，教練能分配在每個人身上的時間本來就不一樣！</div>
-    <div class="note">提醒：「超早鳥雪具優惠」需課程總天數達 1.5 天以上，且同時有訂住宿，才會自動套用。</div>
+    <div class="note">提醒：「超早鳥雪具優惠」需全日課達 2 天以上，且同時有訂住宿，才會自動套用。</div>
   </div>
 
   <!-- 住宿 -->
@@ -330,6 +317,7 @@
     <div class="toggle-row" id="gearToggleRow">
       <div>
         <div class="toggle-label-main">加購全套雪具</div>
+        <div class="toggle-sub">內含：雪衣褲、雪板鞋、安全帽、雪鏡、手套、護臀＋護膝</div>
         <div class="toggle-sub">超早鳥 2,100 ／ 早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
       </div>
       <div class="toggle" id="toggleGear"></div>
@@ -407,10 +395,6 @@
     full: {
       earlyBird: [13900, 15100, 16300, 17500],
       regular:   [14900, 16100, 17500, 18500]
-    },
-    half: {
-      earlyBird: [8700, 9500, 10300, 11100],
-      regular:   [9500, 10300, 11100, 11900]
     }
   };
 
@@ -426,14 +410,13 @@
 
   const S = {
     persons: 1,
-    fullDays: 1, halfDays: 0,
+    fullDays: 1,
     roomType: 'rokka_6', roomCount: 1, roomNights: 2,
     includeGear: false, gearPersons: 1, gearDays: 2
   };
 
   const stepCfg = {
     fullDays:    { min: 0, max: 14 },
-    halfDays:    { min: 0, max: 14 },
     roomCount:   { min: 1, max: 8  },
     roomNights:  { min: 1, max: 14 },
     gearPersons: { min: 1, max: 4  },
@@ -444,23 +427,20 @@
   function el(id) { return document.getElementById(id); }
 
   function superGearOk() {
-    const totalDays = S.fullDays + S.halfDays * 0.5;
-    return S.roomNights >= 1 && totalDays >= 1.5;
+    return S.roomNights >= 1 && S.fullDays >= 2;
   }
 
   function calcTier(courseTier, roomTier, gearPrice, gearIncluded) {
     const fullC = COURSE.full[courseTier][S.persons - 1] * S.fullDays;
-    const halfC = COURSE.half[courseTier][S.persons - 1] * S.halfDays;
     const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
     const gearC = (gearIncluded && S.includeGear)
       ? gearPrice * S.gearPersons * S.gearDays : 0;
-    return fullC + halfC + roomC + gearC;
+    return fullC + roomC + gearC;
   }
 
   function calculate() {
     // 課程天數統計
-    const totalDays = S.fullDays + S.halfDays * 0.5;
-    el('sumDays').textContent = totalDays % 1 === 0 ? totalDays : totalDays.toFixed(1);
+    el('sumDays').textContent = S.fullDays;
 
     // 三個 tier 各自計算
     const gearOk = superGearOk();
@@ -491,7 +471,7 @@
 
     // 超早鳥雪具備注
     if (S.includeGear && !gearOk) {
-      el('superTotal').title = '超早鳥雪具需住宿＋課程天數≥1.5天，已排除雪具費用';
+      el('superTotal').title = '超早鳥雪具需住宿＋全日課達 2 天以上，已排除雪具費用';
     }
   }
 
