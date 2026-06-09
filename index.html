@@ -452,7 +452,7 @@
     persons: 1,
     fullDays: 1,
     roomType: 'rokka_6', roomCount: 1, roomNights: 2,
-    includeGear: false, gearPersons: 1, gearDays: 2
+    includeGear: true, gearPersons: 1, gearDays: 2
   };
 
   const stepCfg = {
@@ -555,6 +555,8 @@
     calculate();
   });
 
+  el('toggleGear').classList.add('on');
+  el('gearDetail').classList.add('visible');
   calculate();
 </script>
 </body>
