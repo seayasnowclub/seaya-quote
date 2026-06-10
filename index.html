@@ -127,31 +127,14 @@
     }
     .stat-val { color: var(--accent); font-weight: 600; }
 
-    .toggle-row {
-      display: flex; align-items: center;
-      justify-content: space-between;
-      cursor: pointer; user-select: none;
+    .summary-box {
+      margin-bottom: 14px; padding: 12px 14px;
+      background: var(--bg); border-radius: 10px;
+      font-size: 13px; color: var(--muted); line-height: 1.9;
     }
-    .toggle-label-main { font-size: 14px; }
-    .toggle-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .toggle {
-      width: 44px; height: 26px; border-radius: 13px;
-      background: var(--border); position: relative;
-      transition: background 0.2s; flex-shrink: 0;
-    }
-    .toggle::after {
-      content: ''; width: 20px; height: 20px; border-radius: 50%;
-      background: #fff; position: absolute; top: 3px; left: 3px;
-      transition: transform 0.2s;
-    }
-    .toggle.on { background: var(--accent); }
-    .toggle.on::after { transform: translateX(18px); }
+    .summary-box b { color: var(--text); font-weight: 600; }
 
-    .gear-detail {
-      display: none; margin-top: 16px; padding-top: 16px;
-      border-top: 1px solid var(--border);
-    }
-    .gear-detail.visible { display: block; }
+    .toggle-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
 
     .note {
       margin-top: 10px; font-size: 12px; color: var(--muted);
@@ -308,7 +291,7 @@
         </div>
       </button>
       <button class="opt-btn room-card" data-group="roomType" data-val="rokka_wa" style="min-width:110px">
-        <img src="images/room_washitsu.jpg" alt="大和室">
+        <img src="images/room_washitsu.jpg" alt="大和室" style="object-position: 70% 30%">
         <div class="room-info">
           <div class="name">大和室</div>
           <small>4–6 人 · 共 1 間</small>
@@ -350,21 +333,14 @@
       <img src="images/gear_boards.jpg" alt="雪板">
       <img src="images/gear_gloves.jpg" alt="手套">
     </div>
-    <div class="toggle-row" id="gearToggleRow" style="margin-top:16px">
-      <div>
-        <div class="toggle-label-main">加購全套雪具</div>
-        <div class="toggle-sub">內含：雪衣褲、雪板鞋、安全帽、雪鏡、手套、護臀＋護膝</div>
-        <div class="toggle-sub">超早鳥 2,100 ／ 早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
-      </div>
-      <div class="toggle" id="toggleGear"></div>
-    </div>
-    <div class="gear-detail" id="gearDetail">
+    <div style="margin-top:16px">
+      <div class="toggle-sub" style="margin-bottom:12px">內含：雪衣褲、雪板鞋、安全帽、雪鏡、手套、護臀＋護膝　／　超早鳥 2,100 ／ 早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
       <div class="stepper-row">
-        <label>加購人數</label>
+        <label>加購人數（不租填 0）</label>
         <div style="display:flex;align-items:center">
           <div class="stepper">
             <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
-            <div class="step-val" id="gearPersonsVal">1</div>
+            <div class="step-val" id="gearPersonsVal">0</div>
             <button class="step-btn" data-action="inc" data-target="gearPersons">+</button>
           </div>
           <span class="unit">人</span>
@@ -387,9 +363,16 @@
     </div>
   </div>
 
+
   <!-- 費用明細比價 -->
   <div class="result-card">
     <div class="result-header">費用明細</div>
+
+    <div class="summary-box">
+      <div>課程：全日 <b id="sumCourseDays">1</b> 天</div>
+      <div>住宿：<b id="sumRoomName">六疊房</b> × <b id="sumRoomCount">1</b> 間 × <b id="sumRoomNights">2</b> 晚</div>
+      <div>雪具：<b id="sumGear">未加購</b></div>
+    </div>
 
     <div class="tier-row super-row">
       <div class="tier-left">
@@ -444,6 +427,7 @@
   };
 
   const ROOM_STOCK = { rokka_6: 8, rokka_8: 1, rokka_wa: 1 };
+  const ROOM_NAME  = { rokka_6: '六疊房', rokka_8: '八疊房', rokka_wa: '大和室' };
   const GEAR_SUPER   = 2100;
   const GEAR_PREPAY  = 2350;
   const GEAR_REGULAR = 2600;
@@ -452,14 +436,14 @@
     persons: 1,
     fullDays: 1,
     roomType: 'rokka_6', roomCount: 1, roomNights: 2,
-    includeGear: true, gearPersons: 1, gearDays: 2
+    gearPersons: 0, gearDays: 2
   };
 
   const stepCfg = {
-    fullDays:    { min: 0, max: 14 },
+    fullDays:    { min: 1, max: 14 },
     roomCount:   { min: 1, max: 8  },
     roomNights:  { min: 1, max: 14 },
-    gearPersons: { min: 1, max: 4  },
+    gearPersons: { min: 0, max: 4  },
     gearDays:    { min: 1, max: 14 }
   };
 
@@ -470,11 +454,10 @@
     return S.roomNights >= 1 && S.fullDays >= 2;
   }
 
-  function calcTier(courseTier, roomTier, gearPrice, gearIncluded) {
+  function calcTier(courseTier, roomTier, gearPrice) {
     const fullC = COURSE.full[courseTier][S.persons - 1] * S.fullDays;
     const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
-    const gearC = (gearIncluded && S.includeGear)
-      ? gearPrice * S.gearPersons * S.gearDays : 0;
+    const gearC = gearPrice * S.gearPersons * S.gearDays;
     return fullC + roomC + gearC;
   }
 
@@ -482,12 +465,20 @@
     // 課程天數統計
     el('sumDays').textContent = S.fullDays;
 
+    // 費用明細總結
+    el('sumCourseDays').textContent = S.fullDays;
+    el('sumRoomName').textContent = ROOM_NAME[S.roomType];
+    el('sumRoomCount').textContent = S.roomCount;
+    el('sumRoomNights').textContent = S.roomNights;
+    el('sumGear').textContent = S.gearPersons > 0
+      ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
+
     // 三個 tier 各自計算
     const gearOk = superGearOk();
     const superGearPrice = gearOk ? GEAR_SUPER : GEAR_REGULAR;
-    const superTotal   = calcTier('regular',  'super',   superGearPrice, true);
-    const earlyTotal   = calcTier('earlyBird','regular',  GEAR_PREPAY, true);
-    const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR, true);
+    const superTotal   = calcTier('regular',  'super',   superGearPrice);
+    const earlyTotal   = calcTier('earlyBird','regular',  GEAR_PREPAY);
+    const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR);
 
     // 省了多少（vs 原價）
     const superSave   = regularTotal - superTotal;
@@ -511,7 +502,7 @@
     el('regularPP').textContent = pp(regularTotal);
 
     // 超早鳥雪具備注
-    const showGearNote = S.includeGear && !gearOk;
+    const showGearNote = S.gearPersons > 0 && !gearOk;
     el('superGearNote').style.display = showGearNote ? 'block' : 'none';
     el('superTotal').title = showGearNote
       ? '全日課未達 2 天，雪具以原價 2,600/天計算（非超早鳥優惠價）' : '';
@@ -547,16 +538,6 @@
     });
   });
 
-  // 雪具 toggle
-  el('gearToggleRow').addEventListener('click', () => {
-    S.includeGear = !S.includeGear;
-    el('toggleGear').classList.toggle('on', S.includeGear);
-    el('gearDetail').classList.toggle('visible', S.includeGear);
-    calculate();
-  });
-
-  el('toggleGear').classList.add('on');
-  el('gearDetail').classList.add('visible');
   calculate();
 </script>
 </body>
