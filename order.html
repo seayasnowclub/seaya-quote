@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>訂單收據系統 — Seaya Snow Club</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf3e6;
+    --surface: #fffaf3;
+    --border: #ecdfc8;
+    --accent: #f1703b;
+    --accent-soft: rgba(241,112,59,0.12);
+    --text: #5a4636;
+    --muted: #a4907b;
+    --success: #6f8c5f;
+    --success-soft: rgba(111,140,95,0.12);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Hiragino Sans", "PingFang TC", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px 80px;
+  }
+
+  .container { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
+
+  header { padding: 8px 0 20px; }
+  .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
+  header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+  header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+  .tabs { display: flex; gap: 8px; }
+  .tab-btn {
+    flex: 1; padding: 12px; border-radius: 12px;
+    border: 1px solid var(--border); background: var(--surface);
+    color: var(--muted); font-weight: 600; font-size: 14px;
+    cursor: pointer; font-family: inherit; transition: all 0.15s;
+  }
+  .tab-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+  }
+
+  .field { margin-bottom: 14px; min-width: 0; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .field input[type=text], .field input[type=number], .field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
+  }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+
+  .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .btn-group:last-child { margin-bottom: 0; }
+  .opt-btn {
+    flex: 1; min-width: 64px;
+    padding: 10px 8px;
+    border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg); color: var(--muted);
+    font-size: 14px; font-family: inherit;
+    cursor: pointer; text-align: center;
+    transition: all 0.15s; line-height: 1.4;
+  }
+  .opt-btn:hover { border-color: var(--accent); color: var(--text); }
+  .opt-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+  .stepper-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .stepper-row:last-child { margin-bottom: 0; }
+  .stepper-row label { font-size: 14px; color: var(--text); }
+  .stepper {
+    display: flex; align-items: center;
+    border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+  }
+  .step-btn {
+    width: 38px; height: 38px; border: none;
+    background: var(--bg); color: var(--muted);
+    font-size: 20px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: color 0.15s, background 0.15s;
+  }
+  .step-btn:hover { background: var(--border); color: var(--text); }
+  .step-val {
+    min-width: 42px; text-align: center;
+    font-size: 15px; font-weight: 600; color: var(--text);
+    background: var(--bg);
+    border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+    height: 38px; display: flex; align-items: center; justify-content: center;
+  }
+
+  .primary-btn {
+    width: 100%; padding: 14px; margin-top: 4px;
+    background: var(--accent); color: #fff; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .primary-btn:hover { opacity: 0.9; }
+
+  .note {
+    margin-top: 10px; font-size: 12px; color: var(--muted);
+    padding: 10px 14px; background: var(--bg); border-radius: 10px;
+    line-height: 1.6;
+  }
+  .note.accent { color: var(--accent); font-weight: 500; }
+
+  /* 收據 */
+  .receipt-card {
+    background: var(--surface); border: 1px dashed var(--accent);
+    border-radius: 14px; padding: 24px;
+  }
+  .receipt-header { text-align: center; margin-bottom: 16px; }
+  .receipt-header img { height: 44px; margin-bottom: 8px; }
+  .receipt-header h2 { font-size: 17px; font-weight: 700; }
+  .receipt-meta { font-size: 12px; color: var(--muted); margin-top: 6px; line-height: 1.8; }
+
+  .receipt-section { margin-top: 16px; padding-top: 16px; border-top: 1px dashed var(--border); }
+  .receipt-section h3 {
+    font-size: 11px; color: var(--accent); letter-spacing: 0.1em;
+    margin-bottom: 10px; text-transform: uppercase; font-weight: 700;
+  }
+  .receipt-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 6px; line-height: 1.6; }
+  .receipt-row:last-child { margin-bottom: 0; }
+  .receipt-row .label { color: var(--muted); flex-shrink: 0; }
+  .receipt-row .value { text-align: right; }
+
+  .receipt-total {
+    display: flex; justify-content: space-between; align-items: baseline;
+    font-size: 18px; font-weight: 700; margin-top: 12px;
+    padding-top: 12px; border-top: 1px solid var(--border);
+  }
+  .receipt-total.deposit { color: var(--success); }
+
+  .receipt-footer {
+    text-align: center; font-size: 11px; color: var(--muted);
+    margin-top: 20px; padding-top: 16px; border-top: 1px dashed var(--border);
+    line-height: 1.8;
+  }
+
+  @media print {
+    body * { visibility: hidden; }
+    .receipt-card, .receipt-card * { visibility: visible; }
+    .receipt-card { position: absolute; left: 0; top: 0; width: 100%; border: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
+    <h1>訂單收據系統</h1>
+    <p>內部使用：訂金確認登記與收據開立</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" id="tabNew">開立收據</button>
+    <button class="tab-btn" id="tabLookup">查詢收據</button>
+  </div>
+
+  <!-- ===== 開立收據 ===== -->
+  <div id="newOrderTab">
+
+    <div class="card">
+      <div class="card-title">客人資訊</div>
+      <div class="field">
+        <label>姓名</label>
+        <input type="text" id="custName" placeholder="例如：王小明">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>聯繫方式</label>
+          <select id="custContactType" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); font-size:14px; font-family:inherit;">
+            <option value="IG">Instagram</option>
+            <option value="LINE">LINE</option>
+            <option value="其他">其他</option>
+          </select>
+        </div>
+        <div class="field" style="flex:2">
+          <label>帳號 / ID</label>
+          <input type="text" id="custContact" placeholder="例如：@ooorange33">
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">課程</div>
+      <div class="btn-group">
+        <div class="group-label">課程人數</div>
+        <button class="opt-btn active" data-group="coursePersons" data-val="1">一對一</button>
+        <button class="opt-btn" data-group="coursePersons" data-val="2">一對二</button>
+        <button class="opt-btn" data-group="coursePersons" data-val="3">一對三</button>
+        <button class="opt-btn" data-group="coursePersons" data-val="4">一對四</button>
+      </div>
+      <div class="stepper-row">
+        <label>全日課程天數</label>
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="courseDays">−</button>
+          <div class="step-val" id="courseDaysVal">2</div>
+          <button class="step-btn" data-action="inc" data-target="courseDays">＋</button>
+        </div>
+      </div>
+      <div class="field" style="margin-top:14px">
+        <label>上課日期</label>
+        <input type="text" id="courseDate" placeholder="例如：2026/12/20（六）－12/21（日）">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">住宿 — 六花 Rokka Inn</div>
+      <div class="btn-group">
+        <div class="group-label">房型</div>
+        <button class="opt-btn active" data-group="roomType" data-val="six">六疊房</button>
+        <button class="opt-btn" data-group="roomType" data-val="eight">八疊房</button>
+        <button class="opt-btn" data-group="roomType" data-val="washitsu">大和室</button>
+      </div>
+      <div class="stepper-row">
+        <label>間數</label>
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
+          <div class="step-val" id="roomCountVal">1</div>
+          <button class="step-btn" data-action="inc" data-target="roomCount">＋</button>
+        </div>
+      </div>
+      <div class="stepper-row">
+        <label>晚數</label>
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomNights">−</button>
+          <div class="step-val" id="roomNightsVal">2</div>
+          <button class="step-btn" data-action="inc" data-target="roomNights">＋</button>
+        </div>
+      </div>
+      <div class="field-row" style="margin-top:14px">
+        <div class="field">
+          <label>入住日期</label>
+          <input type="text" id="checkInDate" placeholder="例如：2026/12/19">
+        </div>
+        <div class="field">
+          <label>退房日期</label>
+          <input type="text" id="checkOutDate" placeholder="例如：2026/12/21">
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">雪具加購 — Good Good 好好雪倉</div>
+      <div class="stepper-row">
+        <label>加購人數（不租填 0）</label>
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
+          <div class="step-val" id="gearPersonsVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="gearPersons">＋</button>
+        </div>
+      </div>
+      <div class="stepper-row">
+        <label>租借天數</label>
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="gearDays">−</button>
+          <div class="step-val" id="gearDaysVal">2</div>
+          <button class="step-btn" data-action="inc" data-target="gearDays">＋</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">金額與付款</div>
+      <div class="field-row">
+        <div class="field">
+          <label>總金額（NT$）</label>
+          <input type="number" id="totalAmount" placeholder="0">
+        </div>
+        <div class="field">
+          <label>已收訂金（NT$）</label>
+          <input type="number" id="depositAmount" placeholder="0">
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>尾款金額（NT$）</label>
+          <input type="number" id="balanceAmount" placeholder="0">
+        </div>
+        <div class="field">
+          <label>尾款繳款期限</label>
+          <input type="text" id="balanceDue" placeholder="例如：開課前 30 天">
+        </div>
+      </div>
+      <div class="field">
+        <label>付款方式</label>
+        <input type="text" id="paymentMethod" placeholder="例如：銀行轉帳 / LINE Pay">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">備註</div>
+      <div class="field">
+        <label>客製化需求</label>
+        <textarea id="customNote" placeholder="例如：素食、租用兒童雪具、加開接駁時間等"></textarea>
+      </div>
+      <div class="field">
+        <label>退款條款</label>
+        <textarea id="refundNote">訂金為保留名額之用，恕不退款。開課前 30 天起（含當日）取消，尾款不予退還。雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。</textarea>
+      </div>
+    </div>
+
+    <button class="primary-btn" id="generateBtn" style="margin-top:4px">產生收據</button>
+
+    <!-- ===== 收據預覽 ===== -->
+    <div class="receipt-card" id="receiptCard" style="display:none; margin-top:12px">
+      <div class="receipt-header">
+        <img src="images/logo.png" alt="Seaya Snow Club">
+        <h2>訂金確認收據</h2>
+        <div class="receipt-meta">
+          收據編號：<span id="rcNo"></span><br>
+          開立日期：<span id="rcDate"></span>
+        </div>
+      </div>
+
+      <div class="receipt-section">
+        <h3>客人資訊</h3>
+        <div class="receipt-row"><span class="label">姓名</span><span class="value" id="rcName"></span></div>
+        <div class="receipt-row"><span class="label">聯繫方式</span><span class="value" id="rcContact"></span></div>
+      </div>
+
+      <div class="receipt-section">
+        <h3>行程內容</h3>
+        <div class="receipt-row"><span class="label">課程</span><span class="value" id="rcCourse"></span></div>
+        <div class="receipt-row"><span class="label">住宿</span><span class="value" id="rcRoom"></span></div>
+        <div class="receipt-row"><span class="label">雪具</span><span class="value" id="rcGear"></span></div>
+      </div>
+
+      <div class="receipt-section">
+        <h3>費用明細</h3>
+        <div class="receipt-row"><span class="label">總金額</span><span class="value" id="rcTotal"></span></div>
+        <div class="receipt-total deposit"><span>已收訂金</span><span id="rcDeposit"></span></div>
+        <div class="receipt-row" style="margin-top:10px"><span class="label">尾款</span><span class="value" id="rcBalance"></span></div>
+        <div class="receipt-row"><span class="label">繳款期限</span><span class="value" id="rcBalanceDue"></span></div>
+        <div class="receipt-row"><span class="label">付款方式</span><span class="value" id="rcPayment"></span></div>
+      </div>
+
+      <div class="receipt-section" id="rcCustomNoteSection">
+        <h3>備註</h3>
+        <div style="font-size:13px; line-height:1.7" id="rcCustomNote"></div>
+      </div>
+
+      <div class="receipt-section">
+        <h3>退款條款</h3>
+        <div style="font-size:12px; line-height:1.7; color:var(--muted)" id="rcRefundNote"></div>
+      </div>
+
+      <div class="receipt-footer">
+        逐光旅行戶外工作室<br>
+        佐倉マネジメント株式会社
+      </div>
+    </div>
+
+    <div class="note" id="printHint" style="display:none">收據可截圖傳給客人，或用瀏覽器「列印」功能另存成 PDF。</div>
+  </div>
+
+  <!-- ===== 查詢收據 ===== -->
+  <div id="lookupTab" style="display:none">
+    <div class="card">
+      <div class="card-title">查詢收據</div>
+      <div class="field">
+        <label>收據編號</label>
+        <input type="text" id="lookupId" placeholder="例如：SEA20261220-1530">
+      </div>
+      <button class="primary-btn" id="lookupBtn">查詢</button>
+      <div class="note accent" style="margin-top:12px">查詢功能將於 Google Sheet 後台串接完成後啟用。</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const O = {
+    coursePersons: 1, courseDays: 2,
+    roomType: 'six', roomCount: 1, roomNights: 2,
+    gearPersons: 0, gearDays: 2
+  };
+
+  const stepCfg = {
+    courseDays:  { min: 0, max: 14 },
+    roomCount:   { min: 0, max: 8  },
+    roomNights:  { min: 0, max: 14 },
+    gearPersons: { min: 0, max: 4  },
+    gearDays:    { min: 0, max: 14 }
+  };
+
+  const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四' };
+  const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室' };
+
+  function el(id) { return document.getElementById(id); }
+  function fmt(n) { return 'NT$ ' + (Number(n) || 0).toLocaleString('zh-TW'); }
+
+  // 按鈕群組
+  document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const group = btn.dataset.group;
+      document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const val = btn.dataset.val;
+      O[group] = (group === 'coursePersons') ? parseInt(val) : val;
+    });
+  });
+
+  // 步進器
+  document.querySelectorAll('.step-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.target;
+      let val = btn.dataset.action === 'inc'
+        ? Math.min(O[t] + 1, stepCfg[t].max)
+        : Math.max(O[t] - 1, stepCfg[t].min);
+      O[t] = val;
+      el(t + 'Val').textContent = val;
+    });
+  });
+
+  // 尾款自動帶入
+  function autoBalance() {
+    const total = Number(el('totalAmount').value) || 0;
+    const deposit = Number(el('depositAmount').value) || 0;
+    el('balanceAmount').value = Math.max(total - deposit, 0);
+  }
+  el('totalAmount').addEventListener('input', autoBalance);
+  el('depositAmount').addEventListener('input', autoBalance);
+
+  // 收據編號（暫時規則，正式編號將由後台串接後改為流水號）
+  function genReceiptNo() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `SEA${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  }
+
+  el('generateBtn').addEventListener('click', () => {
+    const d = new Date();
+
+    el('rcNo').textContent = genReceiptNo();
+    el('rcDate').textContent = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
+
+    el('rcName').textContent = el('custName').value || '—';
+    const contactType = el('custContactType').value;
+    const contact = el('custContact').value || '—';
+    el('rcContact').textContent = `${contactType} ${contact}`;
+
+    // 課程
+    if (O.courseDays > 0) {
+      const date = el('courseDate').value;
+      el('rcCourse').textContent = `${PERSON_LABEL[O.coursePersons]}・全日 ${O.courseDays} 天${date ? '（' + date + '）' : ''}`;
+    } else {
+      el('rcCourse').textContent = '未含課程';
+    }
+
+    // 住宿
+    if (O.roomCount > 0 && O.roomNights > 0) {
+      const ci = el('checkInDate').value;
+      const co = el('checkOutDate').value;
+      const range = (ci || co) ? `（入住 ${ci || '—'} － 退房 ${co || '—'}）` : '';
+      el('rcRoom').textContent = `${ROOM_NAME[O.roomType]} × ${O.roomCount} 間 × ${O.roomNights} 晚${range}`;
+    } else {
+      el('rcRoom').textContent = '未含住宿';
+    }
+
+    // 雪具
+    el('rcGear').textContent = O.gearPersons > 0
+      ? `${O.gearPersons} 人 × ${O.gearDays} 天` : '未加購';
+
+    // 費用
+    const total = Number(el('totalAmount').value) || 0;
+    const deposit = Number(el('depositAmount').value) || 0;
+    const balance = Number(el('balanceAmount').value) || 0;
+    el('rcTotal').textContent = fmt(total);
+    el('rcDeposit').textContent = fmt(deposit);
+    el('rcBalance').textContent = fmt(balance);
+    el('rcBalanceDue').textContent = el('balanceDue').value || '—';
+    el('rcPayment').textContent = el('paymentMethod').value || '—';
+
+    // 備註
+    const customNote = el('customNote').value.trim();
+    if (customNote) {
+      el('rcCustomNote').textContent = customNote;
+      el('rcCustomNoteSection').style.display = 'block';
+    } else {
+      el('rcCustomNoteSection').style.display = 'none';
+    }
+    el('rcRefundNote').textContent = el('refundNote').value;
+
+    el('receiptCard').style.display = 'block';
+    el('printHint').style.display = 'block';
+    el('receiptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // Tabs
+  el('tabNew').addEventListener('click', () => {
+    el('tabNew').classList.add('active');
+    el('tabLookup').classList.remove('active');
+    el('newOrderTab').style.display = 'block';
+    el('lookupTab').style.display = 'none';
+  });
+  el('tabLookup').addEventListener('click', () => {
+    el('tabLookup').classList.add('active');
+    el('tabNew').classList.remove('active');
+    el('lookupTab').style.display = 'block';
+    el('newOrderTab').style.display = 'none';
+  });
+</script>
+</body>
+</html>
