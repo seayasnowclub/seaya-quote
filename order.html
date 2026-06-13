@@ -61,7 +61,7 @@
   .field { margin-bottom: 14px; min-width: 0; }
   .field:last-child { margin-bottom: 0; }
   .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-  .field input[type=text], .field input[type=number], .field textarea {
+  .field input[type=text], .field input[type=number], .field input[type=date], .field select, .field textarea {
     width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
     background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
   }
@@ -163,6 +163,7 @@
     .receipt-card { position: absolute; left: 0; top: 0; width: 100%; border: none; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -190,7 +191,7 @@
       <div class="field-row">
         <div class="field">
           <label>聯繫方式</label>
-          <select id="custContactType" style="width:100%; padding:10px 12px; border:1px solid var(--border); border-radius:10px; background:var(--bg); color:var(--text); font-size:14px; font-family:inherit;">
+          <select id="custContactType">
             <option value="IG">Instagram</option>
             <option value="LINE">LINE</option>
             <option value="其他">其他</option>
@@ -200,6 +201,10 @@
           <label>帳號 / ID</label>
           <input type="text" id="custContact" placeholder="例如：@ooorange33">
         </div>
+      </div>
+      <div class="field">
+        <label>LINE 暱稱（方便對帳聯繫）</label>
+        <input type="text" id="custLineNick" placeholder="例如：小明">
       </div>
     </div>
 
@@ -222,7 +227,7 @@
       </div>
       <div class="field" style="margin-top:14px">
         <label>上課日期</label>
-        <input type="text" id="courseDate" placeholder="例如：2026/12/20（六）－12/21（日）">
+        <input type="date" id="courseDate">
       </div>
     </div>
 
@@ -253,11 +258,11 @@
       <div class="field-row" style="margin-top:14px">
         <div class="field">
           <label>入住日期</label>
-          <input type="text" id="checkInDate" placeholder="例如：2026/12/19">
+          <input type="date" id="checkInDate">
         </div>
         <div class="field">
           <label>退房日期</label>
-          <input type="text" id="checkOutDate" placeholder="例如：2026/12/21">
+          <input type="date" id="checkOutDate">
         </div>
       </div>
     </div>
@@ -301,12 +306,21 @@
         </div>
         <div class="field">
           <label>尾款繳款期限</label>
-          <input type="text" id="balanceDue" placeholder="例如：開課前 30 天">
+          <input type="date" id="balanceDue">
         </div>
       </div>
-      <div class="field">
-        <label>付款方式</label>
-        <input type="text" id="paymentMethod" placeholder="例如：銀行轉帳 / LINE Pay">
+      <div class="field-row">
+        <div class="field">
+          <label>付款方式</label>
+          <select id="paymentMethod">
+            <option value="虛擬帳號">虛擬帳號</option>
+            <option value="匯款">匯款</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>帳號末五碼</label>
+          <input type="text" id="paymentLast5" placeholder="例如：12345" maxlength="5" inputmode="numeric">
+        </div>
       </div>
     </div>
 
@@ -373,7 +387,8 @@
       </div>
     </div>
 
-    <div class="note" id="printHint" style="display:none">收據可截圖傳給客人，或用瀏覽器「列印」功能另存成 PDF。</div>
+    <button class="primary-btn" id="downloadBtn" style="display:none; margin-top:12px; background:var(--success)">下載收據圖片</button>
+    <div class="note" id="printHint" style="display:none">收據可截圖傳給客人，或按「下載收據圖片」存成 PNG，也可用瀏覽器「列印」功能另存成 PDF。</div>
   </div>
 
   <!-- ===== 查詢收據 ===== -->
@@ -411,6 +426,23 @@
 
   function el(id) { return document.getElementById(id); }
   function fmt(n) { return 'NT$ ' + (Number(n) || 0).toLocaleString('zh-TW'); }
+
+  const WEEKDAYS = ['日','一','二','三','四','五','六'];
+  function formatDate(str) {
+    if (!str) return '';
+    const d = new Date(str + 'T00:00:00');
+    return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
+  }
+  function formatDateRange(str, days) {
+    if (!str) return '';
+    const start = new Date(str + 'T00:00:00');
+    if (days <= 1) return formatDate(str);
+    const end = new Date(start);
+    end.setDate(end.getDate() + days - 1);
+    const pad = n => String(n).padStart(2, '0');
+    const endStr = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}`;
+    return `${formatDate(str)} － ${formatDate(endStr)}`;
+  }
 
   // 按鈕群組
   document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
@@ -460,20 +492,21 @@
     el('rcName').textContent = el('custName').value || '—';
     const contactType = el('custContactType').value;
     const contact = el('custContact').value || '—';
-    el('rcContact').textContent = `${contactType} ${contact}`;
+    const lineNick = el('custLineNick').value;
+    el('rcContact').textContent = `${contactType} ${contact}` + (lineNick ? `（LINE 暱稱：${lineNick}）` : '');
 
     // 課程
     if (O.courseDays > 0) {
-      const date = el('courseDate').value;
-      el('rcCourse').textContent = `${PERSON_LABEL[O.coursePersons]}・全日 ${O.courseDays} 天${date ? '（' + date + '）' : ''}`;
+      const range = formatDateRange(el('courseDate').value, O.courseDays);
+      el('rcCourse').textContent = `${PERSON_LABEL[O.coursePersons]}・全日 ${O.courseDays} 天${range ? '（' + range + '）' : ''}`;
     } else {
       el('rcCourse').textContent = '未含課程';
     }
 
     // 住宿
     if (O.roomCount > 0 && O.roomNights > 0) {
-      const ci = el('checkInDate').value;
-      const co = el('checkOutDate').value;
+      const ci = formatDate(el('checkInDate').value);
+      const co = formatDate(el('checkOutDate').value);
       const range = (ci || co) ? `（入住 ${ci || '—'} － 退房 ${co || '—'}）` : '';
       el('rcRoom').textContent = `${ROOM_NAME[O.roomType]} × ${O.roomCount} 間 × ${O.roomNights} 晚${range}`;
     } else {
@@ -491,8 +524,9 @@
     el('rcTotal').textContent = fmt(total);
     el('rcDeposit').textContent = fmt(deposit);
     el('rcBalance').textContent = fmt(balance);
-    el('rcBalanceDue').textContent = el('balanceDue').value || '—';
-    el('rcPayment').textContent = el('paymentMethod').value || '—';
+    el('rcBalanceDue').textContent = formatDate(el('balanceDue').value) || '—';
+    const last5 = el('paymentLast5').value.trim();
+    el('rcPayment').textContent = el('paymentMethod').value + (last5 ? `（末五碼 ${last5}）` : '');
 
     // 備註
     const customNote = el('customNote').value.trim();
@@ -505,8 +539,19 @@
     el('rcRefundNote').textContent = el('refundNote').value;
 
     el('receiptCard').style.display = 'block';
+    el('downloadBtn').style.display = 'block';
     el('printHint').style.display = 'block';
     el('receiptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+
+  // 下載收據圖片
+  el('downloadBtn').addEventListener('click', () => {
+    html2canvas(el('receiptCard'), { backgroundColor: '#fffaf3', scale: 2 }).then(canvas => {
+      const link = document.createElement('a');
+      link.download = `seaya_receipt_${el('rcNo').textContent}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
   });
 
   // Tabs
