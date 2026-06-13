@@ -226,8 +226,24 @@
         </div>
       </div>
       <div class="field" style="margin-top:14px">
-        <label>上課日期</label>
+        <div class="field-row" style="margin-bottom:6px; align-items:center">
+          <label style="margin:0; flex:1">上課日期</label>
+          <label style="display:flex; align-items:center; gap:6px; font-weight:normal; font-size:13px; color:var(--muted); cursor:pointer; flex:0 0 auto; margin:0">
+            <input type="checkbox" id="courseDateRange" style="width:auto; margin:0">
+            區間（多天）
+          </label>
+        </div>
         <input type="date" id="courseDate">
+        <div class="field-row" id="courseDateRangeRow" style="display:none; margin-top:10px">
+          <div class="field" style="margin-bottom:0">
+            <label>開始日期</label>
+            <input type="date" id="courseDateStart">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>結束日期</label>
+            <input type="date" id="courseDateEnd">
+          </div>
+        </div>
       </div>
     </div>
 
@@ -433,16 +449,13 @@
     const d = new Date(str + 'T00:00:00');
     return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
   }
-  function formatDateRange(str, days) {
-    if (!str) return '';
-    const start = new Date(str + 'T00:00:00');
-    if (days <= 1) return formatDate(str);
-    const end = new Date(start);
-    end.setDate(end.getDate() + days - 1);
-    const pad = n => String(n).padStart(2, '0');
-    const endStr = `${end.getFullYear()}-${pad(end.getMonth()+1)}-${pad(end.getDate())}`;
-    return `${formatDate(str)} － ${formatDate(endStr)}`;
-  }
+
+  // 上課日期：單日 / 區間切換
+  el('courseDateRange').addEventListener('change', () => {
+    const isRange = el('courseDateRange').checked;
+    el('courseDate').style.display = isRange ? 'none' : '';
+    el('courseDateRangeRow').style.display = isRange ? 'flex' : 'none';
+  });
 
   // 按鈕群組
   document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
@@ -497,7 +510,16 @@
 
     // 課程
     if (O.courseDays > 0) {
-      const range = formatDateRange(el('courseDate').value, O.courseDays);
+      let range = '';
+      if (el('courseDateRange').checked) {
+        const s = el('courseDateStart').value;
+        const en = el('courseDateEnd').value;
+        if (s && en) range = `${formatDate(s)} － ${formatDate(en)}`;
+        else if (s) range = formatDate(s);
+        else if (en) range = formatDate(en);
+      } else {
+        range = formatDate(el('courseDate').value);
+      }
       el('rcCourse').textContent = `${PERSON_LABEL[O.coursePersons]}・全日 ${O.courseDays} 天${range ? '（' + range + '）' : ''}`;
     } else {
       el('rcCourse').textContent = '未含課程';
