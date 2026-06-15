@@ -83,6 +83,15 @@
   .opt-btn:hover { border-color: var(--accent); color: var(--text); }
   .opt-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
 
+  .quick-btn {
+    flex: 1; padding: 6px 8px;
+    border: 1px solid var(--border); border-radius: 8px;
+    background: var(--bg); color: var(--muted);
+    font-size: 12px; font-family: inherit;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .quick-btn:hover { border-color: var(--accent); color: var(--accent); }
+
   .stepper-row {
     display: flex; align-items: center; justify-content: space-between;
     margin-bottom: 14px;
@@ -313,6 +322,10 @@
         <div class="field">
           <label>已收訂金（NT$）</label>
           <input type="number" id="depositAmount" placeholder="0">
+          <div style="display:flex; gap:6px; margin-top:6px">
+            <button type="button" class="quick-btn" data-deposit-pct="30">訂金 30%</button>
+            <button type="button" class="quick-btn" data-deposit-pct="50">訂金 50%</button>
+          </div>
         </div>
       </div>
       <div class="field-row">
@@ -529,6 +542,7 @@
         : Math.max(O[t] - 1, stepCfg[t].min);
       O[t] = val;
       el(t + 'Val').textContent = val;
+      if (t === 'roomNights') updateCheckOutDate();
     });
   });
 
@@ -540,6 +554,27 @@
   }
   el('totalAmount').addEventListener('input', autoBalance);
   el('depositAmount').addEventListener('input', autoBalance);
+
+  // 訂金快速計算（總金額 × 30% / 50%）
+  document.querySelectorAll('[data-deposit-pct]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const total = Number(el('totalAmount').value) || 0;
+      const pct = Number(btn.dataset.depositPct);
+      el('depositAmount').value = Math.round(total * pct / 100);
+      autoBalance();
+    });
+  });
+
+  // 入住日期 + 晚數 → 自動帶入退房日期
+  function updateCheckOutDate() {
+    const ci = el('checkInDate').value;
+    if (!ci) return;
+    const d = new Date(ci + 'T00:00:00');
+    d.setDate(d.getDate() + O.roomNights);
+    const pad = n => String(n).padStart(2, '0');
+    el('checkOutDate').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+  el('checkInDate').addEventListener('change', updateCheckOutDate);
 
   // 收據編號（後台無回應時的備援暫時編號）
   function genReceiptNo() {
