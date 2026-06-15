@@ -233,15 +233,15 @@
             區間（多天）
           </label>
         </div>
-        <input type="date" id="courseDate">
+        <input type="date" id="courseDate" min="2026-12-01" max="2027-04-30">
         <div class="field-row" id="courseDateRangeRow" style="display:none; margin-top:10px">
           <div class="field" style="margin-bottom:0">
             <label>開始日期</label>
-            <input type="date" id="courseDateStart">
+            <input type="date" id="courseDateStart" min="2026-12-01" max="2027-04-30">
           </div>
           <div class="field" style="margin-bottom:0">
             <label>結束日期</label>
-            <input type="date" id="courseDateEnd">
+            <input type="date" id="courseDateEnd" min="2026-12-01" max="2027-04-30">
           </div>
         </div>
       </div>
@@ -274,11 +274,11 @@
       <div class="field-row" style="margin-top:14px">
         <div class="field">
           <label>入住日期</label>
-          <input type="date" id="checkInDate">
+          <input type="date" id="checkInDate" min="2026-12-01" max="2027-04-30">
         </div>
         <div class="field">
           <label>退房日期</label>
-          <input type="date" id="checkOutDate">
+          <input type="date" id="checkOutDate" min="2026-12-01" max="2027-04-30">
         </div>
       </div>
     </div>
