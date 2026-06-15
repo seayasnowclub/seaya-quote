@@ -322,7 +322,7 @@
         </div>
         <div class="field">
           <label>尾款繳款期限</label>
-          <input type="date" id="balanceDue">
+          <input type="date" id="balanceDue" min="2026-11-01" max="2027-04-30">
         </div>
       </div>
       <div class="field-row">
@@ -488,12 +488,26 @@
     return method + (last5 ? `（末五碼 ${last5}）` : '');
   }
 
+  // 尾款期限：自動帶入上課日前 30 天
+  function updateBalanceDue() {
+    const isRange = el('courseDateRange').checked;
+    const base = isRange ? el('courseDateStart').value : el('courseDate').value;
+    if (!base) return;
+    const d = new Date(base + 'T00:00:00');
+    d.setDate(d.getDate() - 30);
+    const pad = n => String(n).padStart(2, '0');
+    el('balanceDue').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+  }
+
   // 上課日期：單日 / 區間切換
   el('courseDateRange').addEventListener('change', () => {
     const isRange = el('courseDateRange').checked;
     el('courseDate').style.display = isRange ? 'none' : '';
     el('courseDateRangeRow').style.display = isRange ? 'flex' : 'none';
+    updateBalanceDue();
   });
+  el('courseDate').addEventListener('change', updateBalanceDue);
+  el('courseDateStart').addEventListener('change', updateBalanceDue);
 
   // 按鈕群組
   document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
