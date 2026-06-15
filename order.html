@@ -353,58 +353,6 @@
     </div>
 
     <button class="primary-btn" id="generateBtn" style="margin-top:4px">產生收據</button>
-
-    <!-- ===== 收據預覽 ===== -->
-    <div class="receipt-card" id="receiptCard" style="display:none; margin-top:12px">
-      <div class="receipt-header">
-        <img src="images/logo.png" alt="Seaya Snow Club">
-        <h2>訂金確認收據</h2>
-        <div class="receipt-meta">
-          收據編號：<span id="rcNo"></span><br>
-          開立日期：<span id="rcDate"></span>
-        </div>
-      </div>
-
-      <div class="receipt-section">
-        <h3>客人資訊</h3>
-        <div class="receipt-row"><span class="label">姓名</span><span class="value" id="rcName"></span></div>
-        <div class="receipt-row"><span class="label">聯繫方式</span><span class="value" id="rcContact"></span></div>
-      </div>
-
-      <div class="receipt-section">
-        <h3>行程內容</h3>
-        <div class="receipt-row"><span class="label">課程</span><span class="value" id="rcCourse"></span></div>
-        <div class="receipt-row"><span class="label">住宿</span><span class="value" id="rcRoom"></span></div>
-        <div class="receipt-row"><span class="label">雪具</span><span class="value" id="rcGear"></span></div>
-      </div>
-
-      <div class="receipt-section">
-        <h3>費用明細</h3>
-        <div class="receipt-row"><span class="label">總金額</span><span class="value" id="rcTotal"></span></div>
-        <div class="receipt-total deposit"><span>已收訂金</span><span id="rcDeposit"></span></div>
-        <div class="receipt-row" style="margin-top:10px"><span class="label">尾款</span><span class="value" id="rcBalance"></span></div>
-        <div class="receipt-row"><span class="label">繳款期限</span><span class="value" id="rcBalanceDue"></span></div>
-        <div class="receipt-row"><span class="label">付款方式</span><span class="value" id="rcPayment"></span></div>
-      </div>
-
-      <div class="receipt-section" id="rcCustomNoteSection">
-        <h3>備註</h3>
-        <div style="font-size:13px; line-height:1.7" id="rcCustomNote"></div>
-      </div>
-
-      <div class="receipt-section">
-        <h3>退款條款</h3>
-        <div style="font-size:12px; line-height:1.7; color:var(--muted)" id="rcRefundNote"></div>
-      </div>
-
-      <div class="receipt-footer">
-        逐光旅行戶外工作室<br>
-        佐倉マネジメント株式会社
-      </div>
-    </div>
-
-    <button class="primary-btn" id="downloadBtn" style="display:none; margin-top:12px; background:var(--success)">下載收據圖片</button>
-    <div class="note" id="printHint" style="display:none">收據可截圖傳給客人，或按「下載收據圖片」存成 PNG，也可用瀏覽器「列印」功能另存成 PDF。</div>
   </div>
 
   <!-- ===== 查詢收據 ===== -->
@@ -413,16 +361,72 @@
       <div class="card-title">查詢收據</div>
       <div class="field">
         <label>收據編號</label>
-        <input type="text" id="lookupId" placeholder="例如：SEA20261220-1530">
+        <input type="text" id="lookupId" placeholder="例如：SEA261215-001">
       </div>
       <button class="primary-btn" id="lookupBtn">查詢</button>
-      <div class="note accent" style="margin-top:12px">查詢功能將於 Google Sheet 後台串接完成後啟用。</div>
+      <div class="note accent" id="lookupMsg" style="display:none"></div>
     </div>
   </div>
+
+  <!-- ===== 收據預覽（開立／查詢共用） ===== -->
+  <div class="receipt-card" id="receiptCard" style="display:none; margin-top:12px">
+    <div class="receipt-header">
+      <img src="images/logo.png" alt="Seaya Snow Club">
+      <h2>訂金確認收據</h2>
+      <div class="receipt-meta">
+        收據編號：<span id="rcNo"></span><br>
+        開立日期：<span id="rcDate"></span>
+      </div>
+    </div>
+
+    <div class="receipt-section">
+      <h3>客人資訊</h3>
+      <div class="receipt-row"><span class="label">姓名</span><span class="value" id="rcName"></span></div>
+      <div class="receipt-row"><span class="label">聯繫方式</span><span class="value" id="rcContact"></span></div>
+    </div>
+
+    <div class="receipt-section">
+      <h3>行程內容</h3>
+      <div class="receipt-row"><span class="label">課程</span><span class="value" id="rcCourse"></span></div>
+      <div class="receipt-row"><span class="label">住宿</span><span class="value" id="rcRoom"></span></div>
+      <div class="receipt-row"><span class="label">雪具</span><span class="value" id="rcGear"></span></div>
+    </div>
+
+    <div class="receipt-section">
+      <h3>費用明細</h3>
+      <div class="receipt-row"><span class="label">總金額</span><span class="value" id="rcTotal"></span></div>
+      <div class="receipt-total deposit"><span>已收訂金</span><span id="rcDeposit"></span></div>
+      <div class="receipt-row" style="margin-top:10px"><span class="label">尾款</span><span class="value" id="rcBalance"></span></div>
+      <div class="receipt-row"><span class="label">繳款期限</span><span class="value" id="rcBalanceDue"></span></div>
+      <div class="receipt-row"><span class="label">付款方式</span><span class="value" id="rcPayment"></span></div>
+    </div>
+
+    <div class="receipt-section" id="rcCustomNoteSection">
+      <h3>備註</h3>
+      <div style="font-size:13px; line-height:1.7" id="rcCustomNote"></div>
+    </div>
+
+    <div class="receipt-section">
+      <h3>退款條款</h3>
+      <div style="font-size:12px; line-height:1.7; color:var(--muted)" id="rcRefundNote"></div>
+    </div>
+
+    <div class="receipt-footer">
+      逐光旅行戶外工作室<br>
+      佐倉マネジメント株式会社
+    </div>
+  </div>
+
+  <button class="primary-btn" id="downloadBtn" style="display:none; margin-top:12px; background:var(--success)">下載收據圖片</button>
+  <div class="note" id="printHint" style="display:none">收據可截圖傳給客人，或按「下載收據圖片」存成 PNG，也可用瀏覽器「列印」功能另存成 PDF。</div>
 
 </div>
 
 <script>
+  const API_URL = 'https://script.google.com/macros/s/AKfycbwW9nIvabWvERu6ZjzxJ2-4lUX94IHLeAcyt21Aj9gKnj9hcZt1reISkuYXjVa7nABY/exec';
+  const API_SECRET = 'seayasnow2026';
+  const DEFAULT_REFUND_NOTE = '訂金為保留名額之用，恕不退款。開課前 30 天起（含當日）取消，尾款不予退還。雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
+
   const O = {
     coursePersons: 1, courseDays: 2,
     roomType: 'six', roomCount: 1, roomNights: 2,
@@ -448,6 +452,40 @@
     if (!str) return '';
     const d = new Date(str + 'T00:00:00');
     return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
+  }
+  function nowDisplay() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  // Google Sheet 回傳的時間可能被自動轉成 ISO 字串（UTC），需轉回台北時間顯示
+  function formatCreatedAt(value) {
+    if (typeof value === 'string' && /^\d{4}\/\d{1,2}\/\d{1,2} \d{2}:\d{2}$/.test(value)) return value;
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return String(value);
+    const t = new Date(d.getTime() + 8 * 3600 * 1000);
+    const pad = n => String(n).padStart(2, '0');
+    return `${t.getUTCFullYear()}/${t.getUTCMonth()+1}/${t.getUTCDate()} ${pad(t.getUTCHours())}:${pad(t.getUTCMinutes())}`;
+  }
+
+  // 收據顯示文字組合（開立／查詢共用）
+  function buildContactDisplay(contactType, contact, lineNick) {
+    return `${contactType} ${contact || '—'}` + (lineNick ? `（LINE 暱稱：${lineNick}）` : '');
+  }
+  function buildCourseDisplay(personLabel, courseDays, courseDateInfo) {
+    if (!courseDays) return '未含課程';
+    return `${personLabel}・全日 ${courseDays} 天${courseDateInfo ? '（' + courseDateInfo + '）' : ''}`;
+  }
+  function buildRoomDisplay(roomLabel, roomCount, roomNights, checkIn, checkOut) {
+    if (!roomCount || !roomNights) return '未含住宿';
+    const range = (checkIn || checkOut) ? `（入住 ${checkIn || '—'} － 退房 ${checkOut || '—'}）` : '';
+    return `${roomLabel} × ${roomCount} 間 × ${roomNights} 晚${range}`;
+  }
+  function buildGearDisplay(gearPersons, gearDays) {
+    return gearPersons > 0 ? `${gearPersons} 人 × ${gearDays} 天` : '未加購';
+  }
+  function buildPaymentDisplay(method, last5) {
+    return method + (last5 ? `（末五碼 ${last5}）` : '');
   }
 
   // 上課日期：單日 / 區間切換
@@ -489,81 +527,126 @@
   el('totalAmount').addEventListener('input', autoBalance);
   el('depositAmount').addEventListener('input', autoBalance);
 
-  // 收據編號（暫時規則，正式編號將由後台串接後改為流水號）
+  // 收據編號（後台無回應時的備援暫時編號）
   function genReceiptNo() {
     const d = new Date();
     const pad = n => String(n).padStart(2, '0');
     return `SEA${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
   }
 
-  el('generateBtn').addEventListener('click', () => {
-    const d = new Date();
+  // 收據渲染（開立／查詢共用）
+  function renderReceipt(data) {
+    el('rcNo').textContent = data.receiptNo;
+    el('rcDate').textContent = data.createdAt;
+    el('rcName').textContent = data.custName || '—';
+    el('rcContact').textContent = data.contactDisplay;
+    el('rcCourse').textContent = data.courseDisplay;
+    el('rcRoom').textContent = data.roomDisplay;
+    el('rcGear').textContent = data.gearDisplay;
+    el('rcTotal').textContent = fmt(data.totalAmount);
+    el('rcDeposit').textContent = fmt(data.depositAmount);
+    el('rcBalance').textContent = fmt(data.balanceAmount);
+    el('rcBalanceDue').textContent = data.balanceDueDisplay || '—';
+    el('rcPayment').textContent = data.paymentDisplay;
 
-    el('rcNo').textContent = genReceiptNo();
-    el('rcDate').textContent = `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`;
-
-    el('rcName').textContent = el('custName').value || '—';
-    const contactType = el('custContactType').value;
-    const contact = el('custContact').value || '—';
-    const lineNick = el('custLineNick').value;
-    el('rcContact').textContent = `${contactType} ${contact}` + (lineNick ? `（LINE 暱稱：${lineNick}）` : '');
-
-    // 課程
-    if (O.courseDays > 0) {
-      let range = '';
-      if (el('courseDateRange').checked) {
-        const s = el('courseDateStart').value;
-        const en = el('courseDateEnd').value;
-        if (s && en) range = `${formatDate(s)} － ${formatDate(en)}`;
-        else if (s) range = formatDate(s);
-        else if (en) range = formatDate(en);
-      } else {
-        range = formatDate(el('courseDate').value);
-      }
-      el('rcCourse').textContent = `${PERSON_LABEL[O.coursePersons]}・全日 ${O.courseDays} 天${range ? '（' + range + '）' : ''}`;
-    } else {
-      el('rcCourse').textContent = '未含課程';
-    }
-
-    // 住宿
-    if (O.roomCount > 0 && O.roomNights > 0) {
-      const ci = formatDate(el('checkInDate').value);
-      const co = formatDate(el('checkOutDate').value);
-      const range = (ci || co) ? `（入住 ${ci || '—'} － 退房 ${co || '—'}）` : '';
-      el('rcRoom').textContent = `${ROOM_NAME[O.roomType]} × ${O.roomCount} 間 × ${O.roomNights} 晚${range}`;
-    } else {
-      el('rcRoom').textContent = '未含住宿';
-    }
-
-    // 雪具
-    el('rcGear').textContent = O.gearPersons > 0
-      ? `${O.gearPersons} 人 × ${O.gearDays} 天` : '未加購';
-
-    // 費用
-    const total = Number(el('totalAmount').value) || 0;
-    const deposit = Number(el('depositAmount').value) || 0;
-    const balance = Number(el('balanceAmount').value) || 0;
-    el('rcTotal').textContent = fmt(total);
-    el('rcDeposit').textContent = fmt(deposit);
-    el('rcBalance').textContent = fmt(balance);
-    el('rcBalanceDue').textContent = formatDate(el('balanceDue').value) || '—';
-    const last5 = el('paymentLast5').value.trim();
-    el('rcPayment').textContent = el('paymentMethod').value + (last5 ? `（末五碼 ${last5}）` : '');
-
-    // 備註
-    const customNote = el('customNote').value.trim();
-    if (customNote) {
-      el('rcCustomNote').textContent = customNote;
+    if (data.note) {
+      el('rcCustomNote').textContent = data.note;
       el('rcCustomNoteSection').style.display = 'block';
     } else {
       el('rcCustomNoteSection').style.display = 'none';
     }
-    el('rcRefundNote').textContent = el('refundNote').value;
+    el('rcRefundNote').textContent = data.refundNote || DEFAULT_REFUND_NOTE;
 
     el('receiptCard').style.display = 'block';
     el('downloadBtn').style.display = 'block';
     el('printHint').style.display = 'block';
     el('receiptCard').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  el('generateBtn').addEventListener('click', async () => {
+    const contactType = el('custContactType').value;
+    const contact = el('custContact').value || '—';
+    const lineNick = el('custLineNick').value.trim();
+
+    // 上課日期：單日 / 區間
+    let courseDateInfo = '';
+    if (O.courseDays > 0) {
+      if (el('courseDateRange').checked) {
+        const s = el('courseDateStart').value;
+        const en = el('courseDateEnd').value;
+        if (s && en) courseDateInfo = `${formatDate(s)} － ${formatDate(en)}`;
+        else if (s) courseDateInfo = formatDate(s);
+        else if (en) courseDateInfo = formatDate(en);
+      } else {
+        courseDateInfo = formatDate(el('courseDate').value);
+      }
+    }
+
+    const ci = formatDate(el('checkInDate').value);
+    const co = formatDate(el('checkOutDate').value);
+    const balanceDueDisplay = formatDate(el('balanceDue').value);
+    const paymentMethod = el('paymentMethod').value;
+    const last5 = el('paymentLast5').value.trim();
+    const customNote = el('customNote').value.trim();
+    const refundNote = el('refundNote').value;
+    const total = Number(el('totalAmount').value) || 0;
+    const deposit = Number(el('depositAmount').value) || 0;
+    const balance = Number(el('balanceAmount').value) || 0;
+
+    const payload = {
+      secret: API_SECRET,
+      custName: el('custName').value || '—',
+      contactType, contact, lineNick,
+      coursePersons: PERSON_LABEL[O.coursePersons],
+      courseDays: O.courseDays,
+      courseDateInfo,
+      roomType: ROOM_NAME[O.roomType],
+      roomCount: O.roomCount,
+      roomNights: O.roomNights,
+      checkInDate: ci,
+      checkOutDate: co,
+      gearPersons: O.gearPersons,
+      gearDays: O.gearDays,
+      totalAmount: total,
+      depositAmount: deposit,
+      balanceAmount: balance,
+      balanceDue: balanceDueDisplay,
+      paymentMethod,
+      paymentLast5: last5,
+      note: customNote
+    };
+
+    const btn = el('generateBtn');
+    btn.disabled = true;
+    btn.textContent = '處理中…';
+
+    let receiptNo;
+    try {
+      const res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      receiptNo = json.receiptNo;
+    } catch (err) {
+      alert('寫入後台失敗（' + err.message + '），這筆訂單尚未存進 Google Sheet，收據編號為暫時編號，請手動補登。');
+      receiptNo = genReceiptNo();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '產生收據';
+    }
+
+    renderReceipt({
+      receiptNo, createdAt: nowDisplay(),
+      custName: payload.custName,
+      contactDisplay: buildContactDisplay(contactType, contact, lineNick),
+      courseDisplay: buildCourseDisplay(payload.coursePersons, payload.courseDays, courseDateInfo),
+      roomDisplay: buildRoomDisplay(payload.roomType, payload.roomCount, payload.roomNights, ci, co),
+      gearDisplay: buildGearDisplay(payload.gearPersons, payload.gearDays),
+      totalAmount: total, depositAmount: deposit, balanceAmount: balance,
+      balanceDueDisplay,
+      paymentDisplay: buildPaymentDisplay(paymentMethod, last5),
+      note: customNote,
+      refundNote
+    });
   });
 
   // 下載收據圖片
@@ -588,6 +671,53 @@
     el('tabNew').classList.remove('active');
     el('lookupTab').style.display = 'block';
     el('newOrderTab').style.display = 'none';
+  });
+
+  // 查詢收據
+  el('lookupBtn').addEventListener('click', async () => {
+    const receiptNo = el('lookupId').value.trim();
+    const msg = el('lookupMsg');
+    msg.style.display = 'none';
+    el('receiptCard').style.display = 'none';
+    el('downloadBtn').style.display = 'none';
+    el('printHint').style.display = 'none';
+
+    if (!receiptNo) {
+      msg.textContent = '請輸入收據編號';
+      msg.style.display = 'block';
+      return;
+    }
+
+    const btn = el('lookupBtn');
+    btn.disabled = true;
+    btn.textContent = '查詢中…';
+
+    try {
+      const url = `${API_URL}?secret=${encodeURIComponent(API_SECRET)}&receiptNo=${encodeURIComponent(receiptNo)}`;
+      const res = await fetch(url);
+      const row = await res.json();
+      if (row.error) throw new Error(row.error);
+
+      renderReceipt({
+        receiptNo: row['收據編號'],
+        createdAt: formatCreatedAt(row['建立時間']),
+        custName: row['姓名'],
+        contactDisplay: buildContactDisplay(row['聯繫方式'], row['帳號/ID'], row['LINE暱稱']),
+        courseDisplay: buildCourseDisplay(row['課程人數'], row['課程天數'], row['上課日期']),
+        roomDisplay: buildRoomDisplay(row['房型'], row['間數'], row['晚數'], row['入住日期'], row['退房日期']),
+        gearDisplay: buildGearDisplay(row['雪具人數'], row['雪具天數']),
+        totalAmount: row['總金額'], depositAmount: row['已收訂金'], balanceAmount: row['尾款金額'],
+        balanceDueDisplay: row['尾款期限'],
+        paymentDisplay: buildPaymentDisplay(row['付款方式'], row['末五碼']),
+        note: row['備註']
+      });
+    } catch (err) {
+      msg.textContent = '查詢失敗：' + err.message;
+      msg.style.display = 'block';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = '查詢';
+    }
   });
 </script>
 </body>
