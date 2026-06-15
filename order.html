@@ -348,7 +348,7 @@
       </div>
       <div class="field">
         <label>退款條款</label>
-        <textarea id="refundNote">訂金為保留名額之用，恕不退款。開課前 30 天起（含當日）取消，尾款不予退還。雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。</textarea>
+        <textarea id="refundNote">開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。</textarea>
       </div>
     </div>
 
@@ -425,7 +425,7 @@
 <script>
   const API_URL = 'https://script.google.com/macros/s/AKfycbwW9nIvabWvERu6ZjzxJ2-4lUX94IHLeAcyt21Aj9gKnj9hcZt1reISkuYXjVa7nABY/exec';
   const API_SECRET = 'seayasnow2026';
-  const DEFAULT_REFUND_NOTE = '訂金為保留名額之用，恕不退款。開課前 30 天起（含當日）取消，尾款不予退還。雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
+  const DEFAULT_REFUND_NOTE = '開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
 
   const O = {
     coursePersons: 1, courseDays: 2,
