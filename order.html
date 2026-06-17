@@ -220,6 +220,11 @@
     <div class="card" style="margin-top:12px">
       <div class="card-title">課程</div>
       <div class="btn-group">
+        <div class="group-label">地點</div>
+        <button class="opt-btn active" data-group="courseLocation" data-val="zao">藏王</button>
+        <button class="opt-btn" data-group="courseLocation" data-val="yuzawa">湯澤</button>
+      </div>
+      <div class="btn-group">
         <div class="group-label">課程人數</div>
         <button class="opt-btn active" data-group="coursePersons" data-val="1">一對一</button>
         <button class="opt-btn" data-group="coursePersons" data-val="2">一對二</button>
@@ -441,6 +446,7 @@
   const DEFAULT_REFUND_NOTE = '開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
 
   const O = {
+    courseLocation: 'zao',
     coursePersons: 1, courseDays: 2,
     roomType: 'six', roomCount: 1, roomNights: 2,
     gearPersons: 0, gearDays: 2
@@ -454,6 +460,7 @@
     gearDays:    { min: 0, max: 14 }
   };
 
+  const LOCATION_LABEL = { zao: '藏王', yuzawa: '湯澤' };
   const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四' };
   const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室' };
 
@@ -646,7 +653,7 @@
       secret: API_SECRET,
       custName: el('custName').value || '—',
       contactType, contact, lineNick,
-      coursePersons: PERSON_LABEL[O.coursePersons],
+      coursePersons: `${LOCATION_LABEL[O.courseLocation]}・${PERSON_LABEL[O.coursePersons]}`,
       courseDays: O.courseDays,
       courseDateInfo,
       roomType: ROOM_NAME[O.roomType],
