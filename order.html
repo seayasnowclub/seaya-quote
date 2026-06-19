@@ -383,6 +383,7 @@
 
     <div class="receipt-section">
       <h3>行程內容</h3>
+      <div class="receipt-row"><span class="label">地點</span><span class="value" id="rcLocation"></span></div>
       <div class="receipt-row"><span class="label">課程</span><span class="value" id="rcCourse"></span></div>
       <div class="receipt-row"><span class="label">住宿</span><span class="value" id="rcRoom"></span></div>
       <div class="receipt-row"><span class="label">雪具</span><span class="value" id="rcGear"></span></div>
@@ -447,7 +448,7 @@
   function formatDate(str) {
     if (!str) return '';
     const d = new Date(str + 'T00:00:00');
-    return `${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
+    return `${d.getMonth()+1}/${d.getDate()}（${WEEKDAYS[d.getDay()]}）`;
   }
   function nowDisplay() {
     const d = new Date();
@@ -472,7 +473,6 @@
     if (!groups || groups.length === 0) return '—';
     return groups.map((g, i) => {
       const prefix = groups.length > 1 ? `第 ${i+1} 組：` : '';
-      const loc = LOCATION_LABEL[g.location] || g.location;
       const persons = PERSON_LABEL[g.persons] || `一對${g.persons}`;
       const days = formatDays(g.days);
       let dateInfo = '';
@@ -482,8 +482,15 @@
       } else {
         dateInfo = formatDate(g.date);
       }
-      return `${prefix}${loc}・${persons}・${days}${dateInfo ? '（' + dateInfo + '）' : ''}`;
+      return `${prefix}${persons}・${days}${dateInfo ? '（' + dateInfo + '）' : ''}`;
     }).join('\n');
+  }
+  function buildLocationDisplay(groups) {
+    if (!groups || groups.length === 0) return '—';
+    const locs = groups.map(g => LOCATION_LABEL[g.location] || g.location);
+    const unique = [...new Set(locs)];
+    if (unique.length === 1) return unique[0];
+    return groups.map((g, i) => `第${i+1}組 ${LOCATION_LABEL[g.location]}`).join('・');
   }
   function buildCourseDisplay_legacy(personLabel, courseDays, courseDateInfo) {
     if (!courseDays) return personLabel || '—';
@@ -499,6 +506,18 @@
   }
   function buildPaymentDisplay(method, last5) {
     return method + (last5 ? `（末五碼 ${last5}）` : '');
+  }
+
+  function autoEndDate(i) {
+    const g = O.groups[i];
+    if (!g.isRange || !g.dateStart) return;
+    const d = new Date(g.dateStart + 'T00:00:00');
+    d.setDate(d.getDate() + Math.max(0, Math.ceil(g.days) - 1));
+    const pad = n => String(n).padStart(2, '0');
+    const val = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+    g.dateEnd = val;
+    const inp = el('groupList').querySelector(`.grp-date-end[data-idx="${i}"]`);
+    if (inp) inp.value = val;
   }
 
   function updateBalanceDue() {
@@ -584,6 +603,7 @@
         const i = +btn.dataset.idx;
         O.groups[i].days = Math.max(0.5, +(O.groups[i].days - 0.5).toFixed(1));
         el(`grpDays${i}`).textContent = formatDays(O.groups[i].days);
+        autoEndDate(i);
       };
     });
     el('groupList').querySelectorAll('.grp-inc').forEach(btn => {
@@ -591,6 +611,7 @@
         const i = +btn.dataset.idx;
         O.groups[i].days = Math.min(14, +(O.groups[i].days + 0.5).toFixed(1));
         el(`grpDays${i}`).textContent = formatDays(O.groups[i].days);
+        autoEndDate(i);
       };
     });
     el('groupList').querySelectorAll('.grp-is-range').forEach(cb => {
@@ -613,6 +634,7 @@
       inp.onchange = () => {
         const i = +inp.dataset.idx;
         O.groups[i].dateStart = inp.value;
+        autoEndDate(i);
         if (i === 0) updateBalanceDue();
       };
     });
@@ -723,6 +745,7 @@
     el('rcDate').textContent = data.createdAt;
     el('rcName').textContent = data.custName || '—';
     el('rcContact').textContent = data.contactDisplay;
+    el('rcLocation').textContent = data.locationDisplay || '—';
     el('rcCourse').textContent = data.courseDisplay;
     el('rcRoom').textContent = data.roomDisplay;
     el('rcGear').textContent = data.gearDisplay;
@@ -819,6 +842,7 @@
       receiptNo, createdAt: nowDisplay(),
       custName: payload.custName,
       contactDisplay: buildContactDisplay(contactType, contact, lineNick),
+      locationDisplay: buildLocationDisplay(O.groups),
       courseDisplay: buildCourseDisplay(O.groups),
       roomDisplay: buildRoomDisplay(payload.roomType, payload.roomCount, payload.roomNights, ci, co),
       gearDisplay: buildGearDisplay(payload.gearPersons, payload.gearDays),
@@ -884,6 +908,7 @@
         createdAt: formatCreatedAt(row['建立時間']),
         custName: row['姓名'],
         contactDisplay: buildContactDisplay(row['聯繫方式'], row['帳號/ID'], row['LINE暱稱']),
+        locationDisplay: row['地點'] || '—',
         courseDisplay: buildCourseDisplay_legacy(row['課程人數'], row['課程天數'], row['上課日期']),
         roomDisplay: buildRoomDisplay(row['房型'], row['間數'], row['晚數'], row['入住日期'], row['退房日期']),
         gearDisplay: buildGearDisplay(row['雪具人數'], row['雪具天數']),
