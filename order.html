@@ -151,7 +151,7 @@
   .receipt-row { display: flex; justify-content: space-between; gap: 12px; font-size: 14px; margin-bottom: 6px; line-height: 1.6; }
   .receipt-row:last-child { margin-bottom: 0; }
   .receipt-row .label { color: var(--muted); flex-shrink: 0; }
-  .receipt-row .value { text-align: right; }
+  .receipt-row .value { text-align: right; white-space: pre-line; }
 
   .receipt-total {
     display: flex; justify-content: space-between; align-items: baseline;
@@ -219,100 +219,78 @@
 
     <div class="card" style="margin-top:12px">
       <div class="card-title">課程</div>
-      <div class="btn-group">
-        <div class="group-label">地點</div>
-        <button class="opt-btn active" data-group="courseLocation" data-val="zao">藏王</button>
-        <button class="opt-btn" data-group="courseLocation" data-val="yuzawa">湯澤</button>
+      <div id="groupList"></div>
+      <button type="button" id="addGroupBtn" class="quick-btn" style="width:100%; margin-top:12px; padding:10px; font-size:13px; color:var(--accent); border-color:var(--accent)">＋ 新增課程組</button>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0">
+        <span>住宿 — 六花 Rokka Inn</span>
+        <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:600; color:var(--muted)">
+          <input type="checkbox" id="includeRoom" style="width:auto; margin:0">
+          包含住宿
+        </label>
       </div>
-      <div class="btn-group">
-        <div class="group-label">課程人數</div>
-        <button class="opt-btn active" data-group="coursePersons" data-val="1">一對一</button>
-        <button class="opt-btn" data-group="coursePersons" data-val="2">一對二</button>
-        <button class="opt-btn" data-group="coursePersons" data-val="3">一對三</button>
-        <button class="opt-btn" data-group="coursePersons" data-val="4">一對四</button>
-      </div>
-      <div class="stepper-row">
-        <label>全日課程天數</label>
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="courseDays">−</button>
-          <div class="step-val" id="courseDaysVal">2</div>
-          <button class="step-btn" data-action="inc" data-target="courseDays">＋</button>
+      <div id="roomBody" style="display:none; margin-top:16px">
+        <div class="btn-group">
+          <div class="group-label">房型</div>
+          <button class="opt-btn active" data-group="roomType" data-val="six">六疊房</button>
+          <button class="opt-btn" data-group="roomType" data-val="eight">八疊房</button>
+          <button class="opt-btn" data-group="roomType" data-val="washitsu">大和室</button>
         </div>
-      </div>
-      <div class="field" style="margin-top:14px">
-        <div class="field-row" style="margin-bottom:6px; align-items:center">
-          <label style="margin:0; flex:1">上課日期</label>
-          <label style="display:flex; align-items:center; gap:6px; font-weight:normal; font-size:13px; color:var(--muted); cursor:pointer; flex:0 0 auto; margin:0">
-            <input type="checkbox" id="courseDateRange" style="width:auto; margin:0">
-            區間（多天）
-          </label>
-        </div>
-        <input type="date" id="courseDate" min="2026-12-01" max="2027-04-30">
-        <div class="field-row" id="courseDateRangeRow" style="display:none; margin-top:10px">
-          <div class="field" style="margin-bottom:0">
-            <label>開始日期</label>
-            <input type="date" id="courseDateStart" min="2026-12-01" max="2027-04-30">
+        <div class="stepper-row">
+          <label>間數</label>
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
+            <div class="step-val" id="roomCountVal">1</div>
+            <button class="step-btn" data-action="inc" data-target="roomCount">＋</button>
           </div>
-          <div class="field" style="margin-bottom:0">
-            <label>結束日期</label>
-            <input type="date" id="courseDateEnd" min="2026-12-01" max="2027-04-30">
+        </div>
+        <div class="stepper-row">
+          <label>晚數</label>
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="roomNights">−</button>
+            <div class="step-val" id="roomNightsVal">2</div>
+            <button class="step-btn" data-action="inc" data-target="roomNights">＋</button>
+          </div>
+        </div>
+        <div class="field-row" style="margin-top:14px">
+          <div class="field">
+            <label>入住日期</label>
+            <input type="date" id="checkInDate" min="2026-12-01" max="2027-04-30">
+          </div>
+          <div class="field">
+            <label>退房日期</label>
+            <input type="date" id="checkOutDate" min="2026-12-01" max="2027-04-30">
           </div>
         </div>
       </div>
     </div>
 
     <div class="card" style="margin-top:12px">
-      <div class="card-title">住宿 — 六花 Rokka Inn</div>
-      <div class="btn-group">
-        <div class="group-label">房型</div>
-        <button class="opt-btn active" data-group="roomType" data-val="six">六疊房</button>
-        <button class="opt-btn" data-group="roomType" data-val="eight">八疊房</button>
-        <button class="opt-btn" data-group="roomType" data-val="washitsu">大和室</button>
+      <div class="card-title" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0">
+        <span>雪具加購 — Good Good 好好雪倉</span>
+        <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:600; color:var(--muted)">
+          <input type="checkbox" id="includeGear" style="width:auto; margin:0">
+          包含雪具
+        </label>
       </div>
-      <div class="stepper-row">
-        <label>間數</label>
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
-          <div class="step-val" id="roomCountVal">1</div>
-          <button class="step-btn" data-action="inc" data-target="roomCount">＋</button>
+      <div id="gearBody" style="display:none; margin-top:16px">
+        <div class="stepper-row">
+          <label>加購人數</label>
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
+            <div class="step-val" id="gearPersonsVal">1</div>
+            <button class="step-btn" data-action="inc" data-target="gearPersons">＋</button>
+          </div>
         </div>
-      </div>
-      <div class="stepper-row">
-        <label>晚數</label>
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomNights">−</button>
-          <div class="step-val" id="roomNightsVal">2</div>
-          <button class="step-btn" data-action="inc" data-target="roomNights">＋</button>
-        </div>
-      </div>
-      <div class="field-row" style="margin-top:14px">
-        <div class="field">
-          <label>入住日期</label>
-          <input type="date" id="checkInDate" min="2026-12-01" max="2027-04-30">
-        </div>
-        <div class="field">
-          <label>退房日期</label>
-          <input type="date" id="checkOutDate" min="2026-12-01" max="2027-04-30">
-        </div>
-      </div>
-    </div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="card-title">雪具加購 — Good Good 好好雪倉</div>
-      <div class="stepper-row">
-        <label>加購人數（不租填 0）</label>
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
-          <div class="step-val" id="gearPersonsVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="gearPersons">＋</button>
-        </div>
-      </div>
-      <div class="stepper-row">
-        <label>租借天數</label>
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="gearDays">−</button>
-          <div class="step-val" id="gearDaysVal">2</div>
-          <button class="step-btn" data-action="inc" data-target="gearDays">＋</button>
+        <div class="stepper-row">
+          <label>租借天數</label>
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearDays">−</button>
+            <div class="step-val" id="gearDaysVal">2</div>
+            <button class="step-btn" data-action="inc" data-target="gearDays">＋</button>
+          </div>
         </div>
       </div>
     </div>
@@ -446,14 +424,12 @@
   const DEFAULT_REFUND_NOTE = '開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
 
   const O = {
-    courseLocation: 'zao',
-    coursePersons: 1, courseDays: 2,
-    roomType: 'six', roomCount: 1, roomNights: 2,
-    gearPersons: 0, gearDays: 2
+    groups: [{ location: 'zao', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
+    includeRoom: false, roomType: 'six', roomCount: 1, roomNights: 2,
+    includeGear: false, gearPersons: 1, gearDays: 2
   };
 
   const stepCfg = {
-    courseDays:  { min: 0, max: 14 },
     roomCount:   { min: 0, max: 8  },
     roomNights:  { min: 0, max: 14 },
     gearPersons: { min: 0, max: 4  },
@@ -461,7 +437,7 @@
   };
 
   const LOCATION_LABEL = { zao: '藏王', yuzawa: '湯澤' };
-  const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四' };
+  const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四', 5: '一對五' };
   const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室' };
 
   function el(id) { return document.getElementById(id); }
@@ -492,8 +468,25 @@
   function buildContactDisplay(contactType, contact, lineNick) {
     return `${contactType} ${contact || '—'}` + (lineNick ? `（LINE 暱稱：${lineNick}）` : '');
   }
-  function buildCourseDisplay(personLabel, courseDays, courseDateInfo) {
-    if (!courseDays) return '未含課程';
+  function buildCourseDisplay(groups) {
+    if (!groups || groups.length === 0) return '—';
+    return groups.map((g, i) => {
+      const prefix = groups.length > 1 ? `第 ${i+1} 組：` : '';
+      const loc = LOCATION_LABEL[g.location] || g.location;
+      const persons = PERSON_LABEL[g.persons] || `一對${g.persons}`;
+      const days = formatDays(g.days);
+      let dateInfo = '';
+      if (g.isRange) {
+        const s = formatDate(g.dateStart), en = formatDate(g.dateEnd);
+        dateInfo = (s && en) ? `${s} － ${en}` : (s || en || '');
+      } else {
+        dateInfo = formatDate(g.date);
+      }
+      return `${prefix}${loc}・${persons}・${days}${dateInfo ? '（' + dateInfo + '）' : ''}`;
+    }).join('\n');
+  }
+  function buildCourseDisplay_legacy(personLabel, courseDays, courseDateInfo) {
+    if (!courseDays) return personLabel || '—';
     return `${personLabel}・全日 ${courseDays} 天${courseDateInfo ? '（' + courseDateInfo + '）' : ''}`;
   }
   function buildRoomDisplay(roomLabel, roomCount, roomNights, checkIn, checkOut) {
@@ -508,10 +501,9 @@
     return method + (last5 ? `（末五碼 ${last5}）` : '');
   }
 
-  // 尾款期限：自動帶入上課日前 30 天
   function updateBalanceDue() {
-    const isRange = el('courseDateRange').checked;
-    const base = isRange ? el('courseDateStart').value : el('courseDate').value;
+    const g = O.groups[0];
+    const base = g.isRange ? g.dateStart : g.date;
     if (!base) return;
     const d = new Date(base + 'T00:00:00');
     d.setDate(d.getDate() - 30);
@@ -519,31 +511,157 @@
     el('balanceDue').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   }
 
-  // 上課日期：單日 / 區間切換
-  el('courseDateRange').addEventListener('change', () => {
-    const isRange = el('courseDateRange').checked;
-    el('courseDate').style.display = isRange ? 'none' : '';
-    el('courseDateRangeRow').style.display = isRange ? 'flex' : 'none';
-    updateBalanceDue();
-  });
-  el('courseDate').addEventListener('change', updateBalanceDue);
-  el('courseDateStart').addEventListener('change', updateBalanceDue);
+  // 課程組
+  function formatDays(n) {
+    if (!n) return '0 天';
+    const full = Math.floor(n);
+    const half = (n % 1) >= 0.5;
+    if (full === 0) return '半天';
+    return half ? `${full} 天半` : `${full} 天`;
+  }
 
-  // 按鈕群組
+  function buildGroupHTML(g, idx) {
+    const opts = [1,2,3,4,5].map(n =>
+      `<option value="${n}" ${g.persons === n ? 'selected' : ''}>${PERSON_LABEL[n]}</option>`
+    ).join('');
+    return `
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px">
+        <span style="font-size:13px; font-weight:600; color:var(--text)">第 ${idx+1} 組</span>
+        ${idx > 0 ? `<button type="button" class="remove-group-btn" data-idx="${idx}" style="font-size:12px; color:var(--muted); border:none; background:none; cursor:pointer; padding:4px">✕ 移除</button>` : ''}
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>地點</label>
+          <select class="grp-location" data-idx="${idx}">
+            <option value="zao" ${g.location==='zao'?'selected':''}>藏王</option>
+            <option value="yuzawa" ${g.location==='yuzawa'?'selected':''}>湯澤</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>師生比</label>
+          <select class="grp-persons" data-idx="${idx}">${opts}</select>
+        </div>
+      </div>
+      <div class="stepper-row" style="margin-top:4px">
+        <label>天數</label>
+        <div class="stepper">
+          <button type="button" class="step-btn grp-dec" data-idx="${idx}">−</button>
+          <div class="step-val" id="grpDays${idx}">${formatDays(g.days)}</div>
+          <button type="button" class="step-btn grp-inc" data-idx="${idx}">＋</button>
+        </div>
+      </div>
+      <div style="margin-top:14px">
+        <div style="display:flex; align-items:center; margin-bottom:6px">
+          <label style="margin:0; font-size:13px; color:var(--muted); flex:1">上課日期</label>
+          <label style="display:flex; align-items:center; gap:6px; font-size:13px; color:var(--muted); cursor:pointer; margin:0">
+            <input type="checkbox" class="grp-is-range" data-idx="${idx}" style="width:auto; margin:0" ${g.isRange?'checked':''}>
+            區間
+          </label>
+        </div>
+        <input type="date" class="grp-date" data-idx="${idx}" min="2026-12-01" max="2027-04-30" value="${g.date}" ${g.isRange?'style="display:none"':''}>
+        <div class="field-row grp-range-row" data-idx="${idx}" style="${g.isRange?'display:flex':'display:none'}; margin-top:6px">
+          <div class="field" style="margin-bottom:0">
+            <label>開始</label>
+            <input type="date" class="grp-date-start" data-idx="${idx}" min="2026-12-01" max="2027-04-30" value="${g.dateStart}">
+          </div>
+          <div class="field" style="margin-bottom:0">
+            <label>結束</label>
+            <input type="date" class="grp-date-end" data-idx="${idx}" min="2026-12-01" max="2027-04-30" value="${g.dateEnd}">
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function bindGroupEvents() {
+    el('groupList').querySelectorAll('.grp-location').forEach(s => {
+      s.onchange = () => { O.groups[+s.dataset.idx].location = s.value; };
+    });
+    el('groupList').querySelectorAll('.grp-persons').forEach(s => {
+      s.onchange = () => { O.groups[+s.dataset.idx].persons = +s.value; };
+    });
+    el('groupList').querySelectorAll('.grp-dec').forEach(btn => {
+      btn.onclick = () => {
+        const i = +btn.dataset.idx;
+        O.groups[i].days = Math.max(0.5, +(O.groups[i].days - 0.5).toFixed(1));
+        el(`grpDays${i}`).textContent = formatDays(O.groups[i].days);
+      };
+    });
+    el('groupList').querySelectorAll('.grp-inc').forEach(btn => {
+      btn.onclick = () => {
+        const i = +btn.dataset.idx;
+        O.groups[i].days = Math.min(14, +(O.groups[i].days + 0.5).toFixed(1));
+        el(`grpDays${i}`).textContent = formatDays(O.groups[i].days);
+      };
+    });
+    el('groupList').querySelectorAll('.grp-is-range').forEach(cb => {
+      cb.onchange = () => {
+        const i = +cb.dataset.idx;
+        O.groups[i].isRange = cb.checked;
+        el('groupList').querySelector(`.grp-date[data-idx="${i}"]`).style.display = cb.checked ? 'none' : '';
+        el('groupList').querySelector(`.grp-range-row[data-idx="${i}"]`).style.display = cb.checked ? 'flex' : 'none';
+        if (i === 0) updateBalanceDue();
+      };
+    });
+    el('groupList').querySelectorAll('.grp-date').forEach(inp => {
+      inp.onchange = () => {
+        const i = +inp.dataset.idx;
+        O.groups[i].date = inp.value;
+        if (i === 0) updateBalanceDue();
+      };
+    });
+    el('groupList').querySelectorAll('.grp-date-start').forEach(inp => {
+      inp.onchange = () => {
+        const i = +inp.dataset.idx;
+        O.groups[i].dateStart = inp.value;
+        if (i === 0) updateBalanceDue();
+      };
+    });
+    el('groupList').querySelectorAll('.grp-date-end').forEach(inp => {
+      inp.onchange = () => { O.groups[+inp.dataset.idx].dateEnd = inp.value; };
+    });
+    el('groupList').querySelectorAll('.remove-group-btn').forEach(btn => {
+      btn.onclick = () => { O.groups.splice(+btn.dataset.idx, 1); renderGroups(); };
+    });
+  }
+
+  function renderGroups() {
+    const list = el('groupList');
+    list.innerHTML = '';
+    O.groups.forEach((g, idx) => {
+      const div = document.createElement('div');
+      if (idx > 0) {
+        div.style.borderTop = '1px dashed var(--border)';
+        div.style.paddingTop = '16px';
+        div.style.marginTop = '16px';
+      }
+      div.innerHTML = buildGroupHTML(g, idx);
+      list.appendChild(div);
+    });
+    bindGroupEvents();
+  }
+
+  renderGroups();
+
+  el('addGroupBtn').addEventListener('click', () => {
+    O.groups.push({ location: 'zao', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' });
+    renderGroups();
+  });
+
+  // 按鈕群組（住宿房型）
   document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
     btn.addEventListener('click', () => {
       const group = btn.dataset.group;
       document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const val = btn.dataset.val;
-      O[group] = (group === 'coursePersons') ? parseInt(val) : val;
+      O[group] = btn.dataset.val;
     });
   });
 
-  // 步進器
-  document.querySelectorAll('.step-btn').forEach(btn => {
+  // 步進器（住宿 / 雪具）
+  document.querySelectorAll('.step-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const t = btn.dataset.target;
+      if (!stepCfg[t]) return;
       let val = btn.dataset.action === 'inc'
         ? Math.min(O[t] + 1, stepCfg[t].max)
         : Math.max(O[t] - 1, stepCfg[t].min);
@@ -582,6 +700,15 @@
     el('checkOutDate').value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
   }
   el('checkInDate').addEventListener('change', updateCheckOutDate);
+
+  el('includeRoom').addEventListener('change', () => {
+    O.includeRoom = el('includeRoom').checked;
+    el('roomBody').style.display = O.includeRoom ? 'block' : 'none';
+  });
+  el('includeGear').addEventListener('change', () => {
+    O.includeGear = el('includeGear').checked;
+    el('gearBody').style.display = O.includeGear ? 'block' : 'none';
+  });
 
   // 收據編號（後台無回應時的備援暫時編號）
   function genReceiptNo() {
@@ -624,20 +751,6 @@
     const contact = el('custContact').value || '—';
     const lineNick = el('custLineNick').value.trim();
 
-    // 上課日期：單日 / 區間
-    let courseDateInfo = '';
-    if (O.courseDays > 0) {
-      if (el('courseDateRange').checked) {
-        const s = el('courseDateStart').value;
-        const en = el('courseDateEnd').value;
-        if (s && en) courseDateInfo = `${formatDate(s)} － ${formatDate(en)}`;
-        else if (s) courseDateInfo = formatDate(s);
-        else if (en) courseDateInfo = formatDate(en);
-      } else {
-        courseDateInfo = formatDate(el('courseDate').value);
-      }
-    }
-
     const ci = formatDate(el('checkInDate').value);
     const co = formatDate(el('checkOutDate').value);
     const balanceDueDisplay = formatDate(el('balanceDue').value);
@@ -649,20 +762,32 @@
     const deposit = Number(el('depositAmount').value) || 0;
     const balance = Number(el('balanceAmount').value) || 0;
 
+    const courseSummary = O.groups.map(g =>
+      `${LOCATION_LABEL[g.location]}・${PERSON_LABEL[g.persons] || '一對'+g.persons}・${formatDays(g.days)}`
+    ).join('；');
+    const totalCourseDays = +O.groups.reduce((s, g) => s + g.days, 0).toFixed(1);
+    const courseDateSummary = O.groups.map(g => {
+      if (g.isRange) {
+        const s = formatDate(g.dateStart), en = formatDate(g.dateEnd);
+        return (s && en) ? `${s}－${en}` : (s || en || '');
+      }
+      return formatDate(g.date);
+    }).join('；');
+
     const payload = {
       secret: API_SECRET,
       custName: el('custName').value || '—',
       contactType, contact, lineNick,
-      coursePersons: `${LOCATION_LABEL[O.courseLocation]}・${PERSON_LABEL[O.coursePersons]}`,
-      courseDays: O.courseDays,
-      courseDateInfo,
+      coursePersons: courseSummary,
+      courseDays: totalCourseDays,
+      courseDateInfo: courseDateSummary,
       roomType: ROOM_NAME[O.roomType],
-      roomCount: O.roomCount,
-      roomNights: O.roomNights,
-      checkInDate: ci,
-      checkOutDate: co,
-      gearPersons: O.gearPersons,
-      gearDays: O.gearDays,
+      roomCount: O.includeRoom ? O.roomCount : 0,
+      roomNights: O.includeRoom ? O.roomNights : 0,
+      checkInDate: O.includeRoom ? ci : '',
+      checkOutDate: O.includeRoom ? co : '',
+      gearPersons: O.includeGear ? O.gearPersons : 0,
+      gearDays: O.includeGear ? O.gearDays : 0,
       totalAmount: total,
       depositAmount: deposit,
       balanceAmount: balance,
@@ -694,7 +819,7 @@
       receiptNo, createdAt: nowDisplay(),
       custName: payload.custName,
       contactDisplay: buildContactDisplay(contactType, contact, lineNick),
-      courseDisplay: buildCourseDisplay(payload.coursePersons, payload.courseDays, courseDateInfo),
+      courseDisplay: buildCourseDisplay(O.groups),
       roomDisplay: buildRoomDisplay(payload.roomType, payload.roomCount, payload.roomNights, ci, co),
       gearDisplay: buildGearDisplay(payload.gearPersons, payload.gearDays),
       totalAmount: total, depositAmount: deposit, balanceAmount: balance,
@@ -759,7 +884,7 @@
         createdAt: formatCreatedAt(row['建立時間']),
         custName: row['姓名'],
         contactDisplay: buildContactDisplay(row['聯繫方式'], row['帳號/ID'], row['LINE暱稱']),
-        courseDisplay: buildCourseDisplay(row['課程人數'], row['課程天數'], row['上課日期']),
+        courseDisplay: buildCourseDisplay_legacy(row['課程人數'], row['課程天數'], row['上課日期']),
         roomDisplay: buildRoomDisplay(row['房型'], row['間數'], row['晚數'], row['入住日期'], row['退房日期']),
         gearDisplay: buildGearDisplay(row['雪具人數'], row['雪具天數']),
         totalAmount: row['總金額'], depositAmount: row['已收訂金'], balanceAmount: row['尾款金額'],
