@@ -251,7 +251,8 @@
       共 <span class="stat-val" id="sumDays">1</span> 天課程
     </div>
     <div class="note">課程建議：新手建議安排 2～3 天全日課比較紮實。人數越多，建議拉長天數 —— 像一對二跟一對四，教練能分配在每個人身上的時間本來就不一樣！</div>
-    <div class="note accent">此套裝安排 2 天以上課程最划算！提醒：「超早鳥雪具優惠」需全日課達 2 天以上，且同時有訂住宿，才會自動套用。</div>
+    <div class="note accent">此套裝安排 2 天以上課程最划算！</div>
+    <div class="note accent" id="courseSuperNote">提醒：「超早鳥雪具優惠」需全日課達 2 天以上，且同時有訂住宿，才會自動套用。</div>
   </div>
 
   <!-- 住宿 -->
@@ -280,21 +281,21 @@
         <img src="images/room_6jo.jpg" alt="六疊房">
         <div class="room-info">
           <div class="name">六疊房</div>
-          <small>1–3 人 · 共 8 間</small>
+          <small>建議 2 人・上限 3 人・共 8 間</small>
         </div>
       </button>
       <button class="opt-btn room-card" data-group="roomType" data-val="rokka_8" style="min-width:110px">
         <img src="images/room_8jo.jpg" alt="八疊房">
         <div class="room-info">
           <div class="name">八疊房</div>
-          <small>2–4 人 · 共 1 間</small>
+          <small>建議 3 人・上限 4 人・共 1 間</small>
         </div>
       </button>
       <button class="opt-btn room-card" data-group="roomType" data-val="rokka_wa" style="min-width:110px">
         <img src="images/room_washitsu.jpg" alt="大和室" style="object-position: 70% 30%">
         <div class="room-info">
           <div class="name">大和室</div>
-          <small>4–6 人 · 共 1 間</small>
+          <small>建議 5 人・上限 6 人・共 1 間</small>
         </div>
       </button>
     </div>
@@ -320,6 +321,7 @@
         <span class="unit">晚</span>
       </div>
     </div>
+    <div class="note" style="margin-top:14px">各房型舒適入住人數：六疊房 2 人・八疊房 3 人・大和室 5 人。最多可加床 1 張（＋NT$500／晚），加床後上限：六疊房 3 人・八疊房 4 人・大和室 6 人。如有加床需求請洽客服確認。</div>
   </div>
 
   <!-- 雪具加購 -->
@@ -357,7 +359,7 @@
           <span class="unit">天</span>
         </div>
       </div>
-      <div class="note accent">超早鳥雪具費用於訂金確認時收取，恕不退款。若有部分自備雪具，建議現場再依品項租借。</div>
+      <div class="note accent" id="gearSuperNote">超早鳥雪具費用於訂金確認時收取，恕不退款。若有部分自備雪具，建議現場再依品項租借。</div>
       <div class="note">雪具於旅館 ロッカ 直接領取與歸還，不需另外跑租借店。</div>
       <div class="note">備註：無兒童裝備。身高 145cm 以下或鞋號 20cm 以下，好好雪倉無適合裝備，可洽客服提供其他合作單位折扣碼自行預訂。</div>
     </div>
@@ -374,7 +376,7 @@
       <div>雪具：<b id="sumGear">未加購</b></div>
     </div>
 
-    <div class="tier-row super-row">
+    <div class="tier-row super-row" id="superTierRow" style="display:none">
       <div class="tier-left">
         <div class="tier-name">超早鳥 <span class="badge badge-green">最優惠</span></div>
         <div class="tier-date">6/30 前預訂</div>
@@ -387,14 +389,14 @@
       </div>
     </div>
 
-    <div class="tier-row">
+    <div class="tier-row super-row" id="earlyTierRow">
       <div class="tier-left">
-        <div class="tier-name">早鳥</div>
+        <div class="tier-name" id="earlyTierName">早鳥 <span class="badge badge-green">最優惠</span></div>
         <div class="tier-date">7/1–9/30 預訂</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" id="earlyTotal">—</div>
-        <div class="tier-saving mid" id="earlySaving"></div>
+        <div class="tier-saving" id="earlySaving"></div>
         <div class="tier-pp" id="earlyPP"></div>
       </div>
     </div>
@@ -432,8 +434,9 @@
   };
 
   const ROOM = {
-    super:   { rokka_6: 5600, rokka_8: 6400, rokka_wa: 11000 },
-    regular: { rokka_6: 6500, rokka_8: 7500, rokka_wa: 13000 }
+    super:     { rokka_6: 5600, rokka_8: 6400,  rokka_wa: 11000 },
+    earlyBird: { rokka_6: 6000, rokka_8: 7000,  rokka_wa: 12000 },
+    regular:   { rokka_6: 6500, rokka_8: 7500,  rokka_wa: 13000 }
   };
 
   const ROOM_STOCK = { rokka_6: 8, rokka_8: 1, rokka_wa: 1 };
@@ -441,6 +444,10 @@
   const GEAR_SUPER   = 2100;
   const GEAR_PREPAY  = 2350;
   const GEAR_REGULAR = 2600;
+
+  // 超早鳥期限（6/30）已過，暫時只在後台保留計算邏輯，頁面上不顯示給客人。
+  // 下一季重新開賣超早鳥時，把這個改回 true 即可。
+  const SHOW_SUPER_EARLY_BIRD = false;
 
   const S = {
     persons: 1,
@@ -487,7 +494,7 @@
     const gearOk = superGearOk();
     const superGearPrice = gearOk ? GEAR_SUPER : GEAR_REGULAR;
     const superTotal   = calcTier('regular',  'super',   superGearPrice);
-    const earlyTotal   = calcTier('earlyBird','regular',  GEAR_PREPAY);
+    const earlyTotal   = calcTier('earlyBird','earlyBird', GEAR_PREPAY);
     const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR);
 
     // 省了多少（vs 原價）
@@ -548,6 +555,19 @@
     });
   });
 
+  function applyTierVisibility() {
+    if (SHOW_SUPER_EARLY_BIRD) return;
+    el('superTierRow').style.display = 'none';
+    el('courseSuperNote').style.display = 'none';
+    el('gearSuperNote').style.display = 'none';
+    // 超早鳥收起來後，早鳥變成頁面上最優惠的選項，套用同樣的強調樣式
+    const earlyRow = el('earlyTierRow');
+    earlyRow.classList.add('super-row');
+    el('earlySaving').classList.remove('mid');
+    el('earlyTierName').insertAdjacentHTML('beforeend', ' <span class="badge badge-green">最優惠</span>');
+  }
+
+  applyTierVisibility();
   calculate();
 </script>
 </body>
