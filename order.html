@@ -425,7 +425,7 @@
   const DEFAULT_REFUND_NOTE = '開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
 
   const O = {
-    groups: [{ location: 'yuzawa', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
+    groups: [{ location: 'yuzawa', board: 'single', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
     includeRoom: false, roomType: 'six', roomCount: 1, roomNights: 2,
     includeGear: false, gearPersons: 1, gearDays: 2
   };
@@ -438,6 +438,7 @@
   };
 
   const LOCATION_LABEL = { zao: '藏王', yuzawa: '湯澤' };
+  const BOARD_LABEL = { single: '單板', double: '雙板' };
   const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四', 5: '一對五' };
   const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室' };
 
@@ -473,6 +474,7 @@
     if (!groups || groups.length === 0) return '—';
     return groups.map((g, i) => {
       const prefix = groups.length > 1 ? `第 ${i+1} 組：` : '';
+      const board = BOARD_LABEL[g.board] || '';
       const persons = PERSON_LABEL[g.persons] || `一對${g.persons}`;
       const days = formatDays(g.days);
       let dateInfo = '';
@@ -482,7 +484,7 @@
       } else {
         dateInfo = formatDate(g.date);
       }
-      return `${prefix}${persons}・${days}${dateInfo ? '（' + dateInfo + '）' : ''}`;
+      return `${prefix}${board ? board + '・' : ''}${persons}・${days}${dateInfo ? '（' + dateInfo + '）' : ''}`;
     }).join('\n');
   }
   function buildLocationDisplay(groups) {
@@ -557,6 +559,13 @@
           </select>
         </div>
         <div class="field">
+          <label>板類</label>
+          <select class="grp-board" data-idx="${idx}">
+            <option value="single" ${g.board==='single'?'selected':''}>單板</option>
+            <option value="double" ${g.board==='double'?'selected':''}>雙板</option>
+          </select>
+        </div>
+        <div class="field">
           <label>師生比</label>
           <select class="grp-persons" data-idx="${idx}">${opts}</select>
         </div>
@@ -594,6 +603,9 @@
   function bindGroupEvents() {
     el('groupList').querySelectorAll('.grp-location').forEach(s => {
       s.onchange = () => { O.groups[+s.dataset.idx].location = s.value; };
+    });
+    el('groupList').querySelectorAll('.grp-board').forEach(s => {
+      s.onchange = () => { O.groups[+s.dataset.idx].board = s.value; };
     });
     el('groupList').querySelectorAll('.grp-persons').forEach(s => {
       s.onchange = () => { O.groups[+s.dataset.idx].persons = +s.value; };
@@ -665,7 +677,7 @@
   renderGroups();
 
   el('addGroupBtn').addEventListener('click', () => {
-    O.groups.push({ location: 'yuzawa', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' });
+    O.groups.push({ location: 'yuzawa', board: 'single', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' });
     renderGroups();
   });
 
@@ -786,7 +798,7 @@
     const balance = Number(el('balanceAmount').value) || 0;
 
     const courseSummary = O.groups.map(g =>
-      `${LOCATION_LABEL[g.location]}・${PERSON_LABEL[g.persons] || '一對'+g.persons}・${formatDays(g.days)}`
+      `${LOCATION_LABEL[g.location]}・${BOARD_LABEL[g.board] || ''}・${PERSON_LABEL[g.persons] || '一對'+g.persons}・${formatDays(g.days)}`
     ).join('；');
     const totalCourseDays = +O.groups.reduce((s, g) => s + g.days, 0).toFixed(1);
     const courseDateSummary = O.groups.map(g => {
