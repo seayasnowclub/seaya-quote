@@ -800,6 +800,7 @@
     const payload = {
       secret: API_SECRET,
       custName: el('custName').value || '—',
+      location: O.groups[0].location,
       contactType, contact, lineNick,
       coursePersons: courseSummary,
       courseDays: totalCourseDays,
