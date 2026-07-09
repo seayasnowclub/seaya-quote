@@ -425,7 +425,7 @@
   const DEFAULT_REFUND_NOTE = '開課日前 61 日以前（不含開課日）取消，退回已收款項 60%。開課日前 60 日至 30 天前，退回已收款項 40%。開課前 30 天至當日不接受取消（可轉讓給友人），雪具費用如有退款，另依當次政策計算。如需異動，請及早與客服聯繫。';
 
   const O = {
-    groups: [{ location: 'zao', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
+    groups: [{ location: 'yuzawa', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
     includeRoom: false, roomType: 'six', roomCount: 1, roomNights: 2,
     includeGear: false, gearPersons: 1, gearDays: 2
   };
@@ -665,7 +665,7 @@
   renderGroups();
 
   el('addGroupBtn').addEventListener('click', () => {
-    O.groups.push({ location: 'zao', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' });
+    O.groups.push({ location: 'yuzawa', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' });
     renderGroups();
   });
 
