@@ -449,6 +449,25 @@
     </div>
   </div>
 
+  <!-- 前往下單 -->
+  <div style="margin-top:24px; text-align:center; padding-bottom:8px">
+    <button id="lineOrderBtn" onclick="openLineOrder()" style="
+      display:inline-flex; align-items:center; gap:10px;
+      background:#06C755; color:#fff;
+      border:none; border-radius:14px;
+      padding:16px 32px; font-size:17px; font-weight:700;
+      cursor:pointer; width:100%; max-width:400px;
+      justify-content:center; letter-spacing:0.5px;
+      box-shadow:0 4px 16px rgba(6,199,85,0.25);
+    ">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.1 1.74 5.84 4.37 7.53L5.5 22l4.13-2.16c.77.21 1.57.32 2.37.32 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/>
+      </svg>
+      前往 LINE 官方下單
+    </button>
+    <div style="font-size:12px; color:var(--muted); margin-top:8px">點擊後將自動帶入試算內容</div>
+  </div>
+
 </div>
 <script>
   const COURSE = {
@@ -603,6 +622,49 @@
     earlyRow.classList.add('super-row');
     el('earlySaving').classList.remove('mid');
     el('earlyTierName').insertAdjacentHTML('beforeend', ' <span class="badge badge-green">最優惠</span>');
+  }
+
+  function buildQuoteSummary() {
+    const ROOM_NAME_MAP = { rokka_6: '六疊房', rokka_8: '八疊房', rokka_wa: '大和室' };
+    const PERSONS_LABEL = ['一對一', '一對二', '一對三', '一對四'];
+    const lines = [];
+
+    lines.push('【Seaya Snow Club 包套試算】');
+    lines.push('');
+
+    if (S.fullDays > 0) {
+      lines.push(`課程：${PERSONS_LABEL[S.persons - 1]} × ${S.fullDays} 天全日課`);
+    }
+    if (S.roomCount > 0 && S.roomNights > 0) {
+      lines.push(`住宿：${ROOM_NAME_MAP[S.roomType]} × ${S.roomCount} 間 × ${S.roomNights} 晚`);
+    }
+    if (S.gearPersons > 0) {
+      lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
+    }
+
+    const earlyTotal = calcTier('earlyBird', 'earlyBird', GEAR_PREPAY);
+    const regularTotal = calcTier('regular', 'regular', GEAR_REGULAR);
+
+    lines.push('');
+    if (earlyTotal > 0) {
+      lines.push(`早鳥總價：${fmt(earlyTotal)}`);
+      if (S.persons > 1) {
+        lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / S.persons))}）`);
+      }
+    } else {
+      lines.push('（尚未選擇項目）');
+    }
+
+    lines.push('');
+    lines.push('請問目前還有名額嗎？我想預約！');
+
+    return lines.join('\n');
+  }
+
+  function openLineOrder() {
+    const text = buildQuoteSummary();
+    const url = 'https://line.me/R/oaMessage/@seaya.tw/?text=' + encodeURIComponent(text);
+    window.open(url, '_blank');
   }
 
   applyTierVisibility();
