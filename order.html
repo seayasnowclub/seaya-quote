@@ -807,7 +807,7 @@
     } else {
       el('rcCustomNoteSection').style.display = 'none';
     }
-    el('rcRefundNote').textContent = data.refundNote || DEFAULT_REFUND_NOTE;
+    el('rcRefundNote').innerHTML = (data.refundNote || DEFAULT_REFUND_NOTE).replace(/\n/g, '<br>');
 
     el('receiptCard').style.display = 'block';
     el('downloadBtn').style.display = 'block';
