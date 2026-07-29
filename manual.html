@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>出發滑雪使用手冊 — Seaya Snow Club</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --border: #e6e6e6;
+      --accent: #f1703b;
+      --accent-soft: rgba(241,112,59,0.08);
+      --blue: #2f54eb;
+      --blue-soft: rgba(47,84,235,0.07);
+      --text: #111111;
+      --muted: #6b6b6b;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Hiragino Sans", "PingFang TC", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 32px 16px 80px;
+    }
+
+    .container { width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 4px; }
+
+    /* ---------- Cover ---------- */
+    .cover { padding: 4px 0 26px; }
+
+    .cover-top {
+      display: flex; align-items: flex-start; justify-content: space-between;
+      margin-bottom: 22px;
+    }
+    .brand-logo { height: 32px; display: block; }
+    .cover-kicker {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+      color: var(--blue); text-align: right; line-height: 1.6;
+    }
+
+    .cover-title {
+      font-size: 58px; font-weight: 800; color: var(--blue);
+      line-height: 1.02; letter-spacing: -0.02em;
+    }
+
+    .cover-lede {
+      margin-top: 18px; font-size: 14px; color: var(--muted);
+      line-height: 1.8; max-width: 46ch;
+    }
+
+    .cover-photo-band {
+      position: relative; width: 100%; aspect-ratio: 4 / 3;
+      overflow: hidden; margin: 0 0 26px;
+    }
+    .cover-photo-band img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      filter: contrast(1.08) saturate(0.92);
+    }
+    .cover-photo-band::after {
+      content: ""; position: absolute; inset: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+      opacity: 0.22; mix-blend-mode: overlay;
+    }
+
+    /* ---------- Selector strip ---------- */
+    .selector-strip { margin-top: 8px; padding-top: 22px; border-top: 1px solid var(--border); }
+    .selector-label {
+      font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 10px;
+    }
+    .place-tabs { display: flex; gap: 24px; margin-bottom: 4px; }
+    .place-tab {
+      padding: 4px 0 10px; text-align: left;
+      border: none; border-bottom: 3px solid transparent;
+      background: none; color: #b3b3b3; cursor: pointer;
+      font-family: inherit; font-size: 18px; font-weight: 800;
+      transition: all 0.15s;
+    }
+    .place-tab .en { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.1em; margin-top: 2px; opacity: 0.7; }
+    .place-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+    .plan-pills { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .plan-pill {
+      display: flex; align-items: center; gap: 6px;
+      padding: 8px 14px; border-radius: 999px;
+      border: 1px solid var(--border); background: #fff; color: var(--muted);
+      font-family: inherit; font-size: 13px; cursor: pointer; transition: all 0.15s;
+    }
+    .plan-pill .num {
+      font-size: 10px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%;
+      background: #d9d9d9; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .plan-pill.active { border-color: var(--blue); color: var(--blue); font-weight: 700; }
+    .plan-pill.active .num { background: var(--accent); color: #fff; }
+
+    /* ---------- Zao transport banner ---------- */
+    .banner {
+      margin-top: 14px; font-size: 13px; line-height: 1.8; color: var(--text);
+      background: var(--blue-soft); border-left: 3px solid var(--blue);
+      padding: 14px 16px;
+    }
+    .banner b { color: var(--blue); }
+
+    /* ---------- Content ---------- */
+    .content-wrap { margin-top: 30px; }
+
+    .plan-eyebrow {
+      font-size: 12px; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 8px;
+    }
+    .plan-heading {
+      font-size: 32px; font-weight: 800; margin-bottom: 8px; line-height: 1.25;
+      color: var(--blue); letter-spacing: -0.01em;
+    }
+    .plan-tagline { font-size: 13px; color: var(--muted); margin-bottom: 22px; line-height: 1.7; }
+
+    .side-gallery { display: flex; gap: 10px; overflow-x: auto; margin: 0 0 24px; padding-bottom: 6px; }
+    .side-gallery img, .side-gallery .ph {
+      flex: 0 0 auto; width: 130px; height: 130px; object-fit: cover;
+      border: 1px solid var(--text);
+    }
+    .side-gallery .ph {
+      display: flex; align-items: center; justify-content: center; text-align: center;
+      background: #fafafa; color: var(--muted); font-size: 11px; line-height: 1.5;
+      border: 1px dashed #bbb;
+    }
+
+    .story p {
+      font-size: 15px; line-height: 1.95; color: var(--text); margin-bottom: 18px;
+    }
+    .story p:last-child { margin-bottom: 0; }
+    .story b { color: var(--accent); font-weight: 700; }
+    .story a.line-link { color: var(--blue); font-weight: 700; text-decoration: underline; }
+
+    .callout {
+      background: #fff; border: 1.5px solid var(--blue);
+      padding: 16px 18px; margin-top: 4px;
+      font-size: 14px; color: var(--text); line-height: 1.8;
+    }
+    .callout b { color: var(--blue); }
+
+    .divider { border: none; border-top: 1px solid var(--border); margin: 32px 0; }
+
+    .subhead { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+
+    .map-embed {
+      position: relative; width: 100%; aspect-ratio: 4 / 3;
+      border: 1px solid var(--border); margin-top: 6px;
+    }
+    .map-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    .refund-box {
+      background: #fff; border: 1px solid var(--border); padding: 18px 20px; margin-top: 10px;
+    }
+    .refund-table { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 13px; }
+    .refund-table th { padding: 7px 10px; text-align: left; font-weight: 700; background: #fafafa; }
+    .refund-table th:last-child, .refund-table td:last-child { text-align: center; }
+    .refund-table td { padding: 7px 10px; border-bottom: 1px solid var(--border); }
+
+    .cta-btn {
+      display: flex; align-items: center; gap: 10px; justify-content: center;
+      background: #06C755; color: #fff; border: none; border-radius: 14px;
+      padding: 16px 32px; font-size: 16px; font-weight: 700;
+      cursor: pointer; width: 100%; text-decoration: none;
+      box-shadow: 0 4px 16px rgba(6,199,85,0.2); margin-top: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="cover">
+    <div class="cover-photo-band">
+      <img src="images/hero_snow5.jpg" alt="雪坡合照">
+    </div>
+    <div class="cover-top">
+      <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
+      <div class="cover-kicker">FIELD GUIDE<br>26 WINTER SEASON</div>
+    </div>
+    <h1 class="cover-title">出發<br>滑雪手冊</h1>
+    <p class="cover-lede">下單只是開始。從現在到踏上雪場的每一步，這本手冊陪你走完。</p>
+  </div>
+
+  <!-- 選擇器 -->
+  <div class="selector-strip">
+    <div class="selector-label">你的雪季，在哪裡展開</div>
+    <div class="place-tabs" id="locationGroup">
+      <button class="place-tab active" data-location="yuzawa">湯澤<span class="en">YUZAWA</span></button>
+      <button class="place-tab" data-location="zao">藏王<span class="en">ZAO</span></button>
+    </div>
+
+    <div class="banner" id="zaoBanner" style="display:none">
+      <b>提醒：</b>藏王沒有接駁車，這段路要靠自己——可以從山形站轉搭巴士上山，或從仙台機場搭直達巴士。完整路線寫在下面「美食地圖&須知」那一篇。
+    </div>
+
+    <div class="selector-label" style="margin-top:18px">你選的是哪一種玩法</div>
+    <div class="plan-pills" id="planGroup">
+      <button class="plan-pill active" data-plan="course"><span class="num">1</span>純課程</button>
+      <button class="plan-pill" data-plan="package"><span class="num">2</span>一站式套裝（住宿＋雪具＋課程）</button>
+      <button class="plan-pill" data-plan="lazy"><span class="num">3</span>一個人的懶人團</button>
+      <button class="plan-pill" data-plan="guide"><span class="num">4</span>美食與地圖須知</button>
+    </div>
+  </div>
+
+  <!-- 內容 -->
+  <div class="content-wrap" id="contentArea">
+
+    <!-- 湯澤 / 懶人團 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="lazy" style="display:none">
+      <div class="plan-eyebrow">湯澤・PLAN 03</div>
+      <h2 class="plan-heading">一個人的懶人團</h2>
+      <div class="plan-tagline">一個人也能出發。行程、交通、找伴，我們都幫你打點好，時間由我們統一安排。</div>
+      <div class="side-gallery">
+        <div class="ph">越後湯澤東口<br>照片待補</div>
+      </div>
+      <div class="story">
+        <p>出發那天晚上 <b>7 點</b>，我們約在<b>越後湯澤東口</b>碰面——一個人報名也沒關係，這裡會有一整團人陪你一起出發。六花的車已經在等你了，接下來的交通全部包辦，你只需要準時出現。</p>
+        <p>保險的部分，因為每個人出發、回程的日子不太一樣，這件事要麻煩你自己張羅一下。</p>
+        <p>行李也先幫你想好了：<b>排汗材質的內層上衣和褲子、雪襪</b>，這些是基本配備。如果你平常有戴眼鏡，記得自己準備一副裝得下眼鏡的雪鏡——這個我們沒辦法幫你準備。</p>
+        <p>出發前一個月，我們會開一個專屬的群組，把所有細節整理好發給你；教練通常會在上課前 <b>3 天</b>才加入，到時候在群組裡跟他打聲招呼就可以了。</p>
+      </div>
+    </div>
+
+    <!-- 湯澤 / 純課程 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="course">
+      <div class="plan-eyebrow">湯澤・PLAN 01</div>
+      <h2 class="plan-heading">純課程</h2>
+      <div class="plan-tagline">只想好好上一堂課，其他的自己安排。</div>
+      <div class="side-gallery">
+        <div class="ph">岩原滑雪場<br>照片待補</div>
+        <div class="ph">Sakaya 集合處<br>照片待補</div>
+      </div>
+      <div class="story">
+        <p>這個方案的舞台是<b>岩原滑雪場</b>。集合地點在 RC2 的 Sakaya 門口——放心，到時候我們會先把集合處的照片傳給你，一眼就能認出來。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
+        <p>教練的聯繫方式不會太早給你，等你把尾款匯清之後，我們就會開一個群組讓你們對上話；教練本人大概會在上課前 <b>3 天</b>才入群。</p>
+        <p>雪具的部分你可以自己安排——我們準備了一份附折扣碼的店家清單，依照你住的地方挑一間順路的就好。</p>
+      </div>
+    </div>
+
+    <!-- 湯澤 / 一站式套裝 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="package" style="display:none">
+      <div class="plan-eyebrow">湯澤・PLAN 02</div>
+      <h2 class="plan-heading">一站式套裝（住宿＋雪具＋課程）</h2>
+      <div class="plan-tagline">住宿、雪具、課程，這一次自己排時間。</div>
+      <div class="side-gallery">
+        <img src="images/gallery_entrance.jpg" alt="六花民宿外觀">
+        <img src="images/gallery_genkan.jpg" alt="六花民宿玄關">
+        <img src="images/gear_group1.jpg" alt="好好雪倉">
+        <img src="images/gear_boards.jpg" alt="雪具">
+      </div>
+      <div class="story">
+        <p>這個方案的節奏，由你自己說了算——住宿、雪具、上課，三件事的時間都要你自己排。</p>
+        <p>住的地方是<b>六花</b>，下午 <b>3 點</b>以後可以 check-in。車站到民宿、每天往返雪場或去車站吃飯，六花都能接送，只是要記得在前一天晚上 <b>10 點前</b>，透過<a href="https://line.me/R/ti/p/@182lykda?oat_content=url&ts=09221743" class="line-link" target="_blank">六花官方 LINE</a>先預約好。</p>
+        <p>雪具在<b>好好雪倉</b>，就在六花樓下——入住當天晚上就能先去試穿，不用隔天一早匆匆忙忙。記得帶雪襪去，如果你有自己的護具，也一併帶去現場試，這樣尺寸才會準。記得先透過<a href="https://lin.ee/XhZO6On" class="line-link" target="_blank">好好雪倉官方 LINE</a>預約好實際租借雪具的時間。</p>
+        <p>我們主要的教學會安排在<b>岩原滑雪場</b>。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。若是因為雪況或教學需求更換雪場，前一天在群組裡跟教練約好時間跟地點就可以了。</p>
+      </div>
+      <div class="callout"><b>出發前務必先想清楚這兩件事：</b>什麼時候抵達跟離開湯澤、什麼時候租借雪具。</div>
+    </div>
+
+    <!-- 湯澤 / 美食地圖&須知 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="guide" style="display:none">
+      <div class="plan-eyebrow">湯澤・PLAN 04</div>
+      <h2 class="plan-heading">美食與地圖須知</h2>
+      <div class="plan-tagline">出發前的最後準備，跟一份私心整理的美食清單。</div>
+
+      <div class="subhead">怎麼到越後湯澤</div>
+      <div class="story">
+        <p>從<b>成田機場</b>出發，可以搭 Skyliner 到上野站（約 40 分），再轉 JR 上越新幹線到越後湯澤站（約 70–90 分），總車程 110–130 分鐘；或是搭成田特快到東京站（約 60 分）再轉新幹線，總車程 130–150 分鐘。</p>
+        <p>從<b>羽田機場</b>出發，可以搭東京單軌或京急線接到東京站，再轉乘上越新幹線至越後湯澤站，總車程約 2.5–3 小時。</p>
+      </div>
+
+      <hr class="divider">
+
+      <div class="subhead">緊急聯絡</div>
+      <div class="story"><p>路上有任何緊急狀況，透過 <b>CR 官方 LINE</b> 找橘子，我們都在。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">美食地圖</div>
+      <div class="story"><p>我們私心推薦的湯澤美食清單，點進去可以看店名跟位置。</p></div>
+      <div class="map-embed">
+        <iframe src="https://www.google.com/maps/d/embed?mid=1cUuKn_4xX0JGBxzU7pTPOVVfK8TV6lQ" loading="lazy"></iframe>
+      </div>
+
+      <hr class="divider">
+      <div id="refundYuzawa"></div>
+    </div>
+
+    <!-- 藏王 / 懶人團 -->
+    <div class="content-panel" data-location="zao" data-plan="lazy" style="display:none">
+      <div class="plan-eyebrow">藏王・PLAN 03</div>
+      <h2 class="plan-heading">一個人的懶人團</h2>
+      <div class="plan-tagline">一個人也能出發。行程、交通、找伴，我們都幫你打點好，時間由我們統一安排。</div>
+      <div class="side-gallery">
+        <div class="ph">Sun Valley<br>照片待補</div>
+      </div>
+      <div class="story">
+        <p>出發那天晚上 <b>7 點</b>，我們約在<b>Sun Valley</b>（也是戰王好好雪具的所在地）碰面。藏王這裡完全不用煩惱接駁——住宿、雪具店、雪場全部用走的就到，只是山下到藏王溫泉這段路，要麻煩你自己安排上山交通。</p>
+        <p>保險的部分，因為每個人出發、回程的日子不太一樣，這件事要麻煩你自己張羅一下。</p>
+        <p>行李也先幫你想好了：<b>排汗材質的內層上衣和褲子、雪襪</b>，這些是基本配備。如果你平常有戴眼鏡，記得自己準備一副裝得下眼鏡的雪鏡——這個我們沒辦法幫你準備。</p>
+        <p>出發前一個月，我們會開一個專屬的群組，把所有細節整理好發給你；教練通常會在上課前 <b>3 天</b>才加入，到時候在群組裡跟他打聲招呼就可以了。</p>
+      </div>
+    </div>
+
+    <!-- 藏王 / 純課程 -->
+    <div class="content-panel" data-location="zao" data-plan="course" style="display:none">
+      <div class="plan-eyebrow">藏王・PLAN 01</div>
+      <h2 class="plan-heading">純課程</h2>
+      <div class="plan-tagline">只想好好上一堂課，其他的自己安排。</div>
+      <div class="side-gallery">
+        <div class="ph">上之台纜車站<br>照片待補</div>
+      </div>
+      <div class="story">
+        <p>集合點在<b>上之台纜車站</b>。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。教練的聯繫方式，一樣是等尾款匯清之後才會開群組，教練本人大概上課前 <b>3 天</b>入群。</p>
+        <p>雪具的話，我們私心推薦<a href="https://lin.ee/rXvqLkk" class="line-link" target="_blank">好好雪具官方 LINE</a>，也可以參考 Best Rental、鬧雪具這兩家，都附折扣碼。</p>
+      </div>
+    </div>
+
+    <!-- 藏王 / 一站式套裝 -->
+    <div class="content-panel" data-location="zao" data-plan="package" style="display:none">
+      <div class="plan-eyebrow">藏王・PLAN 02</div>
+      <h2 class="plan-heading">一站式套裝（住宿＋雪具＋課程）</h2>
+      <div class="plan-tagline">住宿、雪具、課程，這一次自己排時間。</div>
+      <div class="side-gallery">
+        <div class="ph">Sun Valley 外觀<br>照片待補</div>
+        <div class="ph">好好雪具店內<br>照片待補</div>
+      </div>
+      <div class="story">
+        <p>住的地方跟雪具店在同一棟——<b>Sun Valley</b>，下午 <b>3 點</b> check-in，隔天早上 <b>10 點</b>前退房。這裡完全不用擔心接駁，走出門就是雪場跟雪具店。</p>
+        <p>雪具入住當晚就能先去試穿，我們會特別留時段給你，不用隔天一早匆匆忙忙。</p>
+        <p>上課在上之台纜車站集合。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
+      </div>
+      <div class="callout"><b>出發前務必先想清楚這兩件事：</b>什麼時候 check-in、什麼時候去拿雪具。</div>
+    </div>
+
+    <!-- 藏王 / 美食地圖&須知 -->
+    <div class="content-panel" data-location="zao" data-plan="guide" style="display:none">
+      <div class="plan-eyebrow">藏王・PLAN 04</div>
+      <h2 class="plan-heading">美食與地圖須知</h2>
+      <div class="plan-tagline">出發前的最後準備，跟一份私心整理的美食清單。</div>
+
+      <div class="subhead">怎麼到藏王</div>
+      <div class="story">
+        <p>從<b>東京</b>出發，可以搭新幹線到山形駅，在東口 1 號站牌轉乘「山形↔藏王」巴士，車程約 40 分鐘，車資 1,200 日圓/人（兒童 600 日圓），不需預約；也有夜間巴士從東京車站、新宿、橫濱等地直達藏王溫泉，車資約 4,500 日圓/人。</p>
+        <p>從<b>仙台機場</b>出發，可以搭機場直達巴士（車資 2,500 日圓/人，需於搭乘日前 7 天 18:00 前完成預約），或是到仙台駅東口 76 號出口轉搭巴士（車資 2,500 日圓/人，一天僅一班，記得帶零錢）。</p>
+      </div>
+
+      <hr class="divider">
+
+      <div class="subhead">緊急聯絡</div>
+      <div class="story"><p>路上有任何緊急狀況，透過 <b>CR 官方 LINE</b> 找橘子，我們都在。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">美食地圖</div>
+      <div class="story"><p>我們私心推薦的藏王美食清單，點進去可以看店名跟位置。</p></div>
+      <div class="map-embed">
+        <iframe src="https://www.google.com/maps/d/embed?mid=1-rIi0V7sxCfqQ-CsusuDcld2D5lzE0I" loading="lazy"></iframe>
+      </div>
+
+      <hr class="divider">
+      <div id="refundZao"></div>
+    </div>
+
+  </div>
+
+  <div style="text-align:center; margin-top:8px">
+    <a class="cta-btn" href="https://line.me/R/ti/p/@seaya.tw" target="_blank">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.1 1.74 5.84 4.37 7.53L5.5 22l4.13-2.16c.77.21 1.57.32 2.37.32 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/>
+      </svg>
+      有問題？聯繫客服
+    </a>
+  </div>
+
+</div>
+<script>
+  const state = { location: 'yuzawa', plan: 'course' };
+
+  const REFUND_HTML = `
+    <div class="refund-box">
+      <div class="subhead" style="margin-bottom:12px">取消退款規定</div>
+      <div style="background:var(--blue-soft);border-left:3px solid var(--blue);padding:10px 14px;margin-bottom:12px;line-height:1.9;font-size:13px">
+        <span style="color:var(--blue);font-weight:700">30% 訂金</span>於預約時收取以保留名額<br>
+        <span style="color:var(--blue);font-weight:700">70% 尾款</span>於開課前一個月結清，現場不收費
+      </div>
+      <div style="font-size:13px;line-height:1.8;color:var(--text)">
+        <strong>更改日期</strong><br>
+        純課程開課 30 天前可免費更改日期，需與客服協調調整，限當季雪季。<br><br>
+        <strong>純課程退款</strong>
+        <table class="refund-table">
+          <thead><tr><th>取消時間</th><th>退款比例</th></tr></thead>
+          <tbody>
+            <tr><td>30 天以前</td><td style="font-weight:700">全額退款</td></tr>
+            <tr><td>15–29 天前</td><td>50%</td></tr>
+            <tr><td>7–14 天前</td><td>30%</td></tr>
+            <tr><td>1–6 天前</td><td>10%</td></tr>
+            <tr><td style="color:var(--muted);border-bottom:none">當天取消</td><td style="color:var(--muted);border-bottom:none">不退費</td></tr>
+          </tbody>
+        </table>
+        <strong>含住宿／雪具包套退款</strong><br>
+        開課前 61 天以前取消：退回已收款項 60%<br>
+        開課前 60 至 31 天取消：退回已收款項 40%<br>
+        開課前 30 天至當日：不接受取消（可轉讓給友人）<br><br>
+        所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。
+      </div>
+    </div>
+  `;
+  document.getElementById('refundYuzawa').innerHTML = REFUND_HTML;
+  document.getElementById('refundZao').innerHTML = REFUND_HTML;
+
+  function render() {
+    document.getElementById('zaoBanner').style.display = state.location === 'zao' ? 'block' : 'none';
+    document.querySelectorAll('.content-panel').forEach(panel => {
+      panel.style.display = (panel.dataset.location === state.location && panel.dataset.plan === state.plan)
+        ? 'block' : 'none';
+    });
+  }
+
+  document.querySelectorAll('#locationGroup .place-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#locationGroup .place-tab').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.location = btn.dataset.location;
+      render();
+    });
+  });
+
+  document.querySelectorAll('#planGroup .plan-pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('#planGroup .plan-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.plan = btn.dataset.plan;
+      render();
+    });
+  });
+
+  render();
+</script>
+</body>
+</html>
