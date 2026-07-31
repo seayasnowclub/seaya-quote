@@ -123,7 +123,6 @@
     .side-gallery { display: flex; gap: 10px; overflow-x: auto; margin: 0 0 24px; padding-bottom: 6px; }
     .side-gallery img, .side-gallery .ph {
       flex: 0 0 auto; width: 130px; height: 130px; object-fit: cover;
-      border: 1px solid var(--text);
     }
     .side-gallery .ph {
       display: flex; align-items: center; justify-content: center; text-align: center;
@@ -149,11 +148,29 @@
 
     .subhead { font-size: 15px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
 
+    .map-section { display: flex; gap: 22px; flex-wrap: wrap; margin-top: 6px; }
     .map-embed {
-      position: relative; width: 100%; aspect-ratio: 4 / 3;
-      border: 1px solid var(--border); margin-top: 6px;
+      position: relative; flex: 1 1 320px; aspect-ratio: 4 / 3;
+      border: 1px solid var(--border);
     }
     .map-embed iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+    .map-save {
+      display: inline-block; margin-top: 10px; font-size: 12px; color: var(--muted); line-height: 1.7;
+    }
+    .map-save a { color: var(--blue); font-weight: 700; }
+
+    .map-list { flex: 1 1 240px; max-height: 320px; overflow-y: auto; }
+    .map-list h4 {
+      font-size: 11px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--accent); margin: 16px 0 6px;
+    }
+    .map-list h4:first-child { margin-top: 0; }
+    .map-list ul { list-style: none; }
+    .map-list li {
+      font-size: 13px; padding: 5px 0; border-bottom: 1px dashed var(--border); color: var(--text);
+    }
+    .map-list li:last-child { border-bottom: none; }
 
     .refund-box {
       background: #fff; border: 1px solid var(--border); padding: 18px 20px; margin-top: 10px;
@@ -200,11 +217,17 @@
     </div>
 
     <div class="selector-label" style="margin-top:18px">你選的是哪一種玩法</div>
-    <div class="plan-pills" id="planGroup">
+    <div class="plan-pills">
       <button class="plan-pill active" data-plan="course"><span class="num">1</span>純課程</button>
       <button class="plan-pill" data-plan="package"><span class="num">2</span>一站式套裝（住宿＋雪具＋課程）</button>
       <button class="plan-pill" data-plan="lazy"><span class="num">3</span>一個人的懶人團</button>
-      <button class="plan-pill" data-plan="guide"><span class="num">4</span>美食與地圖須知</button>
+    </div>
+
+    <div class="selector-label" style="margin-top:16px">出發前的共用資訊</div>
+    <div class="plan-pills">
+      <button class="plan-pill" data-plan="guide">美食與地圖須知</button>
+      <button class="plan-pill" data-plan="packing">穿搭：行前準備清單</button>
+      <button class="plan-pill" data-plan="discount">雪具店折扣碼</button>
     </div>
   </div>
 
@@ -233,8 +256,8 @@
       <h2 class="plan-heading">純課程</h2>
       <div class="plan-tagline">只想好好上一堂課，其他的自己安排。</div>
       <div class="side-gallery">
-        <div class="ph">岩原滑雪場<br>照片待補</div>
-        <div class="ph">Sakaya 集合處<br>照片待補</div>
+        <img src="images/iwappara_slope.jpg" alt="岩原滑雪場">
+        <img src="images/sakaeya_storefront.jpg" alt="Sakaya 集合處">
       </div>
       <div class="story">
         <p>這個方案的舞台是<b>岩原滑雪場</b>。集合地點在 RC2 的 Sakaya 門口——放心，到時候我們會先把集合處的照片傳給你，一眼就能認出來。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
@@ -265,7 +288,7 @@
 
     <!-- 湯澤 / 美食地圖&須知 -->
     <div class="content-panel" data-location="yuzawa" data-plan="guide" style="display:none">
-      <div class="plan-eyebrow">湯澤・PLAN 04</div>
+      <div class="plan-eyebrow">湯澤・共用資訊</div>
       <h2 class="plan-heading">美食與地圖須知</h2>
       <div class="plan-tagline">出發前的最後準備，跟一份私心整理的美食清單。</div>
 
@@ -284,12 +307,117 @@
 
       <div class="subhead">美食地圖</div>
       <div class="story"><p>我們私心推薦的湯澤美食清單，點進去可以看店名跟位置。</p></div>
-      <div class="map-embed">
-        <iframe src="https://www.google.com/maps/d/embed?mid=1cUuKn_4xX0JGBxzU7pTPOVVfK8TV6lQ" loading="lazy"></iframe>
+      <div class="map-section">
+        <div class="map-embed">
+          <iframe src="https://www.google.com/maps/d/embed?mid=1cUuKn_4xX0JGBxzU7pTPOVVfK8TV6lQ" loading="lazy"></iframe>
+        </div>
+        <div class="map-list">
+          <h4>美食</h4>
+          <ul>
+            <li>Yakiniku Sakaeya 東口燒肉</li>
+            <li>食樂庵鼎</li>
+            <li>中野屋 湯澤本店（蕎麥麵＆鍋燒壽喜燒）</li>
+            <li>Oshokujidokoro Kikushin 菊新</li>
+            <li>Benichou</li>
+            <li>Ninjintei 人蔘亭（炸豬排）</li>
+            <li>Yasuyoshi</li>
+            <li>食家 あさくさ</li>
+            <li>居酒屋 雪国牛鍋 YUKI-NABE</li>
+            <li>Vitraux</li>
+            <li>溫泉咖啡水屋（奶凍捲）</li>
+            <li>Kaiten-Zushi Honjin</li>
+            <li>Muran Gozzo Cafe</li>
+            <li>Echigo tsuke men (ishin) Yuzawa gan gidoori-ten</li>
+            <li>雪国アグリパーク 湯沢いちご村（越後姬產地）</li>
+            <li>越後清酒博物館 ぽんしゅ館</li>
+            <li>And tap cafe（車站服務處旁咖啡廳，10:00–19:00）</li>
+            <li>Kojimaya 小島家（鰻魚飯）</li>
+            <li>雪之燈 居酒屋</li>
+            <li>森のカフェ 六花</li>
+            <li>Pizzeria La locanda del pittore Iwappara</li>
+            <li>Kaburagi</li>
+          </ul>
+          <h4>推薦雪具店（官網有折扣碼）</h4>
+          <ul>
+            <li>チェンダスキーレンタル（青達雪具）</li>
+            <li>SnowBuddies Rental</li>
+            <li>SNOW RENTAL SHOP</li>
+          </ul>
+          <h4>溫泉</h4>
+          <ul>
+            <li>Shinsen-no-yu</li>
+            <li>駒子之湯</li>
+            <li>Echigoyuzawa Onsen（免費足湯）</li>
+            <li>Egami Public Onsen</li>
+          </ul>
+          <h4>雪具小物</h4>
+          <ul>
+            <li>Xraeb Winter Sport Lab</li>
+            <li>RESORT EX-SPO</li>
+          </ul>
+          <h4>超市／藥妝／便利商店</h4>
+          <ul>
+            <li>Noguchi shopping center</li>
+            <li>超市</li>
+            <li>7-Eleven（Yuzawa Rakucho）</li>
+            <li>7-Eleven（Echigo Yuzawa Station West Exit）</li>
+            <li>マツモトキヨシ 越後湯沢駅前店</li>
+            <li>Drug Seims</li>
+            <li>7-Eleven（Chuetsu Yuzawa Kandatsu）</li>
+            <li>はりまや 湯沢店</li>
+            <li>FamilyMart</li>
+          </ul>
+          <h4>我們主要上課的滑雪場</h4>
+          <ul>
+            <li>岩原滑雪場</li>
+            <li>神立高原滑雪場</li>
+            <li>神樂三俁滑雪場</li>
+          </ul>
+          <h4>其他推薦滑雪場</h4>
+          <ul>
+            <li>Ishiuchi Maruyama Ski Resort</li>
+            <li>湯澤中里滑雪渡假村</li>
+            <li>舞子雪場</li>
+            <li>GALA湯澤滑雪場</li>
+          </ul>
+        </div>
       </div>
+      <div class="map-save">點地圖左上角的 <b>☆</b>，就能把這份地圖收藏到你自己的 Google 地圖，之後隨時打開手機都能查。<br><a href="https://www.google.com/maps/d/viewer?mid=1cUuKn_4xX0JGBxzU7pTPOVVfK8TV6lQ" target="_blank">開啟完整地圖 →</a></div>
 
       <hr class="divider">
       <div id="refundYuzawa"></div>
+    </div>
+
+    <!-- 湯澤 / 穿搭 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="packing" style="display:none">
+      <div class="plan-eyebrow">湯澤・共用資訊</div>
+      <h2 class="plan-heading">穿搭：行前準備清單</h2>
+      <div class="plan-tagline">出發前自己要準備的裝備，先照這份清單打包。</div>
+
+      <div class="subhead">底層衣</div>
+      <div class="story"><p>以<b>排汗材質</b>為主，重點是排汗功能要好——像是登山用的排汗底層衣、機能衣也都適用，不一定要是滑雪專用品牌，只要以排汗為主就沒問題。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">雪襪</div>
+      <div class="story"><p>長度至少要到<b>膝蓋以下</b>，因為要蓋過雪鞋的高度，太短的襪子穿雪鞋會不舒服、也容易磨腳。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">其他配件</div>
+      <div class="story"><p>如果你平常有戴眼鏡，記得自備可以容納眼鏡的雪鏡——這個我們沒辦法幫你準備。</p></div>
+      <div class="note" style="margin-top:14px;font-size:12px;color:var(--muted)">清單持續整理中，之後會補上外層雪衣褲、手套等品項的建議。</div>
+    </div>
+
+    <!-- 湯澤 / 雪具店折扣碼 -->
+    <div class="content-panel" data-location="yuzawa" data-plan="discount" style="display:none">
+      <div class="plan-eyebrow">湯澤・共用資訊</div>
+      <h2 class="plan-heading">雪具店折扣碼</h2>
+      <div class="plan-tagline">合作雪具店的折扣碼，整理在官網上。</div>
+      <div class="story"><p>我們合作雪具店的折扣碼都整理在官網上，依照你住宿的位置挑一間順路的店家就好。</p></div>
+      <div style="text-align:center;margin-top:22px">
+        <a class="cta-btn" style="background:var(--blue);box-shadow:none" href="#" target="_blank">前往官網查看折扣碼</a>
+      </div>
     </div>
 
     <!-- 藏王 / 懶人團 -->
@@ -341,7 +469,7 @@
 
     <!-- 藏王 / 美食地圖&須知 -->
     <div class="content-panel" data-location="zao" data-plan="guide" style="display:none">
-      <div class="plan-eyebrow">藏王・PLAN 04</div>
+      <div class="plan-eyebrow">藏王・共用資訊</div>
       <h2 class="plan-heading">美食與地圖須知</h2>
       <div class="plan-tagline">出發前的最後準備，跟一份私心整理的美食清單。</div>
 
@@ -360,12 +488,100 @@
 
       <div class="subhead">美食地圖</div>
       <div class="story"><p>我們私心推薦的藏王美食清單，點進去可以看店名跟位置。</p></div>
-      <div class="map-embed">
-        <iframe src="https://www.google.com/maps/d/embed?mid=1-rIi0V7sxCfqQ-CsusuDcld2D5lzE0I" loading="lazy"></iframe>
+      <div class="map-section">
+        <div class="map-embed">
+          <iframe src="https://www.google.com/maps/d/embed?mid=1-rIi0V7sxCfqQ-CsusuDcld2D5lzE0I" loading="lazy"></iframe>
+        </div>
+        <div class="map-list">
+          <h4>推薦食物</h4>
+          <ul>
+            <li>Sangoro 三五郎小屋（山腰餐廳，建議要有滑行能力）</li>
+            <li>蔵王の大ちゃん</li>
+            <li>山形酒展示館＆湯煙屋台小菜</li>
+            <li>蔵王温泉「ろばた」</li>
+            <li>Sushi Kiraku</li>
+            <li>Toen Shuka</li>
+            <li>Otochaya</li>
+            <li>Unite Cafe</li>
+            <li>Shiba Mama no Omise</li>
+            <li>Have a Good Slice</li>
+            <li>Cafe ALPINA</li>
+            <li>Cafe＆Bar Chamonix</li>
+            <li>蔵王麺処 梨庵（りあん）</li>
+            <li>カフェレストランJuRI</li>
+            <li>山形之地酒屋 伊東與三郎商店</li>
+            <li>Izakaya Kiwa</li>
+          </ul>
+          <h4>上課集合地</h4>
+          <ul>
+            <li>Zao Sky Cable Uwanodai Station（上之台纜車站）</li>
+          </ul>
+          <h4>便利商店／紀念品店</h4>
+          <ul>
+            <li>Lawson 山形藏王溫泉店</li>
+            <li>Zao Onsen Yutabiya TAKAYUDO</li>
+            <li>山口餅屋</li>
+            <li>Hachiman</li>
+            <li>Okumura Sobaya</li>
+            <li>Kasheru</li>
+          </ul>
+          <h4>溫泉</h4>
+          <ul>
+            <li>藏王溫泉 上湯共同浴場</li>
+            <li>藏王溫泉 下湯共同浴場</li>
+            <li>藏王溫泉 川原湯共同浴場</li>
+            <li>藏王溫泉大露天風呂</li>
+          </ul>
+          <h4>雪具店</h4>
+          <ul>
+            <li>Good Good 好好雪倉藏王店</li>
+            <li>Best Rental Pro Shop</li>
+            <li>Jupeer</li>
+            <li>SkiingNow 鬧雪具 雪具出租店 - 藏王館</li>
+            <li>SHIBA SKI</li>
+          </ul>
+          <h4>不滑雪也能去：搭纜車上樹冰</h4>
+          <ul>
+            <li>藏王中央纜車</li>
+          </ul>
+        </div>
       </div>
+      <div class="map-save">點地圖左上角的 <b>☆</b>，就能把這份地圖收藏到你自己的 Google 地圖，之後隨時打開手機都能查。<br><a href="https://www.google.com/maps/d/viewer?mid=1-rIi0V7sxCfqQ-CsusuDcld2D5lzE0I" target="_blank">開啟完整地圖 →</a></div>
 
       <hr class="divider">
       <div id="refundZao"></div>
+    </div>
+
+    <!-- 藏王 / 穿搭 -->
+    <div class="content-panel" data-location="zao" data-plan="packing" style="display:none">
+      <div class="plan-eyebrow">藏王・共用資訊</div>
+      <h2 class="plan-heading">穿搭：行前準備清單</h2>
+      <div class="plan-tagline">出發前自己要準備的裝備，先照這份清單打包。</div>
+
+      <div class="subhead">底層衣</div>
+      <div class="story"><p>以<b>排汗材質</b>為主，重點是排汗功能要好——像是登山用的排汗底層衣、機能衣也都適用，不一定要是滑雪專用品牌，只要以排汗為主就沒問題。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">雪襪</div>
+      <div class="story"><p>長度至少要到<b>膝蓋以下</b>，因為要蓋過雪鞋的高度，太短的襪子穿雪鞋會不舒服、也容易磨腳。</p></div>
+
+      <hr class="divider">
+
+      <div class="subhead">其他配件</div>
+      <div class="story"><p>如果你平常有戴眼鏡，記得自備可以容納眼鏡的雪鏡——這個我們沒辦法幫你準備。</p></div>
+      <div class="note" style="margin-top:14px;font-size:12px;color:var(--muted)">清單持續整理中，之後會補上外層雪衣褲、手套等品項的建議。</div>
+    </div>
+
+    <!-- 藏王 / 雪具店折扣碼 -->
+    <div class="content-panel" data-location="zao" data-plan="discount" style="display:none">
+      <div class="plan-eyebrow">藏王・共用資訊</div>
+      <h2 class="plan-heading">雪具店折扣碼</h2>
+      <div class="plan-tagline">合作雪具店的折扣碼，整理在官網上。</div>
+      <div class="story"><p>我們合作雪具店的折扣碼都整理在官網上，依照你住宿的位置挑一間順路的店家就好。</p></div>
+      <div style="text-align:center;margin-top:22px">
+        <a class="cta-btn" style="background:var(--blue);box-shadow:none" href="#" target="_blank">前往官網查看折扣碼</a>
+      </div>
     </div>
 
   </div>
@@ -432,9 +648,9 @@
     });
   });
 
-  document.querySelectorAll('#planGroup .plan-pill').forEach(btn => {
+  document.querySelectorAll('.plan-pill').forEach(btn => {
     btn.addEventListener('click', () => {
-      document.querySelectorAll('#planGroup .plan-pill').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.plan-pill').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       state.plan = btn.dataset.plan;
       render();
