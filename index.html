@@ -338,6 +338,17 @@
         <span class="unit">晚</span>
       </div>
     </div>
+    <div class="stepper-row">
+      <label>加床數量（＋NT$500／張／晚）</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="extraBeds">−</button>
+          <div class="step-val" id="extraBedsVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="extraBeds">+</button>
+        </div>
+        <span class="unit">張</span>
+      </div>
+    </div>
     <div class="note" style="margin-top:14px">各房型舒適入住人數：六疊房 2 人・八疊房 3 人・大和室 5 人。最多可加床 1 張（＋NT$500／晚），加床後上限：六疊房 3 人・八疊房 4 人・大和室 6 人。如有加床需求請洽客服確認。</div>
   </div>
 
@@ -390,7 +401,7 @@
 
     <div class="summary-box">
       <div>課程：全日 <b id="sumCourseDays">1</b> 天</div>
-      <div>住宿：<b id="sumRoomName">六疊房</b> × <b id="sumRoomCount">1</b> 間 × <b id="sumRoomNights">2</b> 晚</div>
+      <div>住宿：<b id="sumRoomName">六疊房</b> × <b id="sumRoomCount">1</b> 間 × <b id="sumRoomNights">2</b> 晚<span id="sumExtraBeds"></span></div>
       <div>雪具：<b id="sumGear">未加購</b></div>
     </div>
 
@@ -536,7 +547,7 @@
   const S = {
     persons: 1,
     fullDays: 0,
-    roomType: 'rokka_6', roomCount: 0, roomNights: 0,
+    roomType: 'rokka_6', roomCount: 0, roomNights: 0, extraBeds: 0,
     gearPersons: 0, gearDays: 2
   };
 
@@ -544,6 +555,7 @@
     fullDays:    { min: 0, max: 14 },
     roomCount:   { min: 0, max: 8  },
     roomNights:  { min: 0, max: 14 },
+    extraBeds:   { min: 0, max: 8  },
     gearPersons: { min: 0, max: 4  },
     gearDays:    { min: 1, max: 14 }
   };
@@ -559,7 +571,8 @@
     const fullC = COURSE.full[courseTier][S.persons - 1] * S.fullDays;
     const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
     const gearC = gearPrice * S.gearPersons * S.gearDays;
-    return fullC + roomC + gearC;
+    const bedC  = 500 * S.extraBeds * S.roomNights;
+    return fullC + roomC + gearC + bedC;
   }
 
   function calculate() {
@@ -571,6 +584,7 @@
     el('sumRoomName').textContent = ROOM_NAME[S.roomType];
     el('sumRoomCount').textContent = S.roomCount;
     el('sumRoomNights').textContent = S.roomNights;
+    el('sumExtraBeds').textContent = S.extraBeds > 0 ? `・加床 ${S.extraBeds} 張` : '';
     el('sumGear').textContent = S.gearPersons > 0
       ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
 
