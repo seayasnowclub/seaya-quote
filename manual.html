@@ -137,6 +137,26 @@
     .story b { color: var(--accent); font-weight: 700; }
     .story a.line-link { color: var(--blue); font-weight: 700; text-decoration: underline; }
 
+    .timeline { margin: 4px 0 20px; }
+    .timeline-item { position: relative; padding-left: 26px; padding-bottom: 18px; }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-item::before {
+      content: ""; position: absolute; left: 2px; top: 3px;
+      width: 10px; height: 10px; border-radius: 50%; background: var(--blue);
+    }
+    .timeline-item::after {
+      content: ""; position: absolute; left: 6px; top: 15px; bottom: -2px;
+      width: 2px; background: var(--border);
+    }
+    .timeline-item:last-child::after { display: none; }
+    .timeline-time { font-size: 12px; font-weight: 800; color: var(--blue); letter-spacing: 0.02em; margin-bottom: 3px; }
+    .timeline-text { font-size: 14px; color: var(--text); line-height: 1.7; }
+
+    .info-table { width: 100%; border-collapse: collapse; margin: 4px 0 20px; font-size: 13px; }
+    .info-table th { padding: 8px 10px; text-align: left; font-weight: 700; background: #fafafa; width: 34%; }
+    .info-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); color: var(--text); }
+    .info-table tr th { border-bottom: 1px solid var(--border); }
+
     .callout {
       background: #fff; border: 1.5px solid var(--blue);
       padding: 16px 18px; margin-top: 4px;
@@ -243,10 +263,27 @@
         <div class="ph">越後湯澤東口<br>照片待補</div>
       </div>
       <div class="story">
-        <p>集合當天晚上 <b>7 點</b>，我們約在<b>越後湯澤東口</b>碰面——一個人報名也沒關係，這裡會有一整團人陪你一起出發。六花的車已經在等你了，接下來的交通全部包辦，你只需要準時出現。當天請務必查看群組訊息，接駁時間若有變更以群組通知為主！</p>
-        <p>保險的部分，因為每個人出發、回程的日期都不太一樣，這件事要麻煩你自己準備，<b>一定要準備喔！</b></p>
+        <p>一個人報名也沒關係，這裡會有一整團人陪你一起出發——<b>越後湯澤東口</b>碰面，六花的車已經在等你了，接下來的交通全部包辦，你只需要準時出現。</p>
+      </div>
+      <table class="info-table">
+        <tr><th>集合時間／地點</th><td>晚上 <b>7 點</b>・越後湯澤東口</td></tr>
+        <tr><th>課程時間</th><td>9:30–15:30（全天團課）</td></tr>
+        <tr><th>接駁時間</th><td>去程 9:00 出發．回程 16:30</td></tr>
+        <tr><th>保險</th><td>需自行準備，<b>一定要準備喔！</b></td></tr>
+      </table>
+      <div class="note" style="margin:-8px 0 20px;font-size:12px;color:var(--muted)">接駁時間若有變更，請以當天群組通知為主，配合民宿接駁可能會有小幅度修正。</div>
+      <div class="story">
         <p>行李的部分也先幫你想好了，<b>排汗材質的內層上衣和褲子、雪襪</b>，這些都是基本配備（<a href="https://www.seayasnowclub.com/gears" class="line-link" target="_blank">詳情可以看官網介紹</a>）。如果你平常有戴眼鏡，記得自己準備一副裝得下眼鏡的雪鏡——這個我們沒辦法幫你準備。</p>
-        <p>出發前一個月，我們會開一個專屬的群組，把所有細節整理好發給你；教練通常會在上課前 <b>1–3 天</b>才加入，到時候在群組裡相見！團課固定 <b>9:30–15:30</b> 全日課程，接駁時間 <b>9:00</b> 出發、回程 <b>16:30</b>！但還是請大家以群組訊息為主，有時候配合民宿接駁可能會有小幅度修正。</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">出發前 1 個月</div>
+          <div class="timeline-text">開設專屬群組，把所有細節整理好發給你。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">上課前 1–3 天</div>
+          <div class="timeline-text">教練正式入群，到時候在群組裡相見！</div>
+        </div>
       </div>
     </div>
 
@@ -260,9 +297,18 @@
         <img src="images/sakaeya_storefront.jpg" alt="Sakaya 集合處">
       </div>
       <div class="story">
-        <p>這個方案的舞台是<b>岩原滑雪場</b>。集合地點在 RC2 的 Sakaya 門口——集合處是右邊的圖片，找不到的話可以用群組跟教練聯繫！全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
-        <p>尾款結清後會開設群組，將會由小編先服務行前，大約上課前 <b>1–3 天</b>教練會正式入群，屆時再與教練確認上課時間即可。</p>
+        <p>這個方案的舞台是<b>岩原滑雪場</b>。集合地點在 RC2 的 Sakaya 門口，集合處（右邊的圖片），找不到的話可以用群組跟教練聯繫！全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
         <p>雪具的部分你可以自己安排——我們準備了一份附折扣碼的店家清單，依照你住的地方挑一間順路的就好。</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">尾款結清後</div>
+          <div class="timeline-text">開設群組，小編先為大家服務行前問題。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">上課前 1–3 天</div>
+          <div class="timeline-text">教練正式入群，屆時再與教練確認上課時間即可。</div>
+        </div>
       </div>
     </div>
 
@@ -416,11 +462,17 @@
     <div class="content-panel" data-location="yuzawa" data-plan="discount" style="display:none">
       <div class="plan-eyebrow">湯澤・共用資訊</div>
       <h2 class="plan-heading">雪具店折扣碼</h2>
-      <div class="plan-tagline">合作雪具店的折扣碼，整理在官網上。</div>
-      <div class="story"><p>我們合作雪具店的折扣碼都整理在官網上，依照你住宿的位置挑一間順路的店家就好。</p></div>
-      <div style="text-align:center;margin-top:22px">
-        <a class="cta-btn" style="background:var(--blue);box-shadow:none" href="https://www.seayasnowclub.com/snowgearshop" target="_blank">前往官網查看折扣碼</a>
-      </div>
+      <div class="plan-tagline">依照你住宿的位置，挑一間順路的店家就好。</div>
+      <table class="refund-table">
+        <thead><tr><th>店家</th><th>折扣碼</th><th>優惠內容</th></tr></thead>
+        <tbody>
+          <tr><td>好好雪倉</td><td>—</td><td>洽好好雪倉官方 LINE</td></tr>
+          <tr><td>チェンダスキーレンタル（青達雪具）</td><td>待補</td><td>待補</td></tr>
+          <tr><td>SnowBuddies Rental</td><td>待補</td><td>待補</td></tr>
+          <tr><td>SNOW RENTAL SHOP</td><td>待補</td><td>待補</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="font-size:12px;color:var(--muted)">更多資訊請洽官網行前小祕技。</div>
     </div>
 
     <!-- 藏王 / 懶人團 -->
@@ -432,10 +484,25 @@
         <div class="ph">Sun Valley<br>照片待補</div>
       </div>
       <div class="story">
-        <p>集合當天晚上 <b>7 點</b>，我們約在<b>Sun Valley</b>（也是戰王好好雪具的所在地）碰面。藏王這裡完全不用煩惱接駁——住宿、雪具店、雪場全部用走的就到，只是山下到藏王溫泉這段路，要麻煩你自己安排上山交通。</p>
-        <p>保險的部分，因為每個人出發、回程的日期都不太一樣，這件事要麻煩你自己準備，<b>一定要準備喔！</b></p>
+        <p>一個人報名也沒關係，這裡會有一整團人陪你一起出發——<b>Sun Valley</b>（也是戰王好好雪具的所在地）碰面。藏王這裡完全不用煩惱接駁，住宿、雪具店、雪場全部用走的就到，只是山下到藏王溫泉這段路，要麻煩你自己安排上山交通。</p>
+      </div>
+      <table class="info-table">
+        <tr><th>集合時間／地點</th><td>晚上 <b>7 點</b>・Sun Valley</td></tr>
+        <tr><th>接駁</th><td>無需接駁，住宿、雪具店、雪場皆步行可達</td></tr>
+        <tr><th>保險</th><td>需自行準備，<b>一定要準備喔！</b></td></tr>
+      </table>
+      <div class="story">
         <p>行李的部分也先幫你想好了，<b>排汗材質的內層上衣和褲子、雪襪</b>，這些都是基本配備（<a href="https://www.seayasnowclub.com/gears" class="line-link" target="_blank">詳情可以看官網介紹</a>）。如果你平常有戴眼鏡，記得自己準備一副裝得下眼鏡的雪鏡——這個我們沒辦法幫你準備。</p>
-        <p>出發前一個月，我們會開一個專屬的群組，把所有細節整理好發給你；教練通常會在上課前 <b>1–3 天</b>才加入，到時候在群組裡跟他打聲招呼就可以了。</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">出發前 1 個月</div>
+          <div class="timeline-text">開設專屬群組，把所有細節整理好發給你。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">上課前 1–3 天</div>
+          <div class="timeline-text">教練正式入群，到時候在群組裡跟他打聲招呼就可以了。</div>
+        </div>
       </div>
     </div>
 
@@ -448,9 +515,19 @@
         <img src="images/zao_uwanodai_station.jpg" alt="上之台纜車站">
       </div>
       <div class="story">
-        <p>集合點在<b>上之台纜車站</b>。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。尾款結清後會開設群組，將會由小編先服務行前，大約上課前 <b>1–3 天</b>教練會正式入群，屆時再與教練確認上課時間即可。</p>
+        <p>集合點在<b>上之台纜車站</b>。全天課是 <b>9:30–15:30</b>（共 6 小時）；如果選半天課，上午為 <b>9:30–12:30</b>，下午則是 <b>13:30–16:30</b>。</p>
         <p>單板的話，我們私心推薦<a href="https://lin.ee/rXvqLkk" class="line-link" target="_blank">好好雪具官方 LINE</a>，Seaya 學生可優先使用預約系統保留雪具，折扣碼 <b>seaya</b> 享雪具期間 9 折！這家還提供前一晚取件，可以先試穿，隔天輕鬆出發。租借店僅提供護臀＆護膝，如有其他護具需求請務必自備。</p>
         <p>雙板的話，歡迎參考 Best Rental、鬧雪具這兩家，都離上課地點很近。</p>
+      </div>
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-time">尾款結清後</div>
+          <div class="timeline-text">開設群組，小編先為大家服務行前問題。</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-time">上課前 1–3 天</div>
+          <div class="timeline-text">教練正式入群，屆時再與教練確認上課時間即可。</div>
+        </div>
       </div>
     </div>
 
@@ -580,11 +657,16 @@
     <div class="content-panel" data-location="zao" data-plan="discount" style="display:none">
       <div class="plan-eyebrow">藏王・共用資訊</div>
       <h2 class="plan-heading">雪具店折扣碼</h2>
-      <div class="plan-tagline">合作雪具店的折扣碼，整理在官網上。</div>
-      <div class="story"><p>我們合作雪具店的折扣碼都整理在官網上，依照你住宿的位置挑一間順路的店家就好。</p></div>
-      <div style="text-align:center;margin-top:22px">
-        <a class="cta-btn" style="background:var(--blue);box-shadow:none" href="https://www.seayasnowclub.com/snowgearshop" target="_blank">前往官網查看折扣碼</a>
-      </div>
+      <div class="plan-tagline">依照你住宿的位置，挑一間順路的店家就好。</div>
+      <table class="refund-table">
+        <thead><tr><th>店家</th><th>折扣碼</th><th>優惠內容</th></tr></thead>
+        <tbody>
+          <tr><td>好好雪具</td><td><b>seaya</b></td><td>雪具期間 9 折</td></tr>
+          <tr><td>Best Rental</td><td>待補</td><td>待補</td></tr>
+          <tr><td>鬧雪具</td><td>待補</td><td>待補</td></tr>
+        </tbody>
+      </table>
+      <div class="note" style="font-size:12px;color:var(--muted)">更多資訊請洽官網行前小祕技。</div>
     </div>
 
   </div>
