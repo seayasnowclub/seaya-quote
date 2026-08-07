@@ -332,7 +332,14 @@
       </div>
       <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
     </div>
-    <div class="group-label" style="margin-top:16px;margin-bottom:4px">房型與間數</div>
+    <div class="stepper-row" style="margin-top:16px;margin-bottom:12px">
+      <label style="font-size:13px">入住日期<br><span style="font-size:11px;color:var(--muted);font-weight:400">選填，自動查詢空房</span></label>
+      <input type="date" id="checkInDateInput" min="2026-12-20" max="2027-03-31"
+        style="border:1px solid var(--border);border-radius:10px;padding:8px 10px;
+               font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);
+               outline:none;cursor:pointer;-webkit-appearance:none">
+    </div>
+    <div class="group-label" style="margin-bottom:4px">房型與間數</div>
     <div class="toggle-sub" style="margin-bottom:12px">此旅館均為雅房，設有公共獨立淋浴間</div>
 
     <!-- 六疊房 -->
@@ -341,7 +348,10 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <div class="stepper-row" style="margin-bottom:0">
           <div>
-            <label>六疊房</label>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <label>六疊房</label>
+              <span id="avail_rokka_6" style="font-size:11px;padding:1px 7px;border-radius:4px;font-weight:600;display:none"></span>
+            </div>
             <div class="toggle-sub">建議 2 人・上限 3 人・共 8 間</div>
             <button class="bed-toggle" data-bed="rokka_6" style="margin-top:6px">加床選項 ▾</button>
           </div>
@@ -374,7 +384,10 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <div class="stepper-row" style="margin-bottom:0">
           <div>
-            <label>八疊房</label>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <label>八疊房</label>
+              <span id="avail_rokka_8" style="font-size:11px;padding:1px 7px;border-radius:4px;font-weight:600;display:none"></span>
+            </div>
             <div class="toggle-sub">建議 3 人・上限 4 人・共 1 間</div>
             <button class="bed-toggle" data-bed="rokka_8" style="margin-top:6px">加床選項 ▾</button>
           </div>
@@ -407,7 +420,10 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <div class="stepper-row" style="margin-bottom:0">
           <div>
-            <label>大和室</label>
+            <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+              <label>大和室</label>
+              <span id="avail_rokka_wa" style="font-size:11px;padding:1px 7px;border-radius:4px;font-weight:600;display:none"></span>
+            </div>
             <div class="toggle-sub">建議 5 人・上限 6 人・共 1 間</div>
             <button class="bed-toggle" data-bed="rokka_wa" style="margin-top:6px">加床選項 ▾</button>
           </div>
@@ -905,6 +921,7 @@
           : Math.max(cur - 1, cfg.min);
         S[t] = val;
         el(t + 'Val').textContent = val;
+        if (t === 'roomNights') queryAvailability();
       }
       calculate();
     });
@@ -990,6 +1007,139 @@
   renderCourseGroups();
   applyTierVisibility();
   calculate();
+
+  // ── 空房查詢 ────────────────────────────────────
+  const AVAIL_SHEET_ID = '1pSvsyrdJj_beoska2j-4IIxInLgAW7kPT-CsjkOxQes';
+  const AVAIL_MONTHS = { 12: '2026/12月', 1: '2027/1月', 2: '2027/2月', 3: '2027/3月' };
+  const AVAIL_ROOMS = {
+    '101': '大和室',
+    '201': '六疊房', '202': '六疊房', '203': '六疊房',
+    '205': '六疊房', '206': '六疊房',
+    '207': '八疊房',
+    '208': '六疊房', '210': '六疊房', '211': '六疊房'
+  };
+  const AVAIL_TOTALS = { '六疊房': 8, '八疊房': 1, '大和室': 1 };
+  const AVAIL_KEY_MAP = { rokka_6: '六疊房', rokka_8: '八疊房', rokka_wa: '大和室' };
+  const csvCache = {};
+  let availDate = null;
+
+  function csvRows(text) {
+    const rows = [];
+    for (const line of text.split('\n')) {
+      if (!line.trim()) continue;
+      const row = []; let inQ = false, cell = '';
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { if (inQ && line[i+1] === '"') { cell += '"'; i++; } else inQ = !inQ; }
+        else if (c === ',' && !inQ) { row.push(cell.trim()); cell = ''; }
+        else cell += c;
+      }
+      row.push(cell.trim());
+      if (row.some(c => c)) rows.push(row);
+    }
+    return rows;
+  }
+
+  async function getCSV(month) {
+    if (csvCache[month]) return csvCache[month];
+    const sheet = AVAIL_MONTHS[month];
+    if (!sheet) return null;
+    const url = `https://docs.google.com/spreadsheets/d/${AVAIL_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheet)}`;
+    try {
+      const r = await fetch(url);
+      if (!r.ok) return null;
+      const rows = csvRows(await r.text());
+      csvCache[month] = rows;
+      return rows;
+    } catch { return null; }
+  }
+
+  function bookedOn(rows, day) {
+    const b = {};
+    for (const row of rows) {
+      const c0 = (row[0] || '').trim();
+      const m = c0.match(/^(\d{3})/);
+      if (!m || !AVAIL_ROOMS[m[1]]) continue;
+      const rType = AVAIL_ROOMS[m[1]];
+      const dayCol = (row.length > 1 && /[疊室]/.test(row[1] || '')) ? day + 1 : day;
+      if (dayCol < row.length && (row[dayCol] || '').trim())
+        b[rType] = (b[rType] || 0) + 1;
+    }
+    return b;
+  }
+
+  function showBadge(key, state, count) {
+    const badge = el('avail_' + key);
+    if (!badge) return;
+    if (state === 'hide') { badge.style.display = 'none'; return; }
+    badge.style.display = 'inline-block';
+    if (state === 'loading') {
+      badge.textContent = '查詢中…';
+      badge.style.background = 'var(--accent-soft)'; badge.style.color = 'var(--muted)';
+    } else if (state === 'full') {
+      badge.textContent = '已滿';
+      badge.style.background = 'rgba(192,57,43,0.12)'; badge.style.color = '#c0392b';
+    } else if (state === 'avail') {
+      badge.textContent = `還有 ${count} 間`;
+      badge.style.background = 'var(--success-soft)'; badge.style.color = 'var(--success)';
+    }
+  }
+
+  async function queryAvailability() {
+    if (!availDate || S.roomNights < 1) {
+      Object.keys(AVAIL_KEY_MAP).forEach(k => showBadge(k, 'hide'));
+      for (const k of Object.keys(AVAIL_KEY_MAP))
+        stepCfg['roomCounts.' + k].max = ROOM_STOCK[k];
+      return;
+    }
+    const checkIn = new Date(availDate + 'T00:00:00');
+    if (checkIn < new Date('2026-12-20T00:00:00')) {
+      Object.keys(AVAIL_KEY_MAP).forEach(k => showBadge(k, 'hide'));
+      return;
+    }
+
+    Object.keys(AVAIL_KEY_MAP).forEach(k => showBadge(k, 'loading'));
+
+    const monthDays = {};
+    for (let i = 0; i < S.roomNights; i++) {
+      const d = new Date(checkIn); d.setDate(d.getDate() + i);
+      const mo = d.getMonth() + 1;
+      (monthDays[mo] = monthDays[mo] || []).push(d.getDate());
+    }
+
+    const minAvail = { ...AVAIL_TOTALS };
+    let fail = false;
+    for (const [mo, days] of Object.entries(monthDays)) {
+      const rows = await getCSV(+mo);
+      if (!rows) { fail = true; break; }
+      for (const day of days) {
+        const b = bookedOn(rows, day);
+        for (const [type, total] of Object.entries(AVAIL_TOTALS))
+          minAvail[type] = Math.min(minAvail[type], Math.max(0, total - (b[type] || 0)));
+      }
+    }
+
+    if (fail) {
+      Object.keys(AVAIL_KEY_MAP).forEach(k => showBadge(k, 'hide'));
+      return;
+    }
+
+    for (const [key, rType] of Object.entries(AVAIL_KEY_MAP)) {
+      const cnt = minAvail[rType];
+      showBadge(key, cnt === 0 ? 'full' : 'avail', cnt);
+      stepCfg['roomCounts.' + key].max = cnt;
+      if (S.roomCounts[key] > cnt) {
+        S.roomCounts[key] = cnt;
+        el('roomCounts_' + key + 'Val').textContent = cnt;
+      }
+    }
+    calculate();
+  }
+
+  el('checkInDateInput').addEventListener('change', e => {
+    availDate = e.target.value || null;
+    queryAvailability();
+  });
 </script>
 </body>
 </html>
