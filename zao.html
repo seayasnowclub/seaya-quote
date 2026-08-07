@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>藏王包套報價試算 — Seaya Snow Club</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #faf3e6;
+      --surface: #fffaf3;
+      --border: #ecdfc8;
+      --accent: #f1703b;
+      --accent-soft: rgba(241,112,59,0.12);
+      --text: #5a4636;
+      --muted: #a4907b;
+      --success: #6f8c5f;
+      --success-soft: rgba(111,140,95,0.12);
+      --warn: #d98a3d;
+      --warn-soft: rgba(217,138,61,0.12);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, "Hiragino Sans", "PingFang TC", sans-serif;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      padding: 40px 16px 80px;
+    }
+
+    .container { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
+
+    header { padding: 8px 0 20px; }
+    .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
+    header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+    header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+    /* 目的地切換 */
+    .dest-nav {
+      display: flex; gap: 8px; margin-top: 14px;
+    }
+    .dest-btn {
+      padding: 8px 20px; border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--bg); color: var(--muted);
+      font-size: 14px; font-weight: 600; font-family: inherit;
+      cursor: pointer; text-decoration: none;
+      transition: all 0.15s;
+    }
+    .dest-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .dest-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .gallery-scroll {
+      display: flex; gap: 10px; overflow-x: auto;
+      margin: 0 -20px; padding: 0 20px 8px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .gallery-scroll::-webkit-scrollbar { height: 5px; }
+    .gallery-scroll::-webkit-scrollbar-track { background: transparent; }
+    .gallery-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .gallery-scroll img {
+      flex: 0 0 auto; width: 200px; height: 140px; object-fit: cover;
+      border-radius: 12px; border: 1px solid var(--border);
+      scroll-snap-align: start;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px;
+    }
+
+    .card-title {
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+    }
+
+    .btn-group { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .btn-group:last-child { margin-bottom: 0; }
+    .group-label { width: 100%; font-size: 13px; color: var(--muted); margin-bottom: 2px; }
+
+    .opt-btn {
+      flex: 1; min-width: 80px;
+      padding: 10px 8px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--muted);
+      font-size: 14px; font-family: inherit;
+      cursor: pointer; text-align: center;
+      transition: all 0.15s; line-height: 1.4;
+    }
+    .opt-btn:hover { border-color: var(--accent); color: var(--text); }
+    .opt-btn.active { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
+
+    .stepper-row {
+      display: flex; align-items: center;
+      justify-content: space-between; margin-bottom: 14px;
+    }
+    .stepper-row:last-child { margin-bottom: 0; }
+    .stepper-row label { font-size: 14px; }
+
+    .stepper {
+      display: flex; align-items: center;
+      border: 1px solid var(--border); border-radius: 10px; overflow: hidden;
+    }
+    .step-btn {
+      width: 38px; height: 38px; border: none;
+      background: var(--bg); color: var(--muted);
+      font-size: 20px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: color 0.15s, background 0.15s;
+    }
+    .step-btn:hover { background: var(--border); color: var(--text); }
+    .step-val {
+      min-width: 42px; text-align: center;
+      font-size: 15px; font-weight: 600; color: var(--text);
+      background: var(--bg);
+      border-left: 1px solid var(--border); border-right: 1px solid var(--border);
+      height: 38px; display: flex; align-items: center; justify-content: center;
+    }
+    .unit { font-size: 14px; color: var(--muted); margin-left: 8px; }
+
+    .toggle-sub { font-size: 12px; color: var(--muted); margin-top: 3px; }
+
+    .note {
+      margin-top: 10px; font-size: 12px; color: var(--muted);
+      padding: 10px 14px; background: var(--bg); border-radius: 10px;
+      line-height: 1.6;
+    }
+    .note.accent { color: var(--accent); font-weight: 500; }
+
+    /* 課程分組 */
+    .course-group-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 10px; background: var(--bg);
+    }
+    .course-group-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
+    }
+    .group-index-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+    .group-person-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
+    .group-person-btns .opt-btn { min-width: 70px; flex: 1; }
+    .group-days-row { display: flex; align-items: center; justify-content: space-between; }
+    .group-days-label { font-size: 13px; color: var(--text); }
+    .group-days-ctrl { display: flex; align-items: center; }
+    .del-group-btn {
+      padding: 4px 10px; border-radius: 7px;
+      border: 1px solid var(--border); background: transparent;
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .del-group-btn:hover { border-color: #c0392b; color: #c0392b; }
+    .add-group-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 14px; border-radius: 10px;
+      border: 1.5px dashed var(--border); background: transparent;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; width: 100%;
+      justify-content: center; margin-top: 4px;
+    }
+    .add-group-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* 日期選擇 */
+    .date-input {
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--border); border-radius: 10px;
+      background: var(--bg); color: var(--text);
+      font-size: 15px; font-family: inherit;
+      margin-bottom: 14px; appearance: none;
+    }
+    .date-input:focus { outline: none; border-color: var(--accent); }
+
+    /* 夜晚明細 */
+    .night-breakdown {
+      margin-top: 12px; padding: 10px 14px;
+      background: var(--bg); border-radius: 10px;
+      font-size: 12px; color: var(--muted); line-height: 1.8;
+    }
+    .night-breakdown b { color: var(--text); }
+
+    /* 額外人數（家庭套房） */
+    .extra-row { display: none; }
+    .extra-row.show { display: flex; }
+
+    /* 結果卡 */
+    .summary-box {
+      margin-bottom: 14px; padding: 12px 14px;
+      background: var(--bg); border-radius: 10px;
+      font-size: 13px; color: var(--muted); line-height: 1.9;
+    }
+    .summary-box b { color: var(--text); font-weight: 600; }
+
+    .result-card {
+      border-radius: 14px; overflow: hidden;
+      border: 1px solid var(--border);
+    }
+    .result-header {
+      background: var(--surface);
+      padding: 16px 20px 12px;
+      font-size: 11px; font-weight: 600;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--muted);
+    }
+    .tier-row {
+      padding: 16px 20px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      gap: 12px;
+    }
+    .tier-row.super-row {
+      background: var(--success-soft);
+      border-color: var(--success);
+      border-width: 2px;
+    }
+    .tier-left { display: flex; flex-direction: column; gap: 3px; }
+    .tier-name { font-size: 15px; font-weight: 700; color: var(--text); }
+    .tier-date { font-size: 12px; color: var(--muted); }
+    .tier-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+    .tier-price { font-size: 20px; font-weight: 700; color: var(--text); }
+    .tier-row.super-row .tier-price { color: var(--success); font-size: 22px; }
+    .tier-row.super-row .tier-saving { color: var(--success); }
+    .tier-saving { font-size: 12px; font-weight: 600; color: var(--success); }
+    .tier-saving.mid { color: var(--warn); }
+    .tier-pp { font-size: 11px; color: var(--muted); }
+
+    .badge {
+      display: inline-block; font-size: 11px; font-weight: 600;
+      padding: 2px 7px; border-radius: 6px;
+      margin-left: 4px; vertical-align: middle;
+    }
+    .badge-green { background: var(--success-soft); color: var(--success); }
+    .badge-red { background: rgba(192,57,43,0.12); color: #c0392b; }
+
+    .suggestion-box {
+      background: var(--accent-soft); border: 1.5px solid var(--accent);
+      border-radius: 14px; padding: 16px 20px;
+      display: flex; gap: 12px; align-items: flex-start;
+    }
+    .suggestion-icon { font-size: 20px; flex-shrink: 0; }
+    .suggestion-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+    .suggestion-body { font-size: 13px; color: var(--text); line-height: 1.6; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
+    <h1>滑雪懶人包報價試算</h1>
+    <p>提供課程＋雪具＋住宿，一次搞定</p>
+    <p>Seaya Snow Club × SunValley Zao × Good Good 好好雪倉</p>
+    <nav class="dest-nav">
+      <a href="index.html" class="dest-btn">湯澤</a>
+      <a href="zao.html" class="dest-btn active">藏王</a>
+    </nav>
+  </header>
+
+  <!-- 課程 -->
+  <div class="card">
+    <div class="card-title">Seaya 單板滑雪課程</div>
+    <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數與天數）</div>
+    <div class="toggle-sub" style="margin-bottom:12px">全日課 9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
+    <div id="courseGroupsContainer"></div>
+    <button class="add-group-btn" id="addGroupBtn">＋ 新增一組</button>
+    <div class="note">課程建議：新手建議安排 2～3 天全日課比較紮實。人數越多，建議拉長天數。</div>
+    <div class="note accent">此套裝安排 2 天以上課程最划算！</div>
+  </div>
+
+  <!-- 住宿 SunValley Zao -->
+  <div class="card">
+    <div class="card-title">合作住宿 SunValley Zao</div>
+
+    <div class="group-label" style="margin-bottom:10px">房型</div>
+    <div class="btn-group" style="margin-bottom:18px">
+      <button class="opt-btn active" data-group="roomType" data-val="twin">
+        雙床小套房<br><small>基本 2 人・共 4 間</small>
+      </button>
+      <button class="opt-btn" data-group="roomType" data-val="family">
+        雙床家庭套房<br><small>基本 2 人可加人・共 4 間</small>
+      </button>
+    </div>
+
+    <div class="stepper-row">
+      <label>間數</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
+          <div class="step-val" id="roomCountVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="roomCount">+</button>
+        </div>
+        <span class="unit">間</span>
+      </div>
+    </div>
+
+    <div class="stepper-row extra-row" id="extraPersonRow">
+      <div>
+        <label>加人數（超過 2 人）</label>
+        <div class="toggle-sub">家庭套房每加 1 人／晚，平日 ＋NT$20,000，假日 ＋NT$24,000</div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="extraPersons">−</button>
+          <div class="step-val" id="extraPersonsVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="extraPersons">+</button>
+        </div>
+        <span class="unit">人</span>
+      </div>
+    </div>
+
+    <div class="group-label" style="margin-bottom:6px">入住日期</div>
+    <input type="date" class="date-input" id="checkInDate"
+      min="2026-12-01" max="2027-03-31"
+      placeholder="選擇入住日期">
+
+    <div class="stepper-row">
+      <label>住宿天數</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomNights">−</button>
+          <div class="step-val" id="roomNightsVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="roomNights">+</button>
+        </div>
+        <span class="unit">晚</span>
+      </div>
+    </div>
+
+    <div id="nightBreakdown" class="night-breakdown" style="display:none"></div>
+
+    <div class="note">
+      平日：NT$32,000（小套房）／ NT$40,000（家庭套房）<br>
+      假日：NT$40,000（小套房）／ NT$48,000（家庭套房）<br>
+      黃底日期為假日，其餘平日。
+    </div>
+  </div>
+
+  <!-- 雪具加購 -->
+  <div class="card">
+    <div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px">雪具加購</div>
+    <div class="card-title" style="margin-bottom:16px">Good Good 好好雪倉</div>
+    <div style="margin-top:4px">
+      <div class="toggle-sub" style="margin-bottom:12px">內含：雪衣褲、雪板鞋、安全帽、雪鏡、手套、護臀＋護膝　／　早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
+      <div class="stepper-row">
+        <label>加購人數（不租填 0）</label>
+        <div style="display:flex;align-items:center">
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearPersons">−</button>
+            <div class="step-val" id="gearPersonsVal">0</div>
+            <button class="step-btn" data-action="inc" data-target="gearPersons">+</button>
+          </div>
+          <span class="unit">人</span>
+        </div>
+      </div>
+      <div class="stepper-row" style="margin-bottom:0">
+        <label>租借天數</label>
+        <div style="display:flex;align-items:center">
+          <div class="stepper">
+            <button class="step-btn" data-action="dec" data-target="gearDays">−</button>
+            <div class="step-val" id="gearDaysVal">2</div>
+            <button class="step-btn" data-action="inc" data-target="gearDays">+</button>
+          </div>
+          <span class="unit">天</span>
+        </div>
+      </div>
+      <div class="note" style="margin-top:8px">若只需租借部分雪具，可使用 Seaya 折扣碼享 9 折，現場付日幣即可。<br>預約網站：<a href="https://reserve.seayasnowclub.com/" target="_blank" style="color:var(--accent)">reserve.seayasnowclub.com</a></div>
+      <div class="note">備註：無兒童裝備。身高 145cm 以下或鞋號 20cm 以下，好好雪倉無適合裝備，可洽客服提供其他合作單位折扣碼自行預訂。</div>
+    </div>
+  </div>
+
+  <!-- 費用明細 -->
+  <div class="result-card">
+    <div class="result-header">費用明細</div>
+    <div class="summary-box">
+      <div id="sumCourseGroups">課程：—</div>
+      <div id="sumRoomSummary">住宿：—</div>
+      <div>雪具：<b id="sumGear">未加購</b></div>
+    </div>
+
+    <div class="tier-row super-row" id="earlyTierRow">
+      <div class="tier-left">
+        <div class="tier-name" id="earlyTierName">早鳥 <span class="badge badge-green">最優惠</span></div>
+        <div class="tier-date">7/1–9/30 預訂</div>
+      </div>
+      <div class="tier-right">
+        <div class="tier-price" id="earlyTotal">—</div>
+        <div class="tier-saving mid" id="earlySaving"></div>
+        <div class="tier-pp" id="earlyPP"></div>
+      </div>
+    </div>
+
+    <div class="tier-row">
+      <div class="tier-left">
+        <div class="tier-name" style="color:var(--muted)">原價</div>
+        <div class="tier-date">9/30 後</div>
+      </div>
+      <div class="tier-right">
+        <div class="tier-price" style="color:var(--muted);font-size:16px" id="regularTotal">—</div>
+        <div class="tier-pp" id="regularPP"></div>
+      </div>
+    </div>
+
+    <div id="depositRow" style="display:none;padding:14px 20px;background:var(--bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:2">
+      以早鳥價計算：<br>
+      <span style="color:var(--text)">30% 訂金</span>　<b id="depositAmt" style="color:var(--accent)">—</b><br>
+      <span style="color:var(--text)">70% 尾款</span>　<b id="balanceAmt" style="color:var(--text)">—</b>
+    </div>
+  </div>
+
+  <div id="suggestionBox" class="suggestion-box" style="display:none">
+    <div class="suggestion-icon">💡</div>
+    <div>
+      <div class="suggestion-title">多上一天更划算</div>
+      <div class="suggestion-body" id="suggestionText"></div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:10px">主辦單位保留一切修改之權利，試算表供參考，確認預訂後將再次審核才收取訂金。若有其他客製化需求，請洽客服人工報價。</div>
+
+  <!-- 取消退款規定 -->
+  <div class="result-card" style="margin-top:16px">
+    <div class="result-header">取消退款規定</div>
+    <div style="padding:0 20px 16px; font-size:13px; line-height:1.8; color:var(--text)">
+      <div style="background:#fff8f0;border-left:3px solid var(--accent);border-radius:6px;padding:10px 14px;margin-bottom:12px;line-height:1.9">
+        <span style="color:var(--accent);font-weight:700">30% 訂金</span>於預約時收取以保留名額<br>
+        <span style="color:var(--accent);font-weight:700">70% 尾款</span>於開課前一個月結清，現場不收費
+      </div>
+      <strong>更改日期</strong><br>
+      純課程開課 30 天前可免費更改日期，需與客服協調調整，限當季雪季。<br><br>
+      <strong>純課程退款</strong>
+      <table style="width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:13px">
+        <thead>
+          <tr style="background:var(--muted);color:var(--text)">
+            <th style="padding:7px 10px;text-align:left;font-weight:600">取消時間</th>
+            <th style="padding:7px 10px;text-align:center;font-weight:600">退款比例</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px">30 天以前</td>
+            <td style="padding:7px 10px;text-align:center;font-weight:600">全額退款</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px">15–29 天前</td>
+            <td style="padding:7px 10px;text-align:center">50%</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px">7–14 天前</td>
+            <td style="padding:7px 10px;text-align:center">30%</td>
+          </tr>
+          <tr style="border-bottom:1px solid var(--border)">
+            <td style="padding:7px 10px">1–6 天前</td>
+            <td style="padding:7px 10px;text-align:center">10%</td>
+          </tr>
+          <tr>
+            <td style="padding:7px 10px;color:var(--muted)">當天取消</td>
+            <td style="padding:7px 10px;text-align:center;color:var(--muted)">不退費</td>
+          </tr>
+        </tbody>
+      </table>
+      <strong>含住宿／雪具包套退款</strong><br>
+      開課前 61 天以前取消：退回已收款項 60%<br>
+      開課前 60 至 31 天取消：退回已收款項 40%<br>
+      開課前 30 天至當日：不接受取消（可轉讓給友人）<br><br>
+      所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。
+    </div>
+  </div>
+
+  <!-- 前往下單 -->
+  <div style="margin-top:24px; text-align:center; padding-bottom:8px">
+    <button id="lineOrderBtn" onclick="openLineOrder()" style="
+      display:inline-flex; align-items:center; gap:10px;
+      background:#06C755; color:#fff;
+      border:none; border-radius:14px;
+      padding:16px 32px; font-size:17px; font-weight:700;
+      cursor:pointer; width:100%; max-width:400px;
+      justify-content:center; letter-spacing:0.5px;
+      box-shadow:0 4px 16px rgba(6,199,85,0.25);
+    ">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+        <path d="M12 2C6.48 2 2 5.92 2 10.76c0 3.1 1.74 5.84 4.37 7.53L5.5 22l4.13-2.16c.77.21 1.57.32 2.37.32 5.52 0 10-3.92 10-8.76S17.52 2 12 2z"/>
+      </svg>
+      前往 LINE 諮詢下單
+    </button>
+    <div style="font-size:12px; color:var(--muted); margin-top:8px">點擊後將自動帶入試算內容</div>
+  </div>
+
+</div>
+<script>
+  // ── 常數 ──────────────────────────────────────────────
+  const COURSE = {
+    full: {
+      earlyBird: [13900, 15100, 16300, 17500],
+      regular:   [14900, 16100, 17500, 18500]
+    }
+  };
+
+  const ROOM = {
+    twin:   { weekday: 32000, holiday: 40000, name: '雙床小套房' },
+    family: { weekday: 40000, holiday: 48000, name: '雙床家庭套房' }
+  };
+  const EXTRA_PERSON = { weekday: 20000, holiday: 24000 };
+  const GEAR_PREPAY  = 2350;
+  const GEAR_REGULAR = 2600;
+
+  const HOLIDAYS = new Set([
+    '2026-12-04','2026-12-05','2026-12-11','2026-12-12',
+    '2026-12-18','2026-12-19','2026-12-24','2026-12-25',
+    '2026-12-26','2026-12-27','2026-12-28','2026-12-29',
+    '2026-12-30','2026-12-31',
+    '2027-01-01','2027-01-02','2027-01-03',
+    '2027-01-08','2027-01-09','2027-01-10',
+    '2027-01-15','2027-01-16',
+    '2027-01-22','2027-01-23',
+    '2027-01-29','2027-01-30',
+    '2027-02-03','2027-02-04','2027-02-05','2027-02-06','2027-02-07',
+    '2027-02-08','2027-02-09','2027-02-10','2027-02-11','2027-02-12','2027-02-13',
+    '2027-02-19','2027-02-20','2027-02-21','2027-02-22',
+    '2027-02-26','2027-02-27','2027-02-28',
+    '2027-03-05','2027-03-06',
+    '2027-03-12','2027-03-13',
+    '2027-03-19','2027-03-20','2027-03-21',
+    '2027-03-26','2027-03-27'
+  ]);
+
+  const PERSONS_LABEL = ['一對一', '一對二', '一對三', '一對四'];
+
+  // ── 狀態 ──────────────────────────────────────────────
+  const S = {
+    courseGroups: [{ persons: 1, fullDays: 0 }],
+    roomType: 'twin',
+    roomCount: 0,
+    extraPersons: 0,
+    checkIn: '',
+    roomNights: 0,
+    gearPersons: 0,
+    gearDays: 2
+  };
+
+  const stepCfg = {
+    roomCount:    { min: 0, max: 4  },
+    extraPersons: { min: 0, max: 6  },
+    roomNights:   { min: 0, max: 14 },
+    gearPersons:  { min: 0, max: 8  },
+    gearDays:     { min: 1, max: 14 }
+  };
+
+  // ── 工具函式 ───────────────────────────────────────────
+  function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
+  function el(id) { return document.getElementById(id); }
+
+  function dateKey(checkInStr, offset) {
+    const [y, m, d] = checkInStr.split('-').map(Number);
+    const date = new Date(y, m - 1, d + offset);
+    return `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
+  }
+
+  function totalPersons() {
+    return S.courseGroups.reduce((s, g) => s + g.persons, 0);
+  }
+
+  // ── 住宿費計算 ─────────────────────────────────────────
+  function calcRoomCost() {
+    if (!S.checkIn || S.roomNights === 0 || S.roomCount === 0) return 0;
+    const room = ROOM[S.roomType];
+    let total = 0;
+    for (let i = 0; i < S.roomNights; i++) {
+      const key = dateKey(S.checkIn, i);
+      const isHol = HOLIDAYS.has(key);
+      const roomRate = isHol ? room.holiday : room.weekday;
+      const extraRate = (S.roomType === 'family' && S.extraPersons > 0)
+        ? S.extraPersons * (isHol ? EXTRA_PERSON.holiday : EXTRA_PERSON.weekday) : 0;
+      total += (roomRate + extraRate) * S.roomCount;
+    }
+    return total;
+  }
+
+  function getNightStats() {
+    if (!S.checkIn || S.roomNights === 0) return null;
+    let weekday = 0, holiday = 0;
+    for (let i = 0; i < S.roomNights; i++) {
+      if (HOLIDAYS.has(dateKey(S.checkIn, i))) holiday++;
+      else weekday++;
+    }
+    return { weekday, holiday };
+  }
+
+  // ── 課程費計算 ─────────────────────────────────────────
+  function calcCourseCost(tier) {
+    return S.courseGroups.reduce((s, g) => s + COURSE.full[tier][g.persons - 1] * g.fullDays, 0);
+  }
+
+  function calcTotal(courseTier, gearPrice) {
+    return calcCourseCost(courseTier) + calcRoomCost() + gearPrice * S.gearPersons * S.gearDays;
+  }
+
+  // ── 渲染課程分組 ───────────────────────────────────────
+  function renderCourseGroups() {
+    const container = el('courseGroupsContainer');
+    container.innerHTML = '';
+    S.courseGroups.forEach((group, i) => {
+      const card = document.createElement('div');
+      card.className = 'course-group-card';
+
+      const header = document.createElement('div');
+      header.className = 'course-group-header';
+      const label = document.createElement('span');
+      label.className = 'group-index-label';
+      label.textContent = S.courseGroups.length > 1 ? `第 ${i + 1} 組` : '課程人數';
+      header.appendChild(label);
+      if (S.courseGroups.length > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-group-btn';
+        delBtn.textContent = '刪除';
+        delBtn.addEventListener('click', () => { S.courseGroups.splice(i, 1); renderCourseGroups(); calculate(); });
+        header.appendChild(delBtn);
+      }
+      card.appendChild(header);
+
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'group-person-btns';
+      [1, 2, 3, 4].forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn' + (group.persons === p ? ' active' : '');
+        btn.textContent = PERSONS_LABEL[p - 1];
+        btn.addEventListener('click', () => { S.courseGroups[i].persons = p; renderCourseGroups(); calculate(); });
+        btnWrap.appendChild(btn);
+      });
+      card.appendChild(btnWrap);
+
+      const daysRow = document.createElement('div');
+      daysRow.className = 'group-days-row';
+      const daysLabel = document.createElement('span');
+      daysLabel.className = 'group-days-label';
+      daysLabel.textContent = '全日課';
+      daysRow.appendChild(daysLabel);
+      const daysCtrl = document.createElement('div');
+      daysCtrl.className = 'group-days-ctrl';
+      const stepper = document.createElement('div');
+      stepper.className = 'stepper';
+      const decBtn = document.createElement('button');
+      decBtn.className = 'step-btn'; decBtn.textContent = '−';
+      decBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.max(0, group.fullDays - 1); renderCourseGroups(); calculate(); });
+      const valDiv = document.createElement('div');
+      valDiv.className = 'step-val'; valDiv.textContent = group.fullDays;
+      const incBtn = document.createElement('button');
+      incBtn.className = 'step-btn'; incBtn.textContent = '+';
+      incBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.min(14, group.fullDays + 1); renderCourseGroups(); calculate(); });
+      stepper.appendChild(decBtn); stepper.appendChild(valDiv); stepper.appendChild(incBtn);
+      const unit = document.createElement('span'); unit.className = 'unit'; unit.textContent = '天';
+      daysCtrl.appendChild(stepper); daysCtrl.appendChild(unit);
+      daysRow.appendChild(daysCtrl);
+      card.appendChild(daysRow);
+      container.appendChild(card);
+    });
+  }
+
+  // ── 主計算函式 ─────────────────────────────────────────
+  function calculate() {
+    // 課程摘要
+    const courseLines = S.courseGroups.filter(g => g.fullDays > 0)
+      .map((g, i) => {
+        const prefix = S.courseGroups.filter(x => x.fullDays > 0).length > 1 ? `第${i+1}組 ` : '';
+        return `${prefix}${PERSONS_LABEL[g.persons-1]} × ${g.fullDays} 天`;
+      });
+    el('sumCourseGroups').innerHTML = courseLines.length
+      ? courseLines.map(l => `<div>課程：<b>${l}</b></div>`).join('')
+      : '<div>課程：<b>未選擇</b></div>';
+
+    // 住宿摘要
+    const stats = getNightStats();
+    const roomName = ROOM[S.roomType].name;
+    if (S.roomCount > 0 && S.roomNights > 0 && S.checkIn) {
+      let roomText = `住宿：<b>${roomName} × ${S.roomCount} 間 × ${S.roomNights} 晚</b>`;
+      if (S.roomType === 'family' && S.extraPersons > 0) {
+        roomText += `（加 ${S.extraPersons} 人）`;
+      }
+      el('sumRoomSummary').innerHTML = roomText;
+
+      // 夜晚明細
+      if (stats) {
+        const room = ROOM[S.roomType];
+        let breakdown = '';
+        if (stats.weekday > 0) breakdown += `平日 <b>${stats.weekday} 晚</b> × NT$${room.weekday.toLocaleString()}<br>`;
+        if (stats.holiday > 0) breakdown += `假日 <b>${stats.holiday} 晚</b> × NT$${room.holiday.toLocaleString()}<br>`;
+        if (S.roomType === 'family' && S.extraPersons > 0) {
+          if (stats.weekday > 0) breakdown += `加人 平日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.weekday.toLocaleString()} × ${stats.weekday}晚<br>`;
+          if (stats.holiday > 0) breakdown += `加人 假日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.holiday.toLocaleString()} × ${stats.holiday}晚<br>`;
+        }
+        el('nightBreakdown').innerHTML = breakdown;
+        el('nightBreakdown').style.display = 'block';
+      }
+    } else {
+      el('sumRoomSummary').innerHTML = '住宿：<b>未選擇</b>';
+      el('nightBreakdown').style.display = 'none';
+    }
+
+    // 雪具摘要
+    el('sumGear').textContent = S.gearPersons > 0 ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
+
+    // 報價
+    const earlyTotal   = calcTotal('earlyBird', GEAR_PREPAY);
+    const regularTotal = calcTotal('regular',   GEAR_REGULAR);
+    const earlySave    = regularTotal - earlyTotal;
+    const earlyPct     = regularTotal > 0 ? Math.round(earlySave / regularTotal * 100) : 0;
+
+    el('earlyTotal').textContent   = earlyTotal   > 0 ? fmt(earlyTotal)   : '—';
+    el('regularTotal').textContent = regularTotal > 0 ? fmt(regularTotal) : '—';
+
+    el('earlySaving').textContent = earlySave > 0
+      ? `現省 NT$ ${earlySave.toLocaleString('zh-TW')}（${earlyPct}%）` : '';
+
+    const tp = S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0) || totalPersons();
+    const pp = n => tp > 0 && n > 0 ? `平均每人約 ${fmt(Math.round(n / tp))}` : '';
+    el('earlyPP').textContent   = pp(earlyTotal);
+    el('regularPP').textContent = pp(regularTotal);
+
+    // 訂金 / 尾款
+    if (earlyTotal > 0) {
+      const deposit = Math.round(earlyTotal * 0.3);
+      el('depositAmt').textContent  = fmt(deposit);
+      el('balanceAmt').textContent  = fmt(earlyTotal - deposit);
+      el('depositRow').style.display = 'block';
+    } else {
+      el('depositRow').style.display = 'none';
+    }
+
+    // 課程建議
+    const suggBox = el('suggestionBox');
+    const single = S.courseGroups.filter(g => g.fullDays === 1);
+    if (single.length > 0) {
+      const extra = single.reduce((s, g) => s + COURSE.full.earlyBird[g.persons-1], 0);
+      const tp2   = single.reduce((s, g) => s + g.persons, 0);
+      const ppText = tp2 > 1 ? `，每人平均多 NT$ ${Math.round(extra/tp2).toLocaleString('zh-TW')}` : '';
+      el('suggestionText').textContent = `加到 2 天全日課，整組只多 NT$ ${extra.toLocaleString('zh-TW')}${ppText}，滑雪時間直接多 6 小時——新手最推這樣安排。`;
+      suggBox.style.display = 'flex';
+    } else {
+      suggBox.style.display = 'none';
+    }
+  }
+
+  // ── LINE 訊息 ──────────────────────────────────────────
+  function buildQuoteSummary() {
+    const lines = ['【Seaya Snow Club 藏王包套試算】', ''];
+    const activeGroups = S.courseGroups.filter(g => g.fullDays > 0);
+    if (activeGroups.length === 1) {
+      lines.push(`課程：${PERSONS_LABEL[activeGroups[0].persons-1]} × ${activeGroups[0].fullDays} 天全日課`);
+    } else {
+      activeGroups.forEach((g, i) => lines.push(`課程第${i+1}組：${PERSONS_LABEL[g.persons-1]} × ${g.fullDays} 天全日課`));
+    }
+    if (S.roomCount > 0 && S.roomNights > 0 && S.checkIn) {
+      let roomLine = `住宿：${ROOM[S.roomType].name} × ${S.roomCount} 間 × ${S.roomNights} 晚`;
+      if (S.roomType === 'family' && S.extraPersons > 0) roomLine += `（加 ${S.extraPersons} 人）`;
+      lines.push(roomLine);
+    }
+    if (S.gearPersons > 0) lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
+
+    const earlyTotal = calcTotal('earlyBird', GEAR_PREPAY);
+    const tp = S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0) || totalPersons();
+    lines.push('');
+    if (earlyTotal > 0) {
+      lines.push(`早鳥總價：${fmt(earlyTotal)}`);
+      if (tp > 1) lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / tp))}）`);
+    } else {
+      lines.push('（尚未選擇項目）');
+    }
+    lines.push('', '我想預約');
+    return lines.join('\n');
+  }
+
+  function openLineOrder() {
+    const url = 'https://line.me/R/oaMessage/@seaya.tw/?text=' + encodeURIComponent(buildQuoteSummary());
+    window.open(url, '_blank');
+  }
+
+  // ── 事件綁定 ───────────────────────────────────────────
+  el('addGroupBtn').addEventListener('click', () => {
+    S.courseGroups.push({ persons: 1, fullDays: 0 });
+    renderCourseGroups(); calculate();
+  });
+
+  // 房型切換
+  document.querySelectorAll('.opt-btn[data-group="roomType"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.opt-btn[data-group="roomType"]').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      S.roomType = btn.dataset.val;
+      el('extraPersonRow').classList.toggle('show', S.roomType === 'family');
+      calculate();
+    });
+  });
+
+  // 日期選擇
+  el('checkInDate').addEventListener('change', e => {
+    S.checkIn = e.target.value;
+    if (S.checkIn && S.roomNights === 0) {
+      S.roomNights = 1;
+      el('roomNightsVal').textContent = 1;
+    }
+    calculate();
+  });
+
+  // 步進器
+  document.querySelectorAll('.step-btn[data-target]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const t = btn.dataset.target;
+      const cfg = stepCfg[t];
+      if (!cfg) return;
+      const cur = S[t];
+      const val = btn.dataset.action === 'inc' ? Math.min(cur+1, cfg.max) : Math.max(cur-1, cfg.min);
+      S[t] = val;
+      el(t + 'Val').textContent = val;
+      if (t === 'roomCount' && val > 0 && S.roomNights === 0) {
+        S.roomNights = 1;
+        el('roomNightsVal').textContent = 1;
+      }
+      calculate();
+    });
+  });
+
+  renderCourseGroups();
+  calculate();
+</script>
+</body>
+</html>
