@@ -200,11 +200,10 @@
       border: 1px solid var(--border);
     }
     .result-header {
-      background: var(--surface);
+      background: var(--border); color: var(--text); font-weight: 700;
       padding: 16px 20px 12px;
-      font-size: 11px; font-weight: 600;
+      font-size: 11px;
       letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--muted);
     }
     .tier-row {
       padding: 16px 20px;
@@ -310,7 +309,7 @@
 
   <header>
     <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
-    <h1>滑雪懶人包報價試算</h1>
+    <h1>單板滑雪懶人包報價試算</h1>
     <p>提供課程＋雪具＋住宿，一次搞定</p>
     <p>Seaya Snow Club × SunValley Zao × Good Good 好好雪倉</p>
     <p style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.7">若住宿已滿，也可自行尋找上之台纜車附近的住宿，方便上課和租借雪具。</p>
@@ -318,6 +317,7 @@
       <a href="index.html" class="dest-btn">湯澤</a>
       <a href="zao.html" class="dest-btn active">藏王</a>
     </nav>
+    <img src="images/zao_hero.jpg" alt="藏王雪景" style="width:100%;height:220px;object-fit:cover;object-position:center 80%;border-radius:14px;margin-top:14px;display:block">
   </header>
 
   <!-- 課程 -->
@@ -337,25 +337,48 @@
 
     <div class="gallery-scroll" id="roomGallery"></div>
 
-    <div class="group-label" style="margin-bottom:10px;margin-top:16px">房型</div>
-    <div class="btn-group" style="margin-bottom:18px">
-      <button class="opt-btn active" data-group="roomType" data-val="twin">
-        雙床小套房<br><small>基本 2 人・共 4 間</small>
-      </button>
-      <button class="opt-btn" data-group="roomType" data-val="family">
-        雙床家庭套房<br><small>基本 2 人可加人・共 4 間</small>
-      </button>
-    </div>
+    <div class="group-label" style="margin-bottom:10px;margin-top:16px">房型<span style="font-weight:400;font-size:11px;color:var(--muted);margin-left:6px;letter-spacing:0">（均為套房，並附有浴缸）</span></div>
 
-    <div class="stepper-row">
-      <label>間數</label>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
-          <div class="step-val" id="roomCountVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="roomCount">+</button>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+      <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:stretch">
+          <img src="images/zao_twin_bed1.jpg" alt="雙床小套房" style="width:120px;object-fit:cover;flex-shrink:0">
+          <div style="padding:14px 16px;flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">雙床小套房</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px">基本 2 人・共 4 間</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--muted)">間數</span>
+              <div style="display:flex;align-items:center">
+                <div class="stepper">
+                  <button class="step-btn" data-action="dec" data-target="twinCount">−</button>
+                  <div class="step-val" id="twinCountVal">0</div>
+                  <button class="step-btn" data-action="inc" data-target="twinCount">+</button>
+                </div>
+                <span class="unit">間</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <span class="unit">間</span>
+      </div>
+      <div style="border:1px solid var(--border);border-radius:12px;overflow:hidden">
+        <div style="display:flex;align-items:stretch">
+          <img src="images/zao_family_bed.jpg" alt="雙床家庭套房" style="width:120px;object-fit:cover;flex-shrink:0">
+          <div style="padding:14px 16px;flex:1">
+            <div style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:2px">雙床家庭套房</div>
+            <div style="font-size:12px;color:var(--muted);margin-bottom:10px">基本 2 人可加人・共 4 間</div>
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <span style="font-size:13px;color:var(--muted)">間數</span>
+              <div style="display:flex;align-items:center">
+                <div class="stepper">
+                  <button class="step-btn" data-action="dec" data-target="familyCount">−</button>
+                  <div class="step-val" id="familyCountVal">0</div>
+                  <button class="step-btn" data-action="inc" data-target="familyCount">+</button>
+                </div>
+                <span class="unit">間</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -413,7 +436,14 @@
   <div class="card">
     <div style="font-size:16px;font-weight:700;color:var(--accent);margin-bottom:4px">雪具加購</div>
     <div class="card-title" style="margin-bottom:16px">Good Good 好好雪倉</div>
-    <div style="margin-top:4px">
+    <div class="gallery-scroll">
+      <img src="images/gear_group1.jpg" alt="滑雪營隊">
+      <img src="images/gear_group2.jpg" alt="雪板合照">
+      <img src="images/gear_boots.jpg" alt="雪具店鞋架">
+      <img src="images/gear_boards.jpg" alt="雪板">
+      <img src="images/gear_gloves.jpg" alt="手套">
+    </div>
+    <div style="margin-top:16px">
       <div class="toggle-sub" style="margin-bottom:12px">內含：雪衣褲、雪板鞋、安全帽、雪鏡、手套、護臀＋護膝　／　早鳥 2,350 ／ 原價 2,600（每天/每人）</div>
       <div class="stepper-row">
         <label>加購人數（不租填 0）</label>
@@ -437,7 +467,7 @@
           <span class="unit">天</span>
         </div>
       </div>
-      <div class="note" style="margin-top:8px">若只需租借部分雪具，可使用 Seaya 折扣碼享 9 折，現場付日幣即可。<br>預約網站：<a href="https://reserve.seayasnowclub.com/?store=zao" target="_blank" style="color:var(--accent)">reserve.seayasnowclub.com/?store=zao</a></div>
+      <div class="note" style="margin-top:8px">若只需租借部分雪具，可使用 Seaya 折扣碼享 9 折，現場付日幣即可。租借品項或天數有差異時，也建議現場付日幣會比較方便。<br>預約網站：<a href="https://reserve.seayasnowclub.com/?store=zao" target="_blank" style="color:var(--accent)">reserve.seayasnowclub.com/?store=zao</a></div>
       <div class="note">備註：無兒童裝備。身高 145cm 以下或鞋號 20cm 以下，好好雪倉無適合裝備，可洽客服提供其他合作單位折扣碼自行預訂。</div>
     </div>
   </div>
@@ -617,8 +647,7 @@
   // ── 狀態 ──────────────────────────────────────────────
   const S = {
     courseGroups: [{ persons: 1, fullDays: 0 }],
-    roomType: 'twin',
-    roomCount: 0,
+    roomCounts: { twin: 0, family: 0 },
     extraPersons: 0,
     checkIn: '',
     roomNights: 0,
@@ -627,7 +656,8 @@
   };
 
   const stepCfg = {
-    roomCount:    { min: 0, max: 4  },
+    twinCount:    { min: 0, max: 4  },
+    familyCount:  { min: 0, max: 4  },
     extraPersons: { min: 0, max: 6  },
     roomNights:   { min: 0, max: 14 },
     gearPersons:  { min: 0, max: 8  },
@@ -671,7 +701,19 @@
   function renderGallery() {
     const container = el('roomGallery');
     container.innerHTML = '';
-    GALLERY[S.roomType].forEach(({ src, alt }) => {
+    const hasTwin = S.roomCounts.twin > 0;
+    const hasFamily = S.roomCounts.family > 0;
+    let photos;
+    if (hasTwin && !hasFamily) photos = GALLERY.twin;
+    else if (hasFamily && !hasTwin) photos = GALLERY.family;
+    else photos = [
+      { src: 'images/zao_twin_bed1.jpg', alt: '雙床小套房' },
+      { src: 'images/zao_twin_bed2.jpg', alt: '雙床小套房全景' },
+      { src: 'images/zao_family_bed.jpg', alt: '雙床家庭套房' },
+      { src: 'images/zao_family_room.jpg', alt: '家庭套房客廳' },
+      ...COMMON_PHOTOS,
+    ];
+    photos.forEach(({ src, alt }) => {
       const img = document.createElement('img');
       img.src = src; img.alt = alt;
       container.appendChild(img);
@@ -734,16 +776,25 @@
 
   // ── 住宿費計算 ─────────────────────────────────────────
   function calcRoomCost(roomTier) {
-    if (!S.checkIn || S.roomNights === 0 || S.roomCount === 0) return 0;
-    const rates = ROOM[S.roomType][roomTier];
+    if (!S.checkIn || S.roomNights === 0) return 0;
+    const twin = S.roomCounts.twin;
+    const family = S.roomCounts.family;
+    if (twin === 0 && family === 0) return 0;
     let total = 0;
     for (let i = 0; i < S.roomNights; i++) {
       const key = dateKey(S.checkIn, i);
       const isHol = HOLIDAYS.has(key);
-      const roomRate = isHol ? rates.holiday : rates.weekday;
-      const extraRate = (S.roomType === 'family' && S.extraPersons > 0)
-        ? S.extraPersons * (isHol ? EXTRA_PERSON.holiday : EXTRA_PERSON.weekday) : 0;
-      total += (roomRate + extraRate) * S.roomCount;
+      if (twin > 0) {
+        const r = ROOM.twin[roomTier];
+        total += (isHol ? r.holiday : r.weekday) * twin;
+      }
+      if (family > 0) {
+        const r = ROOM.family[roomTier];
+        const roomRate = isHol ? r.holiday : r.weekday;
+        const extraRate = S.extraPersons > 0
+          ? S.extraPersons * (isHol ? EXTRA_PERSON.holiday : EXTRA_PERSON.weekday) : 0;
+        total += (roomRate + extraRate) * family;
+      }
     }
     return total;
   }
@@ -842,23 +893,35 @@
 
     // 住宿摘要
     const stats = getNightStats();
-    const roomName = ROOM[S.roomType].name;
-    if (S.roomCount > 0 && S.roomNights > 0 && S.checkIn) {
-      let roomText = `住宿：<b>${roomName} × ${S.roomCount} 間 × ${S.roomNights} 晚</b>`;
-      if (S.roomType === 'family' && S.extraPersons > 0) {
-        roomText += `（加 ${S.extraPersons} 人）`;
+    const twin = S.roomCounts.twin;
+    const family = S.roomCounts.family;
+    const hasRoom = (twin > 0 || family > 0) && S.roomNights > 0 && S.checkIn;
+    if (hasRoom) {
+      const parts = [];
+      if (twin > 0) parts.push(`${ROOM.twin.name} × ${twin} 間`);
+      if (family > 0) {
+        let s = `${ROOM.family.name} × ${family} 間`;
+        if (S.extraPersons > 0) s += `（加 ${S.extraPersons} 人）`;
+        parts.push(s);
       }
-      el('sumRoomSummary').innerHTML = roomText;
+      el('sumRoomSummary').innerHTML = `住宿：<b>${parts.join('、')} × ${S.roomNights} 晚</b>`;
 
       // 夜晚明細
       if (stats) {
-        const room = ROOM[S.roomType];
         let breakdown = '';
-        if (stats.weekday > 0) breakdown += `平日 <b>${stats.weekday} 晚</b> × NT$${room.weekday.toLocaleString()}<br>`;
-        if (stats.holiday > 0) breakdown += `假日 <b>${stats.holiday} 晚</b> × NT$${room.holiday.toLocaleString()}<br>`;
-        if (S.roomType === 'family' && S.extraPersons > 0) {
-          if (stats.weekday > 0) breakdown += `加人 平日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.weekday.toLocaleString()} × ${stats.weekday}晚<br>`;
-          if (stats.holiday > 0) breakdown += `加人 假日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.holiday.toLocaleString()} × ${stats.holiday}晚<br>`;
+        if (twin > 0) {
+          const r = ROOM.twin.regular;
+          if (stats.weekday > 0) breakdown += `小套房 平日 <b>${stats.weekday} 晚</b> × ${twin} 間 × NT$${r.weekday.toLocaleString()}<br>`;
+          if (stats.holiday > 0) breakdown += `小套房 假日 <b>${stats.holiday} 晚</b> × ${twin} 間 × NT$${r.holiday.toLocaleString()}<br>`;
+        }
+        if (family > 0) {
+          const r = ROOM.family.regular;
+          if (stats.weekday > 0) breakdown += `家庭房 平日 <b>${stats.weekday} 晚</b> × ${family} 間 × NT$${r.weekday.toLocaleString()}<br>`;
+          if (stats.holiday > 0) breakdown += `家庭房 假日 <b>${stats.holiday} 晚</b> × ${family} 間 × NT$${r.holiday.toLocaleString()}<br>`;
+          if (S.extraPersons > 0) {
+            if (stats.weekday > 0) breakdown += `加人 平日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.weekday.toLocaleString()} × ${stats.weekday}晚<br>`;
+            if (stats.holiday > 0) breakdown += `加人 假日 ${S.extraPersons}人 × NT$${EXTRA_PERSON.holiday.toLocaleString()} × ${stats.holiday}晚<br>`;
+          }
         }
         el('nightBreakdown').innerHTML = breakdown;
         el('nightBreakdown').style.display = 'block';
@@ -921,10 +984,17 @@
     } else {
       activeGroups.forEach((g, i) => lines.push(`課程第${i+1}組：${PERSONS_LABEL[g.persons-1]} × ${g.fullDays} 天全日課`));
     }
-    if (S.roomCount > 0 && S.roomNights > 0 && S.checkIn) {
-      let roomLine = `住宿：${ROOM[S.roomType].name} × ${S.roomCount} 間 × ${S.roomNights} 晚`;
-      if (S.roomType === 'family' && S.extraPersons > 0) roomLine += `（加 ${S.extraPersons} 人）`;
-      lines.push(roomLine);
+    const _twin = S.roomCounts.twin;
+    const _family = S.roomCounts.family;
+    if ((_twin > 0 || _family > 0) && S.roomNights > 0 && S.checkIn) {
+      const parts = [];
+      if (_twin > 0) parts.push(`${ROOM.twin.name} × ${_twin} 間`);
+      if (_family > 0) {
+        let s = `${ROOM.family.name} × ${_family} 間`;
+        if (S.extraPersons > 0) s += `（加 ${S.extraPersons} 人）`;
+        parts.push(s);
+      }
+      lines.push(`住宿：${parts.join('、')} × ${S.roomNights} 晚`);
     }
     if (S.gearPersons > 0) lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
 
@@ -952,18 +1022,6 @@
     renderCourseGroups(); calculate();
   });
 
-  // 房型切換
-  document.querySelectorAll('.opt-btn[data-group="roomType"]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('.opt-btn[data-group="roomType"]').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      S.roomType = btn.dataset.val;
-      el('extraPersonRow').classList.toggle('show', S.roomType === 'family');
-      renderGallery();
-      calculate();
-    });
-  });
-
   // 日期選擇
   el('checkInDate').addEventListener('change', e => {
     S.checkIn = e.target.value;
@@ -980,11 +1038,22 @@
       const t = btn.dataset.target;
       const cfg = stepCfg[t];
       if (!cfg) return;
-      const cur = S[t];
-      const val = btn.dataset.action === 'inc' ? Math.min(cur+1, cfg.max) : Math.max(cur-1, cfg.min);
-      S[t] = val;
-      el(t + 'Val').textContent = val;
-      if (t === 'roomCount' && val > 0 && S.roomNights === 0) {
+      if (t === 'twinCount' || t === 'familyCount') {
+        const key = t === 'twinCount' ? 'twin' : 'family';
+        const cur = S.roomCounts[key];
+        const val = btn.dataset.action === 'inc' ? Math.min(cur+1, cfg.max) : Math.max(cur-1, cfg.min);
+        S.roomCounts[key] = val;
+        el(t + 'Val').textContent = val;
+        if (t === 'familyCount') el('extraPersonRow').classList.toggle('show', val > 0);
+        renderGallery();
+      } else {
+        const cur = S[t];
+        const val = btn.dataset.action === 'inc' ? Math.min(cur+1, cfg.max) : Math.max(cur-1, cfg.min);
+        S[t] = val;
+        el(t + 'Val').textContent = val;
+      }
+      const totalRooms = S.roomCounts.twin + S.roomCounts.family;
+      if (totalRooms > 0 && S.roomNights === 0) {
         S.roomNights = 1;
         el('roomNightsVal').textContent = 1;
       }
