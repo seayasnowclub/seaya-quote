@@ -307,37 +307,45 @@
       </div>
       <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
     </div>
-    <div class="btn-group" style="margin-top:16px">
-      <div class="group-label">房型（點圖選擇）</div>
-      <button class="opt-btn room-card active" data-group="roomType" data-val="rokka_6" style="min-width:110px">
-        <img src="images/room_6jo.jpg" alt="六疊房">
-        <div class="room-info">
-          <div class="name">六疊房</div>
-          <small>建議 2 人・上限 3 人・共 8 間</small>
-        </div>
-      </button>
-      <button class="opt-btn room-card" data-group="roomType" data-val="rokka_8" style="min-width:110px">
-        <img src="images/room_8jo.jpg" alt="八疊房">
-        <div class="room-info">
-          <div class="name">八疊房</div>
-          <small>建議 3 人・上限 4 人・共 1 間</small>
-        </div>
-      </button>
-      <button class="opt-btn room-card" data-group="roomType" data-val="rokka_wa" style="min-width:110px">
-        <img src="images/room_washitsu.jpg" alt="大和室" style="object-position: 70% 30%">
-        <div class="room-info">
-          <div class="name">大和室</div>
-          <small>建議 5 人・上限 6 人・共 1 間</small>
-        </div>
-      </button>
-    </div>
+    <div class="group-label" style="margin-top:16px;margin-bottom:12px">房型與間數</div>
     <div class="stepper-row">
-      <label>間數</label>
+      <div>
+        <label>六疊房</label>
+        <div class="toggle-sub">建議 2 人・上限 3 人・共 8 間</div>
+      </div>
       <div style="display:flex;align-items:center">
         <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCount">−</button>
-          <div class="step-val" id="roomCountVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="roomCount">+</button>
+          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_6">−</button>
+          <div class="step-val" id="roomCount_rokka_6Val">0</div>
+          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_6">+</button>
+        </div>
+        <span class="unit">間</span>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <div>
+        <label>八疊房</label>
+        <div class="toggle-sub">建議 3 人・上限 4 人・共 1 間</div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_8">−</button>
+          <div class="step-val" id="roomCount_rokka_8Val">0</div>
+          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_8">+</button>
+        </div>
+        <span class="unit">間</span>
+      </div>
+    </div>
+    <div class="stepper-row">
+      <div>
+        <label>大和室</label>
+        <div class="toggle-sub">建議 5 人・上限 6 人・共 1 間</div>
+      </div>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_wa">−</button>
+          <div class="step-val" id="roomCount_rokka_waVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_wa">+</button>
         </div>
         <span class="unit">間</span>
       </div>
@@ -416,7 +424,7 @@
 
     <div class="summary-box">
       <div id="sumCourseGroups">課程：—</div>
-      <div>住宿：<b id="sumRoomName">六疊房</b> × <b id="sumRoomCount">1</b> 間 × <b id="sumRoomNights">2</b> 晚<span id="sumExtraBeds"></span></div>
+      <div id="sumRoomGroups">住宿：—</div>
       <div>雪具：<b id="sumGear">未加購</b></div>
     </div>
 
@@ -563,12 +571,15 @@
 
   const S = {
     courseGroups: [{ persons: 1, fullDays: 0 }],
-    roomType: 'rokka_6', roomCount: 0, roomNights: 0, extraBeds: 0,
+    roomCounts: { rokka_6: 0, rokka_8: 0, rokka_wa: 0 },
+    roomNights: 0, extraBeds: 0,
     gearPersons: 0, gearDays: 2
   };
 
   const stepCfg = {
-    roomCount:   { min: 0, max: 8  },
+    'roomCounts.rokka_6': { min: 0, max: 8  },
+    'roomCounts.rokka_8': { min: 0, max: 1  },
+    'roomCounts.rokka_wa': { min: 0, max: 1 },
     roomNights:  { min: 0, max: 14 },
     extraBeds:   { min: 0, max: 8  },
     gearPersons: { min: 0, max: 4  },
@@ -578,8 +589,12 @@
   function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
   function el(id) { return document.getElementById(id); }
 
+  function totalRooms() {
+    return Object.values(S.roomCounts).reduce((s, c) => s + c, 0);
+  }
+
   function superGearOk() {
-    return S.roomNights >= 1 && S.courseGroups.some(g => g.fullDays >= 2);
+    return S.roomNights >= 1 && totalRooms() >= 1 && S.courseGroups.some(g => g.fullDays >= 2);
   }
 
   function totalPersons() {
@@ -588,7 +603,8 @@
 
   function calcTier(courseTier, roomTier, gearPrice) {
     const fullC = S.courseGroups.reduce((s, g) => s + COURSE.full[courseTier][g.persons - 1] * g.fullDays, 0);
-    const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
+    const roomC = Object.entries(S.roomCounts).reduce((s, [type, count]) =>
+      s + ROOM[roomTier][type] * count * S.roomNights, 0);
     const gearC = gearPrice * S.gearPersons * S.gearDays;
     const bedC  = 500 * S.extraBeds * S.roomNights;
     return fullC + roomC + gearC + bedC;
@@ -606,10 +622,13 @@
       ? courseLines.map(l => `<div>課程：<b>${l}</b></div>`).join('')
       : '<div>課程：<b>未選擇</b></div>';
 
-    el('sumRoomName').textContent = ROOM_NAME[S.roomType];
-    el('sumRoomCount').textContent = S.roomCount;
-    el('sumRoomNights').textContent = S.roomNights;
-    el('sumExtraBeds').textContent = S.extraBeds > 0 ? `・加床 ${S.extraBeds} 張` : '';
+    const roomLines = Object.entries(S.roomCounts)
+      .filter(([, c]) => c > 0)
+      .map(([type, c]) => `<b>${ROOM_NAME[type]} × ${c} 間</b>`);
+    const bedText = S.extraBeds > 0 ? `・加床 ${S.extraBeds} 張` : '';
+    el('sumRoomGroups').innerHTML = roomLines.length && S.roomNights > 0
+      ? `住宿：${roomLines.join('、')} × <b>${S.roomNights} 晚</b>${bedText}`
+      : '住宿：<b>未選擇</b>';
     el('sumGear').textContent = S.gearPersons > 0
       ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
 
@@ -764,32 +783,28 @@
     calculate();
   });
 
-  // 按鈕群組（roomType）
-  document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const group = btn.dataset.group;
-      document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const val = btn.dataset.val;
-      S[group] = val;
-      if (group === 'roomType') {
-        const max = ROOM_STOCK[val];
-        stepCfg.roomCount.max = max;
-        if (S.roomCount > max) { S.roomCount = max; el('roomCountVal').textContent = max; }
-      }
-      calculate();
-    });
-  });
-
-  // 步進器
-  document.querySelectorAll('.step-btn').forEach(btn => {
+  // 步進器（支援 roomCounts.xxx 巢狀路徑）
+  document.querySelectorAll('.step-btn[data-target]').forEach(btn => {
     btn.addEventListener('click', () => {
       const t = btn.dataset.target;
-      let val = btn.dataset.action === 'inc'
-        ? Math.min(S[t] + 1, stepCfg[t].max)
-        : Math.max(S[t] - 1, stepCfg[t].min);
-      S[t] = val;
-      el(t + 'Val').textContent = val;
+      const cfg = stepCfg[t];
+      if (!cfg) return;
+      if (t.startsWith('roomCounts.')) {
+        const key = t.split('.')[1];
+        const cur = S.roomCounts[key];
+        const val = btn.dataset.action === 'inc'
+          ? Math.min(cur + 1, cfg.max)
+          : Math.max(cur - 1, cfg.min);
+        S.roomCounts[key] = val;
+        el(t.replace('.', '_') + 'Val').textContent = val;
+      } else {
+        const cur = S[t];
+        const val = btn.dataset.action === 'inc'
+          ? Math.min(cur + 1, cfg.max)
+          : Math.max(cur - 1, cfg.min);
+        S[t] = val;
+        el(t + 'Val').textContent = val;
+      }
       calculate();
     });
   });
@@ -823,8 +838,11 @@
         });
       }
     }
-    if (S.roomCount > 0 && S.roomNights > 0) {
-      lines.push(`住宿：${ROOM_NAME_MAP[S.roomType]} × ${S.roomCount} 間 × ${S.roomNights} 晚`);
+    if (S.roomNights > 0 && totalRooms() > 0) {
+      const roomParts = Object.entries(S.roomCounts)
+        .filter(([, c]) => c > 0)
+        .map(([type, c]) => `${ROOM_NAME_MAP[type]} × ${c} 間`);
+      lines.push(`住宿：${roomParts.join('、')} × ${S.roomNights} 晚`);
     }
     if (S.gearPersons > 0) {
       lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
