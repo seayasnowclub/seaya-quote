@@ -222,6 +222,32 @@
     .badge-orange { background: var(--accent-soft); color: var(--accent); }
     .badge-red { background: rgba(192,57,43,0.12); color: #c0392b; }
     .badge-yellow { background: var(--warn-soft); color: var(--warn); }
+
+    .course-group-row {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 10px; flex-wrap: wrap;
+    }
+    .group-index-label {
+      font-size: 12px; color: var(--muted); min-width: 40px; flex-shrink: 0;
+    }
+    .group-person-btns { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+    .group-person-btns .opt-btn { min-width: 70px; flex: 1; }
+    .del-group-btn {
+      flex-shrink: 0; padding: 6px 10px; border-radius: 8px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--muted); font-size: 12px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s;
+    }
+    .del-group-btn:hover { border-color: #c0392b; color: #c0392b; }
+    .add-group-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 14px; border-radius: 10px;
+      border: 1.5px dashed var(--border); background: transparent;
+      color: var(--muted); font-size: 13px; cursor: pointer;
+      font-family: inherit; transition: all 0.15s; width: 100%;
+      justify-content: center; margin-top: 4px;
+    }
+    .add-group-btn:hover { border-color: var(--accent); color: var(--accent); }
   </style>
 </head>
 <body>
@@ -243,13 +269,9 @@
   <!-- 課程 -->
   <div class="card">
     <div class="card-title">Seaya 單板滑雪課程</div>
-    <div class="btn-group">
-      <div class="group-label">人數</div>
-      <button class="opt-btn active" data-group="persons" data-val="1">一對一</button>
-      <button class="opt-btn" data-group="persons" data-val="2">一對二</button>
-      <button class="opt-btn" data-group="persons" data-val="3">一對三</button>
-      <button class="opt-btn" data-group="persons" data-val="4">一對四</button>
-    </div>
+    <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數）</div>
+    <div id="courseGroupsContainer"></div>
+    <button class="add-group-btn" id="addGroupBtn">＋ 新增一組</button>
     <div class="stepper-row">
       <div>
         <label>全日課</label>
@@ -544,8 +566,10 @@
   // 下一季重新開賣超早鳥時，把這個改回 true 即可。
   const SHOW_SUPER_EARLY_BIRD = false;
 
+  const PERSONS_LABEL = ['一對一', '一對二', '一對三', '一對四'];
+
   const S = {
-    persons: 1,
+    courseGroups: [{ persons: 1 }],
     fullDays: 0,
     roomType: 'rokka_6', roomCount: 0, roomNights: 0, extraBeds: 0,
     gearPersons: 0, gearDays: 2
@@ -567,8 +591,12 @@
     return S.roomNights >= 1 && S.fullDays >= 2;
   }
 
+  function totalPersons() {
+    return S.courseGroups.reduce((s, g) => s + g.persons, 0);
+  }
+
   function calcTier(courseTier, roomTier, gearPrice) {
-    const fullC = COURSE.full[courseTier][S.persons - 1] * S.fullDays;
+    const fullC = S.courseGroups.reduce((s, g) => s + COURSE.full[courseTier][g.persons - 1], 0) * S.fullDays;
     const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
     const gearC = gearPrice * S.gearPersons * S.gearDays;
     const bedC  = 500 * S.extraBeds * S.roomNights;
@@ -610,8 +638,9 @@
     el('earlySaving').textContent = earlySave > 0
       ? `現省 NT$ ${earlySave.toLocaleString('zh-TW')}（${earlyPct}%）` : '';
 
-    // 平均每人費用（以課程人數計算，僅供參考）
-    const pp = n => `平均每人約 ${fmt(Math.round(n / S.persons))}`;
+    // 平均每人費用（以所有組加總人數計算，僅供參考）
+    const tp = totalPersons();
+    const pp = n => tp > 0 ? `平均每人約 ${fmt(Math.round(n / tp))}` : '';
     el('superPP').textContent   = pp(superTotal);
     el('earlyPP').textContent   = pp(earlyTotal);
     el('regularPP').textContent = pp(regularTotal);
@@ -619,9 +648,10 @@
     // 課程建議提示
     const suggBox = el('suggestionBox');
     if (S.fullDays === 1) {
-      const extraCost = COURSE.full.earlyBird[S.persons - 1];
-      const extraPP = Math.round(extraCost / S.persons);
-      const ppText = S.persons > 1 ? `，每人平均多 NT$ ${extraPP.toLocaleString('zh-TW')}` : '';
+      const extraCost = S.courseGroups.reduce((s, g) => s + COURSE.full.earlyBird[g.persons - 1], 0);
+      const tp2 = totalPersons();
+      const extraPP = Math.round(extraCost / tp2);
+      const ppText = tp2 > 1 ? `，每人平均多 NT$ ${extraPP.toLocaleString('zh-TW')}` : '';
       el('suggestionText').textContent =
         `加到 2 天全日課，整組只多 NT$ ${extraCost.toLocaleString('zh-TW')}${ppText}，滑雪時間直接多 6 小時——新手最推這樣安排。`;
       suggBox.style.display = 'flex';
@@ -636,14 +666,63 @@
       ? '全日課未達 2 天，雪具以原價 2,600/天計算（非超早鳥優惠價）' : '';
   }
 
-  // 按鈕群組
+  function renderCourseGroups() {
+    const container = el('courseGroupsContainer');
+    container.innerHTML = '';
+    S.courseGroups.forEach((group, i) => {
+      const row = document.createElement('div');
+      row.className = 'course-group-row';
+
+      const label = document.createElement('span');
+      label.className = 'group-index-label';
+      label.textContent = S.courseGroups.length > 1 ? `第${i + 1}組` : '';
+      row.appendChild(label);
+
+      const btnWrap = document.createElement('div');
+      btnWrap.className = 'group-person-btns';
+      [1, 2, 3, 4].forEach(p => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn' + (group.persons === p ? ' active' : '');
+        btn.textContent = PERSONS_LABEL[p - 1];
+        btn.addEventListener('click', () => {
+          S.courseGroups[i].persons = p;
+          renderCourseGroups();
+          calculate();
+        });
+        btnWrap.appendChild(btn);
+      });
+      row.appendChild(btnWrap);
+
+      if (S.courseGroups.length > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-group-btn';
+        delBtn.textContent = '刪除';
+        delBtn.addEventListener('click', () => {
+          S.courseGroups.splice(i, 1);
+          renderCourseGroups();
+          calculate();
+        });
+        row.appendChild(delBtn);
+      }
+
+      container.appendChild(row);
+    });
+  }
+
+  el('addGroupBtn').addEventListener('click', () => {
+    S.courseGroups.push({ persons: 1 });
+    renderCourseGroups();
+    calculate();
+  });
+
+  // 按鈕群組（roomType）
   document.querySelectorAll('.opt-btn[data-group]').forEach(btn => {
     btn.addEventListener('click', () => {
       const group = btn.dataset.group;
       document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       const val = btn.dataset.val;
-      S[group] = (group === 'persons') ? parseInt(val) : val;
+      S[group] = val;
       if (group === 'roomType') {
         const max = ROOM_STOCK[val];
         stepCfg.roomCount.max = max;
@@ -680,14 +759,19 @@
 
   function buildQuoteSummary() {
     const ROOM_NAME_MAP = { rokka_6: '六疊房', rokka_8: '八疊房', rokka_wa: '大和室' };
-    const PERSONS_LABEL = ['一對一', '一對二', '一對三', '一對四'];
     const lines = [];
 
     lines.push('【Seaya Snow Club 包套試算】');
     lines.push('');
 
     if (S.fullDays > 0) {
-      lines.push(`課程：${PERSONS_LABEL[S.persons - 1]} × ${S.fullDays} 天全日課`);
+      if (S.courseGroups.length === 1) {
+        lines.push(`課程：${PERSONS_LABEL[S.courseGroups[0].persons - 1]} × ${S.fullDays} 天全日課`);
+      } else {
+        S.courseGroups.forEach((g, i) => {
+          lines.push(`課程第 ${i + 1} 組：${PERSONS_LABEL[g.persons - 1]} × ${S.fullDays} 天全日課`);
+        });
+      }
     }
     if (S.roomCount > 0 && S.roomNights > 0) {
       lines.push(`住宿：${ROOM_NAME_MAP[S.roomType]} × ${S.roomCount} 間 × ${S.roomNights} 晚`);
@@ -697,13 +781,13 @@
     }
 
     const earlyTotal = calcTier('earlyBird', 'earlyBird', GEAR_PREPAY);
-    const regularTotal = calcTier('regular', 'regular', GEAR_REGULAR);
+    const tp = totalPersons();
 
     lines.push('');
     if (earlyTotal > 0) {
       lines.push(`早鳥總價：${fmt(earlyTotal)}`);
-      if (S.persons > 1) {
-        lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / S.persons))}）`);
+      if (tp > 1) {
+        lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / tp))}）`);
       }
     } else {
       lines.push('（尚未選擇項目）');
@@ -721,6 +805,7 @@
     window.open(url, '_blank');
   }
 
+  renderCourseGroups();
   applyTierVisibility();
   calculate();
 </script>
