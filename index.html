@@ -223,18 +223,27 @@
     .badge-red { background: rgba(192,57,43,0.12); color: #c0392b; }
     .badge-yellow { background: var(--warn-soft); color: var(--warn); }
 
-    .course-group-row {
-      display: flex; align-items: center; gap: 8px;
-      margin-bottom: 10px; flex-wrap: wrap;
+    .course-group-card {
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 12px 14px; margin-bottom: 10px; background: var(--bg);
+    }
+    .course-group-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px;
     }
     .group-index-label {
-      font-size: 12px; color: var(--muted); min-width: 40px; flex-shrink: 0;
+      font-size: 12px; font-weight: 600; color: var(--muted);
     }
-    .group-person-btns { display: flex; gap: 6px; flex-wrap: wrap; flex: 1; }
+    .group-person-btns { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 10px; }
     .group-person-btns .opt-btn { min-width: 70px; flex: 1; }
+    .group-days-row {
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .group-days-label { font-size: 13px; color: var(--text); }
+    .group-days-ctrl { display: flex; align-items: center; }
     .del-group-btn {
-      flex-shrink: 0; padding: 6px 10px; border-radius: 8px;
-      border: 1px solid var(--border); background: var(--bg);
+      padding: 4px 10px; border-radius: 7px;
+      border: 1px solid var(--border); background: transparent;
       color: var(--muted); font-size: 12px; cursor: pointer;
       font-family: inherit; transition: all 0.15s;
     }
@@ -269,26 +278,10 @@
   <!-- 課程 -->
   <div class="card">
     <div class="card-title">Seaya 單板滑雪課程</div>
-    <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數）</div>
+    <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數與天數）</div>
+    <div class="toggle-sub" style="margin-bottom:12px">全日課 9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
     <div id="courseGroupsContainer"></div>
     <button class="add-group-btn" id="addGroupBtn">＋ 新增一組</button>
-    <div class="stepper-row">
-      <div>
-        <label>全日課</label>
-        <div class="toggle-sub">9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="fullDays">−</button>
-          <div class="step-val" id="fullDaysVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="fullDays">+</button>
-        </div>
-        <span class="unit">天</span>
-      </div>
-    </div>
-    <div class="stat-bar">
-      共 <span class="stat-val" id="sumDays">1</span> 天課程
-    </div>
     <div class="note">課程建議：新手建議安排 2～3 天全日課比較紮實。人數越多，建議拉長天數 —— 像一對二跟一對四，教練能分配在每個人身上的時間本來就不一樣！</div>
     <div class="note accent">此套裝安排 2 天以上課程最划算！</div>
     <div class="note accent" id="courseSuperNote">提醒：「超早鳥雪具優惠」需全日課達 2 天以上，且同時有訂住宿，才會自動套用。</div>
@@ -422,7 +415,7 @@
     <div class="result-header">費用明細</div>
 
     <div class="summary-box">
-      <div>課程：全日 <b id="sumCourseDays">1</b> 天</div>
+      <div id="sumCourseGroups">課程：—</div>
       <div>住宿：<b id="sumRoomName">六疊房</b> × <b id="sumRoomCount">1</b> 間 × <b id="sumRoomNights">2</b> 晚<span id="sumExtraBeds"></span></div>
       <div>雪具：<b id="sumGear">未加購</b></div>
     </div>
@@ -569,14 +562,12 @@
   const PERSONS_LABEL = ['一對一', '一對二', '一對三', '一對四'];
 
   const S = {
-    courseGroups: [{ persons: 1 }],
-    fullDays: 0,
+    courseGroups: [{ persons: 1, fullDays: 0 }],
     roomType: 'rokka_6', roomCount: 0, roomNights: 0, extraBeds: 0,
     gearPersons: 0, gearDays: 2
   };
 
   const stepCfg = {
-    fullDays:    { min: 0, max: 14 },
     roomCount:   { min: 0, max: 8  },
     roomNights:  { min: 0, max: 14 },
     extraBeds:   { min: 0, max: 8  },
@@ -588,7 +579,7 @@
   function el(id) { return document.getElementById(id); }
 
   function superGearOk() {
-    return S.roomNights >= 1 && S.fullDays >= 2;
+    return S.roomNights >= 1 && S.courseGroups.some(g => g.fullDays >= 2);
   }
 
   function totalPersons() {
@@ -596,7 +587,7 @@
   }
 
   function calcTier(courseTier, roomTier, gearPrice) {
-    const fullC = S.courseGroups.reduce((s, g) => s + COURSE.full[courseTier][g.persons - 1], 0) * S.fullDays;
+    const fullC = S.courseGroups.reduce((s, g) => s + COURSE.full[courseTier][g.persons - 1] * g.fullDays, 0);
     const roomC = ROOM[roomTier][S.roomType] * S.roomCount * S.roomNights;
     const gearC = gearPrice * S.gearPersons * S.gearDays;
     const bedC  = 500 * S.extraBeds * S.roomNights;
@@ -604,11 +595,17 @@
   }
 
   function calculate() {
-    // 課程天數統計
-    el('sumDays').textContent = S.fullDays;
+    // 費用明細總結 — 課程（多組）
+    const courseLines = S.courseGroups
+      .filter(g => g.fullDays > 0)
+      .map((g, i) => {
+        const prefix = S.courseGroups.filter(x => x.fullDays > 0).length > 1 ? `第${i + 1}組 ` : '';
+        return `${prefix}${PERSONS_LABEL[g.persons - 1]} × ${g.fullDays} 天`;
+      });
+    el('sumCourseGroups').innerHTML = courseLines.length
+      ? courseLines.map(l => `<div>課程：<b>${l}</b></div>`).join('')
+      : '<div>課程：<b>未選擇</b></div>';
 
-    // 費用明細總結
-    el('sumCourseDays').textContent = S.fullDays;
     el('sumRoomName').textContent = ROOM_NAME[S.roomType];
     el('sumRoomCount').textContent = S.roomCount;
     el('sumRoomNights').textContent = S.roomNights;
@@ -645,11 +642,12 @@
     el('earlyPP').textContent   = pp(earlyTotal);
     el('regularPP').textContent = pp(regularTotal);
 
-    // 課程建議提示
+    // 課程建議提示（有任一組只上 1 天時顯示）
     const suggBox = el('suggestionBox');
-    if (S.fullDays === 1) {
-      const extraCost = S.courseGroups.reduce((s, g) => s + COURSE.full.earlyBird[g.persons - 1], 0);
-      const tp2 = totalPersons();
+    const singleDayGroups = S.courseGroups.filter(g => g.fullDays === 1);
+    if (singleDayGroups.length > 0) {
+      const extraCost = singleDayGroups.reduce((s, g) => s + COURSE.full.earlyBird[g.persons - 1], 0);
+      const tp2 = singleDayGroups.reduce((s, g) => s + g.persons, 0);
       const extraPP = Math.round(extraCost / tp2);
       const ppText = tp2 > 1 ? `，每人平均多 NT$ ${extraPP.toLocaleString('zh-TW')}` : '';
       el('suggestionText').textContent =
@@ -670,14 +668,30 @@
     const container = el('courseGroupsContainer');
     container.innerHTML = '';
     S.courseGroups.forEach((group, i) => {
-      const row = document.createElement('div');
-      row.className = 'course-group-row';
+      const card = document.createElement('div');
+      card.className = 'course-group-card';
 
+      // Header row: 組別標籤 + 刪除
+      const header = document.createElement('div');
+      header.className = 'course-group-header';
       const label = document.createElement('span');
       label.className = 'group-index-label';
-      label.textContent = S.courseGroups.length > 1 ? `第${i + 1}組` : '';
-      row.appendChild(label);
+      label.textContent = S.courseGroups.length > 1 ? `第 ${i + 1} 組` : '課程人數';
+      header.appendChild(label);
+      if (S.courseGroups.length > 1) {
+        const delBtn = document.createElement('button');
+        delBtn.className = 'del-group-btn';
+        delBtn.textContent = '刪除';
+        delBtn.addEventListener('click', () => {
+          S.courseGroups.splice(i, 1);
+          renderCourseGroups();
+          calculate();
+        });
+        header.appendChild(delBtn);
+      }
+      card.appendChild(header);
 
+      // 人數按鈕
       const btnWrap = document.createElement('div');
       btnWrap.className = 'group-person-btns';
       [1, 2, 3, 4].forEach(p => {
@@ -691,21 +705,56 @@
         });
         btnWrap.appendChild(btn);
       });
-      row.appendChild(btnWrap);
+      card.appendChild(btnWrap);
 
-      if (S.courseGroups.length > 1) {
-        const delBtn = document.createElement('button');
-        delBtn.className = 'del-group-btn';
-        delBtn.textContent = '刪除';
-        delBtn.addEventListener('click', () => {
-          S.courseGroups.splice(i, 1);
-          renderCourseGroups();
-          calculate();
-        });
-        row.appendChild(delBtn);
-      }
+      // 全日課天數步進器
+      const daysRow = document.createElement('div');
+      daysRow.className = 'group-days-row';
+      const daysLabel = document.createElement('span');
+      daysLabel.className = 'group-days-label';
+      daysLabel.textContent = '全日課';
+      daysRow.appendChild(daysLabel);
 
-      container.appendChild(row);
+      const daysCtrl = document.createElement('div');
+      daysCtrl.className = 'group-days-ctrl';
+      const stepper = document.createElement('div');
+      stepper.className = 'stepper';
+
+      const decBtn = document.createElement('button');
+      decBtn.className = 'step-btn';
+      decBtn.textContent = '−';
+      decBtn.addEventListener('click', () => {
+        S.courseGroups[i].fullDays = Math.max(0, group.fullDays - 1);
+        renderCourseGroups();
+        calculate();
+      });
+
+      const valDiv = document.createElement('div');
+      valDiv.className = 'step-val';
+      valDiv.textContent = group.fullDays;
+
+      const incBtn = document.createElement('button');
+      incBtn.className = 'step-btn';
+      incBtn.textContent = '+';
+      incBtn.addEventListener('click', () => {
+        S.courseGroups[i].fullDays = Math.min(14, group.fullDays + 1);
+        renderCourseGroups();
+        calculate();
+      });
+
+      stepper.appendChild(decBtn);
+      stepper.appendChild(valDiv);
+      stepper.appendChild(incBtn);
+      daysCtrl.appendChild(stepper);
+
+      const unit = document.createElement('span');
+      unit.className = 'unit';
+      unit.textContent = '天';
+      daysCtrl.appendChild(unit);
+      daysRow.appendChild(daysCtrl);
+      card.appendChild(daysRow);
+
+      container.appendChild(card);
     });
   }
 
@@ -764,12 +813,13 @@
     lines.push('【Seaya Snow Club 包套試算】');
     lines.push('');
 
-    if (S.fullDays > 0) {
+    const activeGroups = S.courseGroups.filter(g => g.fullDays > 0);
+    if (activeGroups.length > 0) {
       if (S.courseGroups.length === 1) {
-        lines.push(`課程：${PERSONS_LABEL[S.courseGroups[0].persons - 1]} × ${S.fullDays} 天全日課`);
+        lines.push(`課程：${PERSONS_LABEL[activeGroups[0].persons - 1]} × ${activeGroups[0].fullDays} 天全日課`);
       } else {
-        S.courseGroups.forEach((g, i) => {
-          lines.push(`課程第 ${i + 1} 組：${PERSONS_LABEL[g.persons - 1]} × ${S.fullDays} 天全日課`);
+        activeGroups.forEach((g, i) => {
+          lines.push(`課程第 ${i + 1} 組：${PERSONS_LABEL[g.persons - 1]} × ${g.fullDays} 天全日課`);
         });
       }
     }
@@ -781,7 +831,7 @@
     }
 
     const earlyTotal = calcTier('earlyBird', 'earlyBird', GEAR_PREPAY);
-    const tp = totalPersons();
+    const tp = S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0) || totalPersons();
 
     lines.push('');
     if (earlyTotal > 0) {
