@@ -759,7 +759,7 @@
   }
 
   el('addGroupBtn').addEventListener('click', () => {
-    S.courseGroups.push({ persons: 1 });
+    S.courseGroups.push({ persons: 1, fullDays: 0 });
     renderCourseGroups();
     calculate();
   });
