@@ -246,6 +246,63 @@
     .suggestion-icon { font-size: 20px; flex-shrink: 0; }
     .suggestion-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
     .suggestion-body { font-size: 13px; color: var(--text); line-height: 1.6; }
+
+    /* 月曆 */
+    .cal-wrap { margin-top: 14px; }
+    .cal-scroll {
+      display: flex; gap: 14px; overflow-x: auto;
+      padding-bottom: 8px;
+      scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch;
+    }
+    .cal-scroll::-webkit-scrollbar { height: 4px; }
+    .cal-scroll::-webkit-scrollbar-track { background: transparent; }
+    .cal-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .cal-month { flex: 0 0 auto; scroll-snap-align: start; }
+    .cal-month-title {
+      font-size: 12px; font-weight: 700; color: var(--text);
+      margin-bottom: 7px; text-align: center; letter-spacing: 0.05em;
+    }
+    .cal-grid { display: grid; grid-template-columns: repeat(7, 28px); gap: 2px; }
+    .cal-day-hdr {
+      font-size: 10px; color: var(--muted);
+      text-align: center; padding: 3px 0; font-weight: 600;
+    }
+    .cal-day-hdr.sun { color: #c0392b; }
+    .cal-day-hdr.sat { color: #2980b9; }
+    .cal-day {
+      font-size: 11px; text-align: center; line-height: 26px;
+      border-radius: 6px; height: 26px;
+    }
+    .cal-day.hol {
+      background: var(--warn-soft); color: var(--warn);
+      font-weight: 700; border: 1px solid rgba(217,138,61,0.3);
+    }
+    .cal-day.sold {
+      background: rgba(0,0,0,0.05) !important;
+      color: #ccc !important; font-weight: 400 !important;
+      border: none !important; position: relative;
+      text-decoration: line-through;
+    }
+    .cal-day.sold::after {
+      content: '×'; position: absolute;
+      top: -4px; right: 1px;
+      font-size: 9px; color: #bbb; line-height: 1;
+    }
+    .cal-day.empty { }
+    .cal-legend {
+      display: flex; gap: 16px; margin-top: 10px;
+      font-size: 12px; color: var(--muted); align-items: center; flex-wrap: wrap;
+    }
+    .cal-legend-item { display: flex; align-items: center; gap: 5px; }
+    .cal-dot {
+      width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0;
+    }
+    .cal-price-info {
+      margin-top: 10px; padding: 10px 14px;
+      background: var(--bg); border-radius: 10px;
+      font-size: 12px; color: var(--muted); line-height: 2;
+    }
+    .cal-price-info b { color: var(--text); }
   </style>
 </head>
 <body>
@@ -256,6 +313,7 @@
     <h1>滑雪懶人包報價試算</h1>
     <p>提供課程＋雪具＋住宿，一次搞定</p>
     <p>Seaya Snow Club × SunValley Zao × Good Good 好好雪倉</p>
+    <p style="margin-top:8px;font-size:12px;color:var(--muted);line-height:1.7">若住宿已滿，也可自行尋找上之台纜車附近的住宿，方便上課和租借雪具。</p>
     <nav class="dest-nav">
       <a href="index.html" class="dest-btn">湯澤</a>
       <a href="zao.html" class="dest-btn active">藏王</a>
@@ -277,7 +335,9 @@
   <div class="card">
     <div class="card-title">合作住宿 SunValley Zao</div>
 
-    <div class="group-label" style="margin-bottom:10px">房型</div>
+    <div class="gallery-scroll" id="roomGallery"></div>
+
+    <div class="group-label" style="margin-bottom:10px;margin-top:16px">房型</div>
     <div class="btn-group" style="margin-bottom:18px">
       <button class="opt-btn active" data-group="roomType" data-val="twin">
         雙床小套房<br><small>基本 2 人・共 4 間</small>
@@ -302,7 +362,7 @@
     <div class="stepper-row extra-row" id="extraPersonRow">
       <div>
         <label>加人數（超過 2 人）</label>
-        <div class="toggle-sub">家庭套房每加 1 人／晚，平日 ＋NT$20,000，假日 ＋NT$24,000</div>
+        <div class="toggle-sub">家庭套房每加 1 人／晚，平日 ＋NT$5,000，假日 ＋NT$6,000</div>
       </div>
       <div style="display:flex;align-items:center">
         <div class="stepper">
@@ -333,10 +393,19 @@
 
     <div id="nightBreakdown" class="night-breakdown" style="display:none"></div>
 
-    <div class="note">
-      平日：NT$32,000（小套房）／ NT$40,000（家庭套房）<br>
-      假日：NT$40,000（小套房）／ NT$48,000（家庭套房）<br>
-      黃底日期為假日，其餘平日。
+    <div class="cal-wrap">
+      <div class="group-label" style="margin-bottom:10px">平假日日期對照</div>
+      <div class="cal-scroll" id="calScroll"></div>
+      <div class="cal-legend">
+        <div class="cal-legend-item">
+          <div class="cal-dot" style="background:var(--warn-soft);border:1px solid rgba(217,138,61,0.4)"></div>
+          <span>假日（價格較高）</span>
+        </div>
+        <div class="cal-legend-item">
+          <div class="cal-dot" style="background:var(--border)"></div>
+          <span>平日</span>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -368,7 +437,7 @@
           <span class="unit">天</span>
         </div>
       </div>
-      <div class="note" style="margin-top:8px">若只需租借部分雪具，可使用 Seaya 折扣碼享 9 折，現場付日幣即可。<br>預約網站：<a href="https://reserve.seayasnowclub.com/" target="_blank" style="color:var(--accent)">reserve.seayasnowclub.com</a></div>
+      <div class="note" style="margin-top:8px">若只需租借部分雪具，可使用 Seaya 折扣碼享 9 折，現場付日幣即可。<br>預約網站：<a href="https://reserve.seayasnowclub.com/?store=zao" target="_blank" style="color:var(--accent)">reserve.seayasnowclub.com/?store=zao</a></div>
       <div class="note">備註：無兒童裝備。身高 145cm 以下或鞋號 20cm 以下，好好雪倉無適合裝備，可洽客服提供其他合作單位折扣碼自行預訂。</div>
     </div>
   </div>
@@ -501,12 +570,27 @@
   };
 
   const ROOM = {
-    twin:   { weekday: 32000, holiday: 40000, name: '雙床小套房' },
-    family: { weekday: 40000, holiday: 48000, name: '雙床家庭套房' }
+    twin: {
+      earlyBird: { weekday: 7500, holiday: 9500 },
+      regular:   { weekday: 8000, holiday: 10000 },
+      name: '雙床小套房'
+    },
+    family: {
+      earlyBird: { weekday: 9500, holiday: 11500 },
+      regular:   { weekday: 10000, holiday: 12000 },
+      name: '雙床家庭套房'
+    }
   };
-  const EXTRA_PERSON = { weekday: 20000, holiday: 24000 };
+  const EXTRA_PERSON = { weekday: 5000, holiday: 6000 };
   const GEAR_PREPAY  = 2350;
   const GEAR_REGULAR = 2600;
+
+  const SOLDOUT = new Set([
+    '2026-12-01','2026-12-02','2026-12-03','2026-12-04','2026-12-05',
+    '2026-12-06','2026-12-07','2026-12-08','2026-12-09','2026-12-10',
+    '2026-12-11','2026-12-12','2026-12-13','2026-12-14',
+    '2027-01-16','2027-01-17','2027-01-18','2027-01-19','2027-01-20'
+  ]);
 
   const HOLIDAYS = new Set([
     '2026-12-04','2026-12-05','2026-12-11','2026-12-12',
@@ -564,15 +648,99 @@
     return S.courseGroups.reduce((s, g) => s + g.persons, 0);
   }
 
+  // ── 照片 gallery ──────────────────────────────────────
+  const COMMON_PHOTOS = [
+    { src: 'images/zao_exterior.png', alt: 'SunValley Zao 外觀' },
+    { src: 'images/zao_dining.jpg',   alt: 'SunValley Zao 餐廳' },
+  ];
+  const GALLERY = {
+    twin: [
+      { src: 'images/zao_twin_bed1.jpg', alt: '雙床小套房' },
+      { src: 'images/zao_twin_bed2.jpg', alt: '雙床小套房全景' },
+      { src: 'images/zao_twin_bath.jpg', alt: '雙床小套房浴室' },
+      ...COMMON_PHOTOS,
+    ],
+    family: [
+      { src: 'images/zao_family_bed.jpg',  alt: '雙床家庭套房' },
+      { src: 'images/zao_family_room.jpg', alt: '家庭套房客廳' },
+      { src: 'images/zao_family_bath.jpg', alt: '家庭套房浴室' },
+      ...COMMON_PHOTOS,
+    ],
+  };
+
+  function renderGallery() {
+    const container = el('roomGallery');
+    container.innerHTML = '';
+    GALLERY[S.roomType].forEach(({ src, alt }) => {
+      const img = document.createElement('img');
+      img.src = src; img.alt = alt;
+      container.appendChild(img);
+    });
+  }
+
+  // ── 月曆渲染 ───────────────────────────────────────────
+  function renderCalendar() {
+    const months = [
+      { year: 2026, month: 12 },
+      { year: 2027, month: 1 },
+      { year: 2027, month: 2 },
+      { year: 2027, month: 3 },
+    ];
+    const dayNames = ['日', '一', '二', '三', '四', '五', '六'];
+    const container = el('calScroll');
+    container.innerHTML = '';
+
+    months.forEach(({ year, month }) => {
+      const monthDiv = document.createElement('div');
+      monthDiv.className = 'cal-month';
+
+      const title = document.createElement('div');
+      title.className = 'cal-month-title';
+      title.textContent = `${year} 年 ${month} 月`;
+      monthDiv.appendChild(title);
+
+      const grid = document.createElement('div');
+      grid.className = 'cal-grid';
+
+      dayNames.forEach((d, i) => {
+        const h = document.createElement('div');
+        h.className = 'cal-day-hdr' + (i === 0 ? ' sun' : i === 6 ? ' sat' : '');
+        h.textContent = d;
+        grid.appendChild(h);
+      });
+
+      const firstDay = new Date(year, month - 1, 1).getDay();
+      const daysInMonth = new Date(year, month, 0).getDate();
+
+      for (let i = 0; i < firstDay; i++) {
+        const e = document.createElement('div');
+        e.className = 'cal-day empty';
+        grid.appendChild(e);
+      }
+
+      for (let d = 1; d <= daysInMonth; d++) {
+        const key = `${year}-${String(month).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+        const cell = document.createElement('div');
+        const isSold = SOLDOUT.has(key);
+        cell.className = 'cal-day' + (HOLIDAYS.has(key) && !isSold ? ' hol' : '') + (isSold ? ' sold' : '');
+        cell.textContent = d;
+        grid.appendChild(cell);
+      }
+
+      monthDiv.appendChild(grid);
+      container.appendChild(monthDiv);
+    });
+  }
+
   // ── 住宿費計算 ─────────────────────────────────────────
-  function calcRoomCost() {
+  function calcRoomCost(roomTier) {
     if (!S.checkIn || S.roomNights === 0 || S.roomCount === 0) return 0;
-    const room = ROOM[S.roomType];
+    const rates = ROOM[S.roomType][roomTier];
     let total = 0;
     for (let i = 0; i < S.roomNights; i++) {
       const key = dateKey(S.checkIn, i);
       const isHol = HOLIDAYS.has(key);
-      const roomRate = isHol ? room.holiday : room.weekday;
+      const roomRate = isHol ? rates.holiday : rates.weekday;
       const extraRate = (S.roomType === 'family' && S.extraPersons > 0)
         ? S.extraPersons * (isHol ? EXTRA_PERSON.holiday : EXTRA_PERSON.weekday) : 0;
       total += (roomRate + extraRate) * S.roomCount;
@@ -595,8 +763,8 @@
     return S.courseGroups.reduce((s, g) => s + COURSE.full[tier][g.persons - 1] * g.fullDays, 0);
   }
 
-  function calcTotal(courseTier, gearPrice) {
-    return calcCourseCost(courseTier) + calcRoomCost() + gearPrice * S.gearPersons * S.gearDays;
+  function calcTotal(courseTier, roomTier, gearPrice) {
+    return calcCourseCost(courseTier) + calcRoomCost(roomTier) + gearPrice * S.gearPersons * S.gearDays;
   }
 
   // ── 渲染課程分組 ───────────────────────────────────────
@@ -704,8 +872,8 @@
     el('sumGear').textContent = S.gearPersons > 0 ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
 
     // 報價
-    const earlyTotal   = calcTotal('earlyBird', GEAR_PREPAY);
-    const regularTotal = calcTotal('regular',   GEAR_REGULAR);
+    const earlyTotal   = calcTotal('earlyBird', 'earlyBird', GEAR_PREPAY);
+    const regularTotal = calcTotal('regular',   'regular',   GEAR_REGULAR);
     const earlySave    = regularTotal - earlyTotal;
     const earlyPct     = regularTotal > 0 ? Math.round(earlySave / regularTotal * 100) : 0;
 
@@ -791,6 +959,7 @@
       btn.classList.add('active');
       S.roomType = btn.dataset.val;
       el('extraPersonRow').classList.toggle('show', S.roomType === 'family');
+      renderGallery();
       calculate();
     });
   });
@@ -823,6 +992,8 @@
     });
   });
 
+  renderGallery();
+  renderCalendar();
   renderCourseGroups();
   calculate();
 </script>
