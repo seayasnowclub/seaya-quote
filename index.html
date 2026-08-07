@@ -839,6 +839,11 @@
           : Math.max(cur - 1, cfg.min);
         S[obj][key] = val;
         el(t.replace('.', '_') + 'Val').textContent = val;
+        // 選了房間但天數還是 0 → 自動帶入 1 晚
+        if (obj === 'roomCounts' && val > 0 && S.roomNights === 0) {
+          S.roomNights = 1;
+          el('roomNightsVal').textContent = 1;
+        }
       } else {
         const cur = S[t];
         const val = btn.dataset.action === 'inc'
