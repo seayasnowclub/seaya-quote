@@ -257,6 +257,9 @@
       justify-content: center; margin-top: 4px;
     }
     .add-group-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .bed-row { margin-left: 16px; margin-top: -6px; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+    .bed-row:last-of-type { border-bottom: none; }
+    .bed-label { font-size: 12px; color: var(--muted); }
   </style>
 </head>
 <body>
@@ -322,6 +325,17 @@
         <span class="unit">間</span>
       </div>
     </div>
+    <div class="stepper-row bed-row">
+      <label class="bed-label">加床（＋NT$500／張／晚）</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_6">−</button>
+          <div class="step-val" id="extraBeds_rokka_6Val">0</div>
+          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_6">+</button>
+        </div>
+        <span class="unit">張</span>
+      </div>
+    </div>
     <div class="stepper-row">
       <div>
         <label>八疊房</label>
@@ -334,6 +348,17 @@
           <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_8">+</button>
         </div>
         <span class="unit">間</span>
+      </div>
+    </div>
+    <div class="stepper-row bed-row">
+      <label class="bed-label">加床（＋NT$500／張／晚）</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_8">−</button>
+          <div class="step-val" id="extraBeds_rokka_8Val">0</div>
+          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_8">+</button>
+        </div>
+        <span class="unit">張</span>
       </div>
     </div>
     <div class="stepper-row">
@@ -350,6 +375,17 @@
         <span class="unit">間</span>
       </div>
     </div>
+    <div class="stepper-row bed-row">
+      <label class="bed-label">加床（＋NT$500／張／晚）</label>
+      <div style="display:flex;align-items:center">
+        <div class="stepper">
+          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_wa">−</button>
+          <div class="step-val" id="extraBeds_rokka_waVal">0</div>
+          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_wa">+</button>
+        </div>
+        <span class="unit">張</span>
+      </div>
+    </div>
     <div class="stepper-row">
       <label>住宿天數</label>
       <div style="display:flex;align-items:center">
@@ -361,18 +397,7 @@
         <span class="unit">晚</span>
       </div>
     </div>
-    <div class="stepper-row">
-      <label>加床數量（＋NT$500／張／晚）</label>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="extraBeds">−</button>
-          <div class="step-val" id="extraBedsVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="extraBeds">+</button>
-        </div>
-        <span class="unit">張</span>
-      </div>
-    </div>
-    <div class="note" style="margin-top:14px">各房型舒適入住人數：六疊房 2 人・八疊房 3 人・大和室 5 人。最多可加床 1 張（＋NT$500／晚），加床後上限：六疊房 3 人・八疊房 4 人・大和室 6 人。如有加床需求請洽客服確認。</div>
+    <div class="note" style="margin-top:14px">各房型舒適入住人數：六疊房 2 人・八疊房 3 人・大和室 5 人。加床後上限：六疊房 3 人・八疊房 4 人・大和室 6 人。如有加床需求請洽客服確認。</div>
   </div>
 
   <!-- 雪具加購 -->
@@ -572,16 +597,19 @@
   const S = {
     courseGroups: [{ persons: 1, fullDays: 0 }],
     roomCounts: { rokka_6: 0, rokka_8: 0, rokka_wa: 0 },
-    roomNights: 0, extraBeds: 0,
+    extraBeds:  { rokka_6: 0, rokka_8: 0, rokka_wa: 0 },
+    roomNights: 0,
     gearPersons: 0, gearDays: 2
   };
 
   const stepCfg = {
-    'roomCounts.rokka_6': { min: 0, max: 8  },
-    'roomCounts.rokka_8': { min: 0, max: 1  },
+    'roomCounts.rokka_6':  { min: 0, max: 8 },
+    'roomCounts.rokka_8':  { min: 0, max: 1 },
     'roomCounts.rokka_wa': { min: 0, max: 1 },
+    'extraBeds.rokka_6':   { min: 0, max: 8 },
+    'extraBeds.rokka_8':   { min: 0, max: 1 },
+    'extraBeds.rokka_wa':  { min: 0, max: 1 },
     roomNights:  { min: 0, max: 14 },
-    extraBeds:   { min: 0, max: 8  },
     gearPersons: { min: 0, max: 4  },
     gearDays:    { min: 1, max: 14 }
   };
@@ -606,7 +634,7 @@
     const roomC = Object.entries(S.roomCounts).reduce((s, [type, count]) =>
       s + ROOM[roomTier][type] * count * S.roomNights, 0);
     const gearC = gearPrice * S.gearPersons * S.gearDays;
-    const bedC  = 500 * S.extraBeds * S.roomNights;
+    const bedC  = Object.values(S.extraBeds).reduce((s, b) => s + 500 * b, 0) * S.roomNights;
     return fullC + roomC + gearC + bedC;
   }
 
@@ -624,10 +652,13 @@
 
     const roomLines = Object.entries(S.roomCounts)
       .filter(([, c]) => c > 0)
-      .map(([type, c]) => `<b>${ROOM_NAME[type]} × ${c} 間</b>`);
-    const bedText = S.extraBeds > 0 ? `・加床 ${S.extraBeds} 張` : '';
+      .map(([type, c]) => {
+        const beds = S.extraBeds[type];
+        const bedStr = beds > 0 ? `＋加床${beds}張` : '';
+        return `<b>${ROOM_NAME[type]} × ${c} 間${bedStr}</b>`;
+      });
     el('sumRoomGroups').innerHTML = roomLines.length && S.roomNights > 0
-      ? `住宿：${roomLines.join('、')} × <b>${S.roomNights} 晚</b>${bedText}`
+      ? `住宿：${roomLines.join('、')} × <b>${S.roomNights} 晚</b>`
       : '住宿：<b>未選擇</b>';
     el('sumGear').textContent = S.gearPersons > 0
       ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
@@ -789,13 +820,13 @@
       const t = btn.dataset.target;
       const cfg = stepCfg[t];
       if (!cfg) return;
-      if (t.startsWith('roomCounts.')) {
-        const key = t.split('.')[1];
-        const cur = S.roomCounts[key];
+      if (t.includes('.')) {
+        const [obj, key] = t.split('.');
+        const cur = S[obj][key];
         const val = btn.dataset.action === 'inc'
           ? Math.min(cur + 1, cfg.max)
           : Math.max(cur - 1, cfg.min);
-        S.roomCounts[key] = val;
+        S[obj][key] = val;
         el(t.replace('.', '_') + 'Val').textContent = val;
       } else {
         const cur = S[t];
@@ -841,7 +872,10 @@
     if (S.roomNights > 0 && totalRooms() > 0) {
       const roomParts = Object.entries(S.roomCounts)
         .filter(([, c]) => c > 0)
-        .map(([type, c]) => `${ROOM_NAME_MAP[type]} × ${c} 間`);
+        .map(([type, c]) => {
+          const beds = S.extraBeds[type];
+          return `${ROOM_NAME_MAP[type]} × ${c} 間${beds > 0 ? `＋加床${beds}張` : ''}`;
+        });
       lines.push(`住宿：${roomParts.join('、')} × ${S.roomNights} 晚`);
     }
     if (S.gearPersons > 0) {
