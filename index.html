@@ -8,17 +8,17 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #faf3e6;
-      --surface: #fffaf3;
-      --border: #ecdfc8;
-      --accent: #f1703b;
-      --accent-soft: rgba(241,112,59,0.12);
-      --text: #5a4636;
-      --muted: #a4907b;
-      --success: #6f8c5f;
-      --success-soft: rgba(111,140,95,0.12);
-      --warn: #d98a3d;
-      --warn-soft: rgba(217,138,61,0.12);
+      --bg: #edf3fb;
+      --surface: #f5f9ff;
+      --border: #c4d6ed;
+      --accent: #2b7fd4;
+      --accent-soft: rgba(43,127,212,0.12);
+      --text: #2c3e55;
+      --muted: #7b90a6;
+      --success: #3a8c6a;
+      --success-soft: rgba(58,140,106,0.12);
+      --warn: #b07a28;
+      --warn-soft: rgba(176,122,40,0.12);
     }
 
     body {
@@ -33,7 +33,7 @@
 
     .container { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
 
-    header { padding: 8px 0 20px; }
+    header { padding: 8px 0 4px; }
     .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
     header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
     header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
@@ -173,11 +173,11 @@
     }
 
     .result-header {
-      background: var(--surface);
-      padding: 16px 20px 12px;
-      font-size: 11px; font-weight: 600;
+      background: var(--border);
+      padding: 12px 20px;
+      font-size: 11px; font-weight: 700;
       letter-spacing: 0.1em; text-transform: uppercase;
-      color: var(--muted);
+      color: var(--text);
     }
 
     .tier-row {
@@ -286,24 +286,20 @@
 
   <header>
     <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
-    <h1>滑雪懶人包報價試算</h1>
+    <h1>單板滑雪懶人包報價試算</h1>
     <p>提供課程＋雪具＋住宿＋雪場往返交通，一次搞定</p>
     <p>Seaya Snow Club × 六花旅館 ロッカ × Good Good 好好雪倉</p>
     <nav class="dest-nav">
       <a href="index.html" class="dest-btn active">湯澤</a>
       <a href="zao.html" class="dest-btn">藏王</a>
     </nav>
-    <div class="gallery-scroll">
-      <img src="images/hero_snow5.jpg" alt="雪坡合照">
-      <img src="images/hero_snow1.jpg" alt="滑雪日常">
-      <img src="images/hero_snow3.jpg" alt="雪場開心">
-      <img src="images/hero_snow4.jpg" alt="湯澤雪景">
-    </div>
+    <img src="images/hero_snow5.jpg" alt="雪坡合照" style="width:100%;height:220px;object-fit:cover;object-position:center 70%;border-radius:14px;margin-top:14px;display:block">
   </header>
 
   <!-- 課程 -->
   <div class="card">
     <div class="card-title">Seaya 單板滑雪課程</div>
+    <div style="font-size:13px;color:var(--muted);margin-bottom:14px"><span style="color:var(--accent)">📍岩原滑雪場</span>（若因雪況或程度調整，可與教練討論）</div>
     <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數與天數）</div>
     <div class="toggle-sub" style="margin-bottom:12px">全日課 9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
     <div id="courseGroupsContainer"></div>
@@ -333,88 +329,108 @@
       </div>
       <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
     </div>
-    <div class="group-label" style="margin-top:16px;margin-bottom:12px">房型與間數</div>
-    <div class="stepper-row">
-      <div>
-        <img src="images/room_6jo.jpg" alt="六疊房" style="width:100px;height:68px;object-fit:cover;border-radius:8px;margin-bottom:6px;display:block">
-        <label>六疊房</label>
-        <div class="toggle-sub">建議 2 人・上限 3 人・共 8 間</div>
-        <button class="bed-toggle" data-bed="rokka_6" style="margin-top:6px">加床選項 ▾</button>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_6">−</button>
-          <div class="step-val" id="roomCounts_rokka_6Val">0</div>
-          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_6">+</button>
+    <div class="group-label" style="margin-top:16px;margin-bottom:4px">房型與間數</div>
+    <div class="toggle-sub" style="margin-bottom:12px">此旅館均為雅房，設有公共獨立淋浴間</div>
+
+    <!-- 六疊房 -->
+    <div style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex">
+      <img src="images/room_6jo.jpg" alt="六疊房" style="width:120px;flex-shrink:0;object-fit:cover;display:block">
+      <div style="flex:1;padding:12px 14px;min-width:0">
+        <div class="stepper-row" style="margin-bottom:0">
+          <div>
+            <label>六疊房</label>
+            <div class="toggle-sub">建議 2 人・上限 3 人・共 8 間</div>
+            <button class="bed-toggle" data-bed="rokka_6" style="margin-top:6px">加床選項 ▾</button>
+          </div>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_6">−</button>
+              <div class="step-val" id="roomCounts_rokka_6Val">0</div>
+              <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_6">+</button>
+            </div>
+            <span class="unit">間</span>
+          </div>
         </div>
-        <span class="unit">間</span>
+        <div class="stepper-row bed-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);border-bottom:none;padding-bottom:0">
+          <label class="bed-label">加床 <small>＋NT$500／晚</small></label>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_6">−</button>
+              <div class="step-val" id="extraBeds_rokka_6Val">0</div>
+              <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_6">+</button>
+            </div>
+            <span class="unit">張</span>
+          </div>
+        </div>
       </div>
     </div>
+
+    <!-- 八疊房 -->
+    <div style="margin-bottom:12px;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex">
+      <img src="images/room_8jo.jpg" alt="八疊房" style="width:120px;flex-shrink:0;object-fit:cover;display:block">
+      <div style="flex:1;padding:12px 14px;min-width:0">
+        <div class="stepper-row" style="margin-bottom:0">
+          <div>
+            <label>八疊房</label>
+            <div class="toggle-sub">建議 3 人・上限 4 人・共 1 間</div>
+            <button class="bed-toggle" data-bed="rokka_8" style="margin-top:6px">加床選項 ▾</button>
+          </div>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_8">−</button>
+              <div class="step-val" id="roomCounts_rokka_8Val">0</div>
+              <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_8">+</button>
+            </div>
+            <span class="unit">間</span>
+          </div>
+        </div>
+        <div class="stepper-row bed-row" style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);border-bottom:none;padding-bottom:0">
+          <label class="bed-label">加床 <small>＋NT$500／晚</small></label>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_8">−</button>
+              <div class="step-val" id="extraBeds_rokka_8Val">0</div>
+              <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_8">+</button>
+            </div>
+            <span class="unit">張</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 大和室 -->
+    <div style="margin-bottom:4px;border:1px solid var(--border);border-radius:12px;overflow:hidden;display:flex">
+      <img src="images/room_washitsu.jpg" alt="大和室" style="width:120px;flex-shrink:0;object-fit:cover;display:block">
+      <div style="flex:1;padding:12px 14px;min-width:0">
+        <div class="stepper-row" style="margin-bottom:0">
+          <div>
+            <label>大和室</label>
+            <div class="toggle-sub">建議 5 人・上限 6 人・共 1 間</div>
+            <button class="bed-toggle" data-bed="rokka_wa" style="margin-top:6px">加床選項 ▾</button>
+          </div>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_wa">−</button>
+              <div class="step-val" id="roomCounts_rokka_waVal">0</div>
+              <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_wa">+</button>
+            </div>
+            <span class="unit">間</span>
+          </div>
+        </div>
     <div class="stepper-row bed-row">
       <label class="bed-label">加床 <small>＋NT$500／晚</small></label>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_6">−</button>
-          <div class="step-val" id="extraBeds_rokka_6Val">0</div>
-          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_6">+</button>
+          <div style="display:flex;align-items:center;flex-shrink:0">
+            <div class="stepper">
+              <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_wa">−</button>
+              <div class="step-val" id="extraBeds_rokka_waVal">0</div>
+              <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_wa">+</button>
+            </div>
+            <span class="unit">張</span>
+          </div>
         </div>
-        <span class="unit">張</span>
       </div>
     </div>
-    <div class="stepper-row">
-      <div>
-        <img src="images/room_8jo.jpg" alt="八疊房" style="width:100px;height:68px;object-fit:cover;border-radius:8px;margin-bottom:6px;display:block">
-        <label>八疊房</label>
-        <div class="toggle-sub">建議 3 人・上限 4 人・共 1 間</div>
-        <button class="bed-toggle" data-bed="rokka_8" style="margin-top:6px">加床選項 ▾</button>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_8">−</button>
-          <div class="step-val" id="roomCounts_rokka_8Val">0</div>
-          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_8">+</button>
-        </div>
-        <span class="unit">間</span>
-      </div>
-    </div>
-    <div class="stepper-row bed-row">
-      <label class="bed-label">加床 <small>＋NT$500／晚</small></label>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_8">−</button>
-          <div class="step-val" id="extraBeds_rokka_8Val">0</div>
-          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_8">+</button>
-        </div>
-        <span class="unit">張</span>
-      </div>
-    </div>
-    <div class="stepper-row">
-      <div>
-        <img src="images/room_washitsu.jpg" alt="大和室" style="width:100px;height:68px;object-fit:cover;border-radius:8px;margin-bottom:6px;display:block">
-        <label>大和室</label>
-        <div class="toggle-sub">建議 5 人・上限 6 人・共 1 間</div>
-        <button class="bed-toggle" data-bed="rokka_wa" style="margin-top:6px">加床選項 ▾</button>
-      </div>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_wa">−</button>
-          <div class="step-val" id="roomCounts_rokka_waVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="roomCounts.rokka_wa">+</button>
-        </div>
-        <span class="unit">間</span>
-      </div>
-    </div>
-    <div class="stepper-row bed-row">
-      <label class="bed-label">加床 <small>＋NT$500／晚</small></label>
-      <div style="display:flex;align-items:center">
-        <div class="stepper">
-          <button class="step-btn" data-action="dec" data-target="extraBeds.rokka_wa">−</button>
-          <div class="step-val" id="extraBeds_rokka_waVal">0</div>
-          <button class="step-btn" data-action="inc" data-target="extraBeds.rokka_wa">+</button>
-        </div>
-        <span class="unit">張</span>
-      </div>
-    </div>
+
     <div class="stepper-row">
       <label>住宿天數</label>
       <div style="display:flex;align-items:center">
