@@ -215,6 +215,17 @@
         <label>LINE 暱稱（方便對帳聯繫）</label>
         <input type="text" id="custLineNick" placeholder="例如：小明">
       </div>
+      <div class="field">
+        <label>教練（選填）</label>
+        <select id="coachName">
+          <option value="">（無指定）</option>
+          <option value="Emma">Emma</option>
+          <option value="Allie">Allie</option>
+          <option value="嵐嵐">嵐嵐</option>
+          <option value="萱">萱</option>
+          <option value="Jerry">Jerry</option>
+        </select>
+      </div>
     </div>
 
     <div class="card" style="margin-top:12px">
@@ -302,7 +313,7 @@
           <label>總金額（NT$）</label>
           <input type="number" id="totalAmount" placeholder="0">
         </div>
-        <div class="field">
+        <div class="field" id="depositSection">
           <label>已收訂金（NT$）</label>
           <input type="number" id="depositAmount" placeholder="0">
           <div style="display:flex; gap:6px; margin-top:6px">
@@ -311,22 +322,25 @@
           </div>
         </div>
       </div>
-      <div class="field-row">
-        <div class="field">
-          <label>尾款金額（NT$）</label>
-          <input type="number" id="balanceAmount" placeholder="0">
-        </div>
-        <div class="field">
-          <label>尾款繳款期限</label>
-          <input type="date" id="balanceDue" min="2026-11-01" max="2027-04-30">
+      <div class="note accent" id="jerryPaymentNote" style="display:none">Jerry 課程為全額收費，總金額即已收全額款項。</div>
+      <div id="balanceSection">
+        <div class="field-row">
+          <div class="field">
+            <label>尾款金額（NT$）</label>
+            <input type="number" id="balanceAmount" placeholder="0">
+          </div>
+          <div class="field">
+            <label>尾款繳款期限</label>
+            <input type="date" id="balanceDue" min="2026-11-01" max="2027-04-30">
+          </div>
         </div>
       </div>
       <div class="field-row">
         <div class="field">
           <label>付款方式</label>
           <select id="paymentMethod">
-            <option value="虛擬帳號">虛擬帳號</option>
             <option value="匯款">匯款</option>
+            <option value="虛擬帳號">虛擬帳號</option>
           </select>
         </div>
         <div class="field">
@@ -385,7 +399,7 @@
   <div class="receipt-card" id="receiptCard" style="display:none; margin-top:12px">
     <div class="receipt-header">
       <img src="images/logo.png" alt="Seaya Snow Club">
-      <h2>訂金確認收據</h2>
+      <h2 id="rcTitle">訂金確認收據</h2>
       <div class="receipt-meta">
         收據編號：<span id="rcNo"></span><br>
         開立日期：<span id="rcDate"></span>
@@ -401,6 +415,7 @@
     <div class="receipt-section">
       <h3>行程內容</h3>
       <div class="receipt-row"><span class="label">地點</span><span class="value" id="rcLocation"></span></div>
+      <div class="receipt-row" id="rcCoachRow" style="display:none"><span class="label">教練</span><span class="value" id="rcCoach"></span></div>
       <div class="receipt-row"><span class="label">課程</span><span class="value" id="rcCourse"></span></div>
       <div class="receipt-row"><span class="label">住宿</span><span class="value" id="rcRoom"></span></div>
       <div class="receipt-row"><span class="label">雪具</span><span class="value" id="rcGear"></span></div>
@@ -409,9 +424,11 @@
     <div class="receipt-section">
       <h3>費用明細</h3>
       <div class="receipt-row"><span class="label">總金額</span><span class="value" id="rcTotal"></span></div>
-      <div class="receipt-total deposit"><span>已收訂金</span><span id="rcDeposit"></span></div>
-      <div class="receipt-row" style="margin-top:10px"><span class="label">尾款</span><span class="value" id="rcBalance"></span></div>
-      <div class="receipt-row"><span class="label">繳款期限</span><span class="value" id="rcBalanceDue"></span></div>
+      <div class="receipt-total deposit"><span id="rcDepositLabel">已收訂金</span><span id="rcDeposit"></span></div>
+      <div id="rcBalanceSection">
+        <div class="receipt-row" style="margin-top:10px"><span class="label">尾款</span><span class="value" id="rcBalance"></span></div>
+        <div class="receipt-row"><span class="label">繳款期限</span><span class="value" id="rcBalanceDue"></span></div>
+      </div>
       <div class="receipt-row"><span class="label">付款方式</span><span class="value" id="rcPayment"></span></div>
     </div>
 
@@ -457,6 +474,36 @@
 開課前 30 天至當日：不接受取消（可轉讓給友人）
 
 所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。`;
+
+  const JERRY_REFUND_NOTE = `【更改日期】
+純課程開課 30 天前可免費更改日期，需與客服協調調整，限當季雪季。
+
+【純課程退款】
+30 天以前取消：全額退款
+15–29 天取消：退款 50%
+7–14 天取消：退款 30%
+1–6 天取消：退款 10%
+當天取消：不退費
+
+所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。`;
+
+  function applyCoachMode() {
+    const jerry = el('coachName').value === 'Jerry';
+    el('depositSection').style.display = jerry ? 'none' : '';
+    el('balanceSection').style.display = jerry ? 'none' : '';
+    el('jerryPaymentNote').style.display = jerry ? 'block' : 'none';
+    const current = el('refundNote').value;
+    if (jerry && (current === DEFAULT_REFUND_NOTE || current === '')) {
+      el('refundNote').value = JERRY_REFUND_NOTE;
+    } else if (!jerry && current === JERRY_REFUND_NOTE) {
+      el('refundNote').value = DEFAULT_REFUND_NOTE;
+    }
+    if (jerry) {
+      const total = Number(el('totalAmount').value) || 0;
+      el('depositAmount').value = total;
+      el('balanceAmount').value = 0;
+    }
+  }
 
   const O = {
     groups: [{ location: 'yuzawa', board: 'single', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
@@ -745,8 +792,9 @@
     const deposit = Number(el('depositAmount').value) || 0;
     el('balanceAmount').value = Math.max(total - deposit, 0);
   }
-  el('totalAmount').addEventListener('input', autoBalance);
+  el('totalAmount').addEventListener('input', () => { autoBalance(); if (el('coachName').value === 'Jerry') { el('depositAmount').value = el('totalAmount').value; el('balanceAmount').value = 0; } });
   el('depositAmount').addEventListener('input', autoBalance);
+  el('coachName').addEventListener('change', applyCoachMode);
 
   // 訂金快速計算（總金額 × 30% / 50%）
   document.querySelectorAll('[data-deposit-pct]').forEach(btn => {
@@ -787,16 +835,26 @@
 
   // 收據渲染（開立／查詢共用）
   function renderReceipt(data) {
+    const jerry = data.coach === 'Jerry';
+    el('rcTitle').textContent = jerry ? '全額付款確認收據' : '訂金確認收據';
     el('rcNo').textContent = data.receiptNo;
     el('rcDate').textContent = data.createdAt;
     el('rcName').textContent = data.custName || '—';
     el('rcContact').textContent = data.contactDisplay;
     el('rcLocation').textContent = data.locationDisplay || '—';
+    if (data.coach) {
+      el('rcCoach').textContent = data.coach;
+      el('rcCoachRow').style.display = '';
+    } else {
+      el('rcCoachRow').style.display = 'none';
+    }
     el('rcCourse').textContent = data.courseDisplay;
     el('rcRoom').textContent = data.roomDisplay;
     el('rcGear').textContent = data.gearDisplay;
     el('rcTotal').textContent = fmt(data.totalAmount);
+    el('rcDepositLabel').textContent = jerry ? '已收全額' : '已收訂金';
     el('rcDeposit').textContent = fmt(data.depositAmount);
+    el('rcBalanceSection').style.display = jerry ? 'none' : '';
     el('rcBalance').textContent = fmt(data.balanceAmount);
     el('rcBalanceDue').textContent = data.balanceDueDisplay || '—';
     el('rcPayment').textContent = data.paymentDisplay;
@@ -864,7 +922,8 @@
       balanceDue: balanceDueDisplay,
       paymentMethod,
       paymentLast5: last5,
-      note: customNote
+      note: customNote,
+      coach: el('coachName').value || ''
     };
 
     const btn = el('generateBtn');
@@ -897,7 +956,8 @@
       balanceDueDisplay,
       paymentDisplay: buildPaymentDisplay(paymentMethod, last5),
       note: customNote,
-      refundNote
+      refundNote,
+      coach: payload.coach
     });
   });
 
