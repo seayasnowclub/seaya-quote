@@ -1011,18 +1011,21 @@
       if (row.error) throw new Error(row.error);
 
       renderReceipt({
-        receiptNo: row['收據編號'],
-        createdAt: formatCreatedAt(row['建立時間']),
-        custName: row['姓名'],
-        contactDisplay: buildContactDisplay(row['聯繫方式'], row['帳號/ID'], row['LINE暱稱']),
+        receiptNo: row['收據編號'] || row['#REF!'] || receiptNo,
+        createdAt: formatCreatedAt(row['建立時間']) || '—',
+        custName: row['姓名'] || '—',
+        contactDisplay: buildContactDisplay(row['聯繫方式'] || '', row['帳號/ID'] || row['帳號ID'] || '', row['LINE暱稱'] || ''),
         locationDisplay: row['地點'] || '—',
-        courseDisplay: buildCourseDisplay_legacy(row['課程人數'], row['課程天數'], row['上課日期']),
-        roomDisplay: buildRoomDisplay(row['房型'], row['間數'], row['晚數'], row['入住日期'], row['退房日期']),
-        gearDisplay: buildGearDisplay(row['雪具人數'], row['雪具天數']),
-        totalAmount: row['總金額'], depositAmount: row['已收訂金'], balanceAmount: row['尾款金額'],
-        balanceDueDisplay: row['尾款期限'],
-        paymentDisplay: buildPaymentDisplay(row['付款方式'], row['末五碼']),
-        note: row['備註']
+        courseDisplay: buildCourseDisplay_legacy(row['課程人數'] || '', row['課程天數'] || '', row['上課日期'] || row['日期'] || ''),
+        roomDisplay: buildRoomDisplay(row['房型'] || row['房間'] || '', row['間數'] || 0, row['晚數'] || 0, row['入住日期'] || row['入住'] || '', row['退房日期'] || row['退房'] || ''),
+        gearDisplay: buildGearDisplay(row['雪具人數'] || 0, row['雪具天數'] || 0),
+        totalAmount: row['總金額'],
+        depositAmount: row['已收訂金'] || row['訂金'],
+        balanceAmount: row['尾款金額'] || row['尾款'],
+        balanceDueDisplay: row['尾款期限'] || row['尾款日期'] || '—',
+        paymentDisplay: buildPaymentDisplay(row['付款方式'] || '', row['末五碼'] || ''),
+        note: row['備註'],
+        coach: row['教練'] || ''
       });
     } catch (err) {
       msg.textContent = '查詢失敗：' + err.message;
