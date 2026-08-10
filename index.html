@@ -332,12 +332,16 @@
       </div>
       <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
     </div>
-    <div class="stepper-row" style="margin-top:16px;margin-bottom:16px">
-      <label style="font-size:13px">入住日期<br><span style="font-size:11px;color:var(--muted);font-weight:400">選填，確認住宿是否有空</span></label>
+    <div style="margin-top:16px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">
+        入住日期 <span style="font-size:11px;font-weight:400;color:var(--muted)">（選填）</span>
+      </div>
       <input type="date" id="checkInDateInput" min="2026-12-20" max="2027-03-29"
-        style="border:1px solid var(--border);border-radius:10px;padding:8px 10px;
-               font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);
-               outline:none;cursor:pointer;-webkit-appearance:none">
+        style="width:100%;box-sizing:border-box;
+               border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;
+               font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);
+               outline:none;cursor:pointer;-webkit-appearance:none;display:block">
+      <div style="font-size:11px;color:var(--muted);margin-top:6px">選擇日期後，若該期間住宿已滿，系統會自動提示</div>
     </div>
     <div id="roomFullNotice" style="display:none;margin-bottom:14px;padding:12px 14px;background:rgba(192,57,43,0.08);border:1.5px solid #c0392b;border-radius:10px;font-size:13px;color:#c0392b;font-weight:600">
       此日期住宿已無空房，無法加入住宿。如需協助請洽客服。
