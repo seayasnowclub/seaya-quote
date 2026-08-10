@@ -334,7 +334,7 @@
     </div>
     <div class="stepper-row" style="margin-top:16px;margin-bottom:16px">
       <label style="font-size:13px">入住日期<br><span style="font-size:11px;color:var(--muted);font-weight:400">選填，確認住宿是否有空</span></label>
-      <input type="date" id="checkInDateInput" min="2026-12-20" max="2027-03-31"
+      <input type="date" id="checkInDateInput" min="2026-12-20" max="2027-03-29"
         style="border:1px solid var(--border);border-radius:10px;padding:8px 10px;
                font-size:14px;font-family:inherit;background:var(--bg);color:var(--text);
                outline:none;cursor:pointer;-webkit-appearance:none">
@@ -1006,7 +1006,8 @@
   // ── 住宿已滿日期（客人選到這些日期，住宿區鎖起來）──
   // 格式：'YYYY-MM-DD'，一次可填整段區間
   const FULL_DATE_RANGES = [
-    // 例：{ from: '2027-01-01', to: '2027-01-05' }
+    { from: '2027-01-28', to: '2027-01-31' },
+    { from: '2027-02-20', to: '2027-02-23' },
   ];
 
   function isDateFull(dateStr) {
