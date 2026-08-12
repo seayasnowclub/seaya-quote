@@ -301,6 +301,14 @@
     <div class="card" style="border-radius:0;border:none">
       <div class="card-title">Seaya 單板滑雪課程</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px"><span style="color:var(--accent)">📍岩原滑雪場</span>（若因雪況或程度調整，可與教練討論）</div>
+      <div style="margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">上課開始日期</div>
+        <input type="date" id="courseDateInput" min="2026-12-20" max="2027-03-29"
+          style="width:100%;box-sizing:border-box;
+                 border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;
+                 font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);
+                 outline:none;cursor:pointer;-webkit-appearance:none;display:block">
+      </div>
       <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數與天數）</div>
       <div class="toggle-sub" style="margin-bottom:12px">全日課 9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
       <div id="courseGroupsContainer"></div>
@@ -938,6 +946,18 @@
 
     lines.push('【Seaya Snow Club 包套試算】');
     lines.push('');
+
+    const courseDate = el('courseDateInput').value;
+    const checkInDate = el('checkInDateInput').value;
+    if (courseDate) {
+      const [, m, d] = courseDate.split('-');
+      lines.push(`上課日期：${+m}/${+d} 起`);
+    }
+    if (checkInDate) {
+      const [, m, d] = checkInDate.split('-');
+      lines.push(`入住日期：${+m}/${+d}`);
+    }
+    if (courseDate || checkInDate) lines.push('');
 
     const activeGroups = S.courseGroups.filter(g => g.fullDays > 0);
     if (activeGroups.length > 0) {
