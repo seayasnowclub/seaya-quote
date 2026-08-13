@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>滑雪團報名 — Seaya Snow Club</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #faf3e6;
+    --surface: #fffaf3;
+    --border: #ecdfc8;
+    --accent: #f1703b;
+    --accent-soft: rgba(241,112,59,0.12);
+    --text: #5a4636;
+    --muted: #a4907b;
+    --success: #6f8c5f;
+    --success-soft: rgba(111,140,95,0.12);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, "Hiragino Sans", "PingFang TC", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 16px 80px;
+  }
+
+  .container { width: 100%; max-width: 560px; display: flex; flex-direction: column; gap: 12px; }
+
+  header { padding: 8px 0 20px; }
+  .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
+  header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
+  header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px;
+  }
+
+  .card-title {
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 16px;
+  }
+
+  .field { margin-bottom: 14px; min-width: 0; }
+  .field:last-child { margin-bottom: 0; }
+  .field label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
+  .field input[type=text], .field select, .field textarea {
+    width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px;
+    background: var(--bg); color: var(--text); font-size: 14px; font-family: inherit;
+  }
+  .field textarea { resize: vertical; min-height: 70px; line-height: 1.6; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  .field-hint { margin-top: 4px; font-size: 12px; color: var(--muted); }
+
+  .profile-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; background: var(--success-soft); border-radius: 10px;
+    font-size: 13px; color: var(--text);
+  }
+  .profile-row img { width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0; }
+
+  .primary-btn {
+    width: 100%; padding: 14px; margin-top: 4px;
+    background: var(--accent); color: #fff; border: none; border-radius: 12px;
+    font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .primary-btn:hover { opacity: 0.9; }
+  .primary-btn:disabled { opacity: 0.5; cursor: default; }
+
+  .secondary-btn {
+    width: 100%; padding: 12px; margin-top: 8px;
+    background: var(--bg); color: var(--text); border: 1px solid var(--border); border-radius: 12px;
+    font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+
+  .note {
+    margin-top: 10px; font-size: 12px; color: var(--muted);
+    padding: 10px 14px; background: var(--bg); border-radius: 10px;
+    line-height: 1.6;
+  }
+  .note.accent { color: var(--accent); font-weight: 500; }
+
+  .center-card { text-align: center; padding: 32px 20px; }
+  .center-card .big-icon { font-size: 40px; margin-bottom: 12px; }
+  .center-card h2 { font-size: 17px; margin-bottom: 8px; }
+  .center-card p { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+  .success-card { text-align: center; padding: 36px 20px; }
+  .success-card .big-icon { font-size: 44px; margin-bottom: 14px; }
+  .success-card h2 { font-size: 18px; margin-bottom: 10px; }
+  .success-card p { font-size: 14px; color: var(--text); line-height: 1.8; }
+  .success-card .reg-no { margin-top: 14px; font-size: 12px; color: var(--muted); }
+</style>
+<script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <img class="brand-logo" src="images/logo.png" alt="Seaya Snow Club">
+    <h1>滑雪團報名</h1>
+    <p>填寫志願梯次，成團後會直接透過 LINE 通知你，不需要再等我們回覆。</p>
+  </header>
+
+  <!-- 載入中 -->
+  <div class="card center-card" id="loadingState">
+    <div class="big-icon">🎿</div>
+    <p>正在連接 LINE，請稍候…</p>
+  </div>
+
+  <!-- 尚未加好友 -->
+  <div class="card center-card" id="friendGate" style="display:none">
+    <div class="big-icon">💬</div>
+    <h2>請先加 Seaya Snow Club 好友</h2>
+    <p>成團通知是透過官方帳號推播給你，需要先加好友才收得到訊息。</p>
+    <a id="addFriendBtn" href="#" target="_blank" rel="noopener">
+      <button type="button" class="primary-btn">加好友</button>
+    </a>
+    <button type="button" class="secondary-btn" id="recheckFriendBtn">我已加好友，重新檢查</button>
+  </div>
+
+  <!-- 報名表單 -->
+  <div id="formState" style="display:none">
+
+    <div class="card">
+      <div class="card-title">LINE 綁定</div>
+      <div class="profile-row">
+        <img id="profileAvatar" src="" alt="">
+        <span>已透過 LINE 綁定：<strong id="profileName"></strong></span>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">聯絡資訊</div>
+      <div class="field">
+        <label>姓名</label>
+        <input type="text" id="custName" placeholder="例如：王小明">
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">選擇班別</div>
+      <div class="field-row">
+        <div class="field">
+          <label>地點</label>
+          <select id="location">
+            <option value="藏王滑雪團">藏王滑雪團</option>
+            <option value="湯澤滑雪團">湯澤滑雪團</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>班別</label>
+          <select id="classType">
+            <option value="新手班">新手班</option>
+            <option value="S班">S班（Step-on 地形訓練班）</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label>天數方案</label>
+        <select id="classPlan">
+          <option value="4天3夜">4天3夜</option>
+          <option value="3天2夜">3天2夜</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">選擇梯次（依志願順序）</div>
+      <div id="sessionLoading" class="note">載入目前開放中的梯次…</div>
+      <div id="sessionEmpty" class="note accent" style="display:none">目前這個班別沒有開放中的梯次，請直接聯繫客服。</div>
+      <div id="sessionFields" style="display:none">
+        <div class="field">
+          <label>志願 1（必選）</label>
+          <select id="choice1"></select>
+        </div>
+        <div class="field">
+          <label>志願 2（選填）</label>
+          <select id="choice2"><option value="">（不填）</option></select>
+        </div>
+        <div class="field">
+          <label>志願 3（選填）</label>
+          <select id="choice3"><option value="">（不填）</option></select>
+        </div>
+        <div class="field-hint">依優先順序選梯次，哪個志願先成團就用哪個。同一個人如果想報名不同地點、班別或天數方案，請分開填兩次表單。</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:12px">
+      <div class="card-title">備註</div>
+      <div class="field">
+        <label>其他需求（選填）</label>
+        <textarea id="noteField" placeholder="例如：想找同伴、有滑雪經驗程度等"></textarea>
+      </div>
+    </div>
+
+    <button class="primary-btn" id="submitBtn" style="margin-top:4px">送出報名</button>
+    <div class="note accent" id="formMsg" style="display:none"></div>
+  </div>
+
+  <!-- 送出成功 -->
+  <div class="card success-card" id="successState" style="display:none">
+    <div class="big-icon">✅</div>
+    <h2>已收到報名！</h2>
+    <p>成團後會直接透過 LINE 通知你，<br>不需要再等我們回覆。</p>
+    <div class="reg-no">報名編號：<span id="successRegNo"></span></div>
+  </div>
+
+</div>
+
+<script>
+  // TODO：LIFF 申請完成後填入實際 LIFF ID
+  const LIFF_ID = '2011099252-TpccTPyV';
+  // TODO：Apps Script 部署成 Web App 後填入實際網址
+  const APPS_SCRIPT_URL = 'REPLACE_WITH_APPS_SCRIPT_URL';
+  const SIGNUP_SECRET = 'REPLACE_WITH_SIGNUP_SECRET';
+  // TODO：填入官方帳號加好友連結，例如 https://line.me/R/ti/p/@xxxxxxx
+  const ADD_FRIEND_URL = 'REPLACE_WITH_ADD_FRIEND_URL';
+  // TODO：填入「場次管理」所在的 Google Sheet ID（網址 /d/ 和 /edit 中間那一段）
+  const SESSION_SHEET_ID = 'REPLACE_WITH_SHEET_ID';
+  const SESSION_SHEET_NAME = '場次管理';
+
+  function el(id) { return document.getElementById(id); }
+
+  function showOnly(id) {
+    ['loadingState', 'friendGate', 'formState', 'successState'].forEach(s => {
+      el(s).style.display = (s === id) ? 'block' : 'none';
+    });
+  }
+
+  let profile = null;
+  let openSessions = []; // 場次管理 sheet 目前「收單中」的列
+
+  // ── 讀取場次管理 sheet（公開 CSV 匯出，仿現有 room_availability 讀法）──
+  function parseCsv(text) {
+    const rows = [];
+    let row = [], field = '', inQuotes = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (inQuotes) {
+        if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
+        else if (c === '"') { inQuotes = false; }
+        else { field += c; }
+      } else {
+        if (c === '"') inQuotes = true;
+        else if (c === ',') { row.push(field); field = ''; }
+        else if (c === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+        else if (c === '\r') { /* skip */ }
+        else { field += c; }
+      }
+    }
+    if (field.length || row.length) { row.push(field); rows.push(row); }
+    return rows;
+  }
+
+  async function fetchSessions() {
+    const url = `https://docs.google.com/spreadsheets/d/${SESSION_SHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SESSION_SHEET_NAME)}`;
+    const res = await fetch(url);
+    const text = await res.text();
+    const rows = parseCsv(text);
+    if (rows.length < 2) return [];
+    const headers = rows[0];
+    return rows.slice(1).filter(r => r.length && r.some(v => v)).map(r => {
+      const obj = {};
+      headers.forEach((h, i) => { obj[h.trim()] = (r[i] || '').trim(); });
+      return obj;
+    });
+  }
+
+  function populateChoiceSelects() {
+    const location = el('location').value;
+    const classType = el('classType').value;
+    const classPlan = el('classPlan').value;
+
+    const matched = openSessions.filter(s =>
+      s['地點'] === location && s['班別'] === classType && s['天數方案'] === classPlan && s['狀態'] === '收單中'
+    );
+
+    ['sessionEmpty', 'sessionFields'].forEach(id => el(id).style.display = 'none');
+
+    if (matched.length === 0) {
+      el('sessionEmpty').style.display = 'block';
+      return;
+    }
+
+    const opts = matched.map(s => `<option value="${s['場次代號']}">${s['日期範圍顯示文字']}</option>`).join('');
+    el('choice1').innerHTML = opts;
+    el('choice2').innerHTML = '<option value="">（不填）</option>' + opts;
+    el('choice3').innerHTML = '<option value="">（不填）</option>' + opts;
+    el('sessionFields').style.display = 'block';
+  }
+
+  async function loadSessionsAndRender() {
+    el('sessionLoading').style.display = 'block';
+    el('sessionEmpty').style.display = 'none';
+    el('sessionFields').style.display = 'none';
+    try {
+      openSessions = await fetchSessions();
+      el('sessionLoading').style.display = 'none';
+      populateChoiceSelects();
+    } catch (err) {
+      el('sessionLoading').textContent = '梯次清單載入失敗，請重新整理頁面再試一次。';
+    }
+  }
+
+  ['location', 'classType', 'classPlan'].forEach(id => {
+    el(id).addEventListener('change', populateChoiceSelects);
+  });
+
+  // ── LIFF 綁定 ──────────────────────────────────────
+
+  async function checkFriendshipAndProceed() {
+    showOnly('loadingState');
+    try {
+      const friendship = await liff.getFriendship();
+      if (!friendship.friendFlag) {
+        el('addFriendBtn').href = ADD_FRIEND_URL;
+        showOnly('friendGate');
+        return;
+      }
+      profile = await liff.getProfile();
+      el('profileAvatar').src = profile.pictureUrl || '';
+      el('profileName').textContent = profile.displayName || '';
+      showOnly('formState');
+      loadSessionsAndRender();
+    } catch (err) {
+      alert('無法連接 LINE，請重新整理頁面再試一次。（' + err.message + '）');
+    }
+  }
+
+  async function initLiff() {
+    try {
+      await liff.init({ liffId: LIFF_ID });
+      if (!liff.isLoggedIn()) {
+        liff.login();
+        return;
+      }
+      await checkFriendshipAndProceed();
+    } catch (err) {
+      alert('LIFF 初始化失敗，請確認是從 LINE 開啟這個頁面。（' + err.message + '）');
+    }
+  }
+
+  el('recheckFriendBtn').addEventListener('click', checkFriendshipAndProceed);
+
+  // ── 送出報名 ───────────────────────────────────────
+
+  function genFallbackRegNo() {
+    const d = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    return `REG${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
+  }
+
+  el('submitBtn').addEventListener('click', async () => {
+    const msg = el('formMsg');
+    msg.style.display = 'none';
+
+    const custName = el('custName').value.trim();
+    const location = el('location').value;
+    const classType = el('classType').value;
+    const classPlan = el('classPlan').value;
+    const choice1 = el('choice1').value;
+    const choice2 = el('choice2').value;
+    const choice3 = el('choice3').value;
+    const note = el('noteField').value.trim();
+
+    if (!custName || !choice1) {
+      msg.textContent = '請填寫姓名，並至少選擇志願 1';
+      msg.style.display = 'block';
+      return;
+    }
+
+    const payload = {
+      secret: SIGNUP_SECRET,
+      lineUserId: profile.userId,
+      lineDisplayName: profile.displayName || '',
+      custName, location, classType, classPlan,
+      choice1, choice2, choice3,
+      note
+    };
+
+    const btn = el('submitBtn');
+    btn.disabled = true;
+    btn.textContent = '送出中…';
+
+    let registrationId;
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', body: JSON.stringify(payload) });
+      const json = await res.json();
+      if (json.error) throw new Error(json.error);
+      registrationId = json.registrationId;
+    } catch (err) {
+      btn.disabled = false;
+      btn.textContent = '送出報名';
+      msg.textContent = '送出失敗，請稍後再試，或直接聯繫客服。（' + err.message + '）';
+      msg.style.display = 'block';
+      return;
+    }
+
+    el('successRegNo').textContent = registrationId || genFallbackRegNo();
+    showOnly('successState');
+  });
+
+  initLiff();
+</script>
+</body>
+</html>
