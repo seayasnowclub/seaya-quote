@@ -298,41 +298,70 @@
   <!-- 行程流程說明 -->
   <div class="card">
     <div class="card-title">行程怎麼安排？</div>
-    <div style="font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.7">以下為 4 天 3 夜的行程範例，包含 3 晚住宿、3 天雪具、3 日課程，可依需求自行調整天數。</div>
-    <div style="display:flex;flex-direction:column;gap:16px">
 
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 1</div>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">入住・預備日</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.8">與六花旅館聯繫入住時間，抵達車站後六花旅館提供接駁接送。當天晚上前往<a href="https://reserve.seayasnowclub.com/?store=yuzawa" target="_blank" style="color:var(--accent);text-decoration:none">雪具店</a>租借（在六花旅館地下一樓，18:00–21:00），隔天就可以一早出發。住宿期間，往返車站與雪場的接駁皆由六花旅館提供，可事先預約時段。<br><span style="color:var(--accent);font-weight:500">備註：15:00 以後可以進房。</span></div>
+    <!-- 行程公式 -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">Day 1</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">預備日</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px">入住・租雪具</div>
+      </div>
+      <div style="font-size:18px;font-weight:300;color:var(--muted)">＋</div>
+      <div style="background:var(--accent);border-radius:10px;padding:8px 14px;text-align:center">
+        <div style="font-size:10px;color:rgba(255,255,255,.7);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">Day 2 ～ N</div>
+        <div style="font-size:13px;font-weight:700;color:#fff">課程日 × N</div>
+        <div style="font-size:10px;color:rgba(255,255,255,.75);margin-top:1px">可自行調整天數</div>
+      </div>
+      <div style="font-size:18px;font-weight:300;color:var(--muted)">＋</div>
+      <div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
+        <div style="font-size:10px;color:var(--muted);font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:2px">最後一天</div>
+        <div style="font-size:13px;font-weight:700;color:var(--text)">回程日</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:1px">還雪具・搭車</div>
+      </div>
+    </div>
+
+    <!-- 展開行程範例 -->
+    <button id="itinToggle" onclick="toggleItinerary()" style="width:100%;background:none;border:1.5px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-size:13px;font-weight:600;color:var(--muted);font-family:inherit">
+      <span>查看 4 天 3 夜行程範例</span>
+      <span id="itinArrow" style="font-size:11px;transition:transform .25s">▾</span>
+    </button>
+
+    <div id="itinBody" style="overflow:hidden;max-height:0;transition:max-height .35s ease">
+      <div style="padding-top:16px;display:flex;flex-direction:column;gap:16px">
+        <div style="font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:4px">包含 3 晚住宿、3 天雪具、3 日課程，可依需求自行調整天數。</div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 1</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">入住・預備日</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">與六花旅館聯繫入住時間，抵達車站後六花旅館提供接駁接送。當天晚上前往<a href="https://reserve.seayasnowclub.com/?store=yuzawa" target="_blank" style="color:var(--accent);text-decoration:none">雪具店</a>租借（在六花旅館地下一樓，18:00–21:00），隔天就可以一早出發。住宿期間，往返車站與雪場的接駁皆由六花旅館提供，可事先預約時段。<br><span style="color:var(--accent);font-weight:500">備註：15:00 以後可以進房。</span></div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 2</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">正式上課</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">早上前往岩原雪場，與 Seaya 教練會合後開始全日課（9:30–15:30）。下課後由六花旅館接駁返回住宿；若需前往車站吃晚餐，可預約六花旅館接駁往返。</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 3</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">正式上課</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">同 Day 2，繼續全日課程。</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 4</div>
+          <div>
+            <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">歸還雪具・回程</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">下課後返回六花旅館，將雪具歸還至地下一樓雪具店。六花旅館提供接駁送至越後湯澤車站，踏上回程。<br><span style="color:var(--accent);font-weight:500">備註：建議選擇 18:00 以後的班次。若需提早離開，可與教練協調調整上課時間。</span></div>
+          </div>
         </div>
       </div>
-
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 2</div>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">正式上課</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.8">早上前往岩原雪場，與 Seaya 教練會合後開始全日課（9:30–15:30）。下課後由六花旅館接駁返回住宿；若需前往車站吃晚餐，可預約六花旅館接駁往返。</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 3</div>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">正式上課</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.8">同 Day 2，繼續全日課程。</div>
-        </div>
-      </div>
-
-      <div style="display:flex;gap:12px;align-items:flex-start">
-        <div style="flex-shrink:0;background:var(--accent);color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 4</div>
-        <div>
-          <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">歸還雪具・回程</div>
-          <div style="font-size:12px;color:var(--muted);line-height:1.8">下課後返回六花旅館，將雪具歸還至地下一樓雪具店。六花旅館提供接駁送至越後湯澤車站，踏上回程。<br><span style="color:var(--accent);font-weight:500">備註：建議選擇 18:00 以後的班次。若需提早離開，可與教練協調調整上課時間。</span></div>
-        </div>
-      </div>
-
     </div>
   </div>
 
@@ -728,6 +757,19 @@
 
   function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
   function el(id) { return document.getElementById(id); }
+
+  function toggleItinerary() {
+    const body = el('itinBody');
+    const arrow = el('itinArrow');
+    const isOpen = body.style.maxHeight !== '0px' && body.style.maxHeight !== '';
+    if (isOpen) {
+      body.style.maxHeight = '0';
+      arrow.style.transform = '';
+    } else {
+      body.style.maxHeight = body.scrollHeight + 'px';
+      arrow.style.transform = 'rotate(180deg)';
+    }
+  }
 
   function totalRooms() {
     return Object.values(S.roomCounts).reduce((s, c) => s + c, 0);
