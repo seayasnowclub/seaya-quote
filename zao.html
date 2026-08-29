@@ -229,6 +229,17 @@
     .tier-saving.mid { color: var(--warn); }
     .tier-pp { font-size: 11px; color: var(--muted); }
 
+    .preset-btn {
+      flex: 1; padding: 12px 8px; border: 1.5px solid var(--border);
+      border-radius: 12px; background: var(--bg); cursor: pointer;
+      font-family: inherit; text-align: center; transition: all 0.15s;
+      touch-action: manipulation;
+    }
+    .preset-btn:hover { border-color: var(--accent); }
+    .preset-btn.active { background: var(--accent-soft); border-color: var(--accent); }
+    .preset-ratio { font-size: 15px; font-weight: 700; color: var(--text); }
+    .preset-sub { font-size: 11px; color: var(--muted); margin-top: 3px; }
+    .preset-btn.active .preset-ratio { color: var(--accent); }
     .badge {
       display: inline-block; font-size: 11px; font-weight: 600;
       padding: 2px 7px; border-radius: 6px;
@@ -378,6 +389,26 @@
           </div>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- 快速試算 -->
+  <div class="card">
+    <div class="card-title">快速試算</div>
+    <div style="font-size:12px;color:var(--muted);margin-bottom:14px">選人數比，自動帶入「3 天 2 夜・2 天課・2 晚住宿・2 天雪具」基本配置，可再調整下方細節。</div>
+    <div style="display:flex;gap:8px">
+      <button class="preset-btn" onclick="applyPreset(2,this)">
+        <div class="preset-ratio">一對二</div>
+        <div class="preset-sub">2 人組</div>
+      </button>
+      <button class="preset-btn" onclick="applyPreset(3,this)">
+        <div class="preset-ratio">一對三</div>
+        <div class="preset-sub">3 人組</div>
+      </button>
+      <button class="preset-btn" onclick="applyPreset(4,this)">
+        <div class="preset-ratio">一對四</div>
+        <div class="preset-sub">4 人組</div>
+      </button>
     </div>
   </div>
 
@@ -745,6 +776,34 @@
   // ── 工具函式 ───────────────────────────────────────────
   function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
   function el(id) { return document.getElementById(id); }
+
+  function applyPreset(persons, btn) {
+    S.courseGroups = [{ persons: persons, fullDays: 2 }];
+    renderCourseGroups();
+
+    // 重置住宿
+    S.roomCounts.twin = 0; S.roomCounts.family = 0;
+    el('twinCountVal').textContent = 0;
+    el('familyCountVal').textContent = 0;
+    if (persons <= 2) {
+      S.roomCounts.twin = 1; el('twinCountVal').textContent = 1;
+    } else {
+      S.roomCounts.family = 1; el('familyCountVal').textContent = 1;
+    }
+    S.roomNights = 2; el('roomNightsVal').textContent = 2;
+
+    // 雪具
+    S.gearPersons = persons; S.gearDays = 2;
+    el('gearPersonsVal').textContent = persons;
+    el('gearDaysVal').textContent = 2;
+
+    calculate();
+
+    document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    btn.closest('.card').nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 
   function toggleItinerary() {
     const body = el('itinBody');
