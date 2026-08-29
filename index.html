@@ -108,6 +108,7 @@
       font-size: 20px; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
       transition: color 0.15s, background 0.15s;
+      touch-action: manipulation;
     }
     .step-btn:hover { background: var(--border); color: var(--text); }
     .step-val {
@@ -334,7 +335,7 @@
           <div style="flex-shrink:0;background:var(--surface);border:1.5px solid var(--border);color:var(--text);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;margin-top:2px">Day 1</div>
           <div>
             <div style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px">入住・預備日</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.8">與六花旅館聯繫入住時間，抵達車站後六花旅館提供接駁接送。當天晚上前往<a href="https://reserve.seayasnowclub.com/?store=yuzawa" target="_blank" style="color:var(--accent);text-decoration:none">雪具店</a>租借（在六花旅館地下一樓，18:00–21:00），隔天就可以一早出發。住宿期間，往返車站與雪場的接駁皆由六花旅館提供，可事先預約時段。<br><span style="color:var(--accent);font-weight:500">備註：15:00 以後可以進房。</span></div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.8">與六花旅館聯繫入住時間，抵達車站後六花旅館提供接駁接送。當天晚上前往<a href="https://reserve.seayasnowclub.com/?store=yuzawa" target="_blank" style="color:var(--accent);text-decoration:none">雪具店</a>租借（在六花旅館地下一樓，18:00–21:00），隔天就可以一早出發。住宿期間，往返車站與雪場的接駁皆由六花旅館提供，可事先預約時段。<br><span style="color:var(--accent);font-weight:500">備註：15:00 以後可以進房。</span><br><span style="color:var(--accent);font-weight:500">建議：20:00 前抵達湯澤以利完成雪具租借。</span></div>
           </div>
         </div>
 
@@ -434,9 +435,9 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <label>六疊房</label>
         <div class="toggle-sub" style="margin-top:2px;margin-bottom:10px">建議 2 人・上限 3 人・共 8 間</div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
           <button class="bed-toggle" data-bed="rokka_6">加床選項 ▾</button>
-          <div style="display:flex;align-items:center">
+          <div style="display:flex;align-items:center;margin-left:auto">
             <div class="stepper">
               <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_6">−</button>
               <div class="step-val" id="roomCounts_rokka_6Val">0</div>
@@ -465,9 +466,9 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <label>八疊房</label>
         <div class="toggle-sub" style="margin-top:2px;margin-bottom:10px">建議 3 人・上限 4 人・共 1 間</div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
           <button class="bed-toggle" data-bed="rokka_8">加床選項 ▾</button>
-          <div style="display:flex;align-items:center">
+          <div style="display:flex;align-items:center;margin-left:auto">
             <div class="stepper">
               <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_8">−</button>
               <div class="step-val" id="roomCounts_rokka_8Val">0</div>
@@ -496,9 +497,9 @@
       <div style="flex:1;padding:12px 14px;min-width:0">
         <label>大和室</label>
         <div class="toggle-sub" style="margin-top:2px;margin-bottom:10px">建議 5 人・上限 6 人・共 1 間</div>
-        <div style="display:flex;align-items:center;justify-content:space-between">
+        <div style="display:flex;align-items:center;flex-wrap:wrap;gap:8px">
           <button class="bed-toggle" data-bed="rokka_wa">加床選項 ▾</button>
-          <div style="display:flex;align-items:center">
+          <div style="display:flex;align-items:center;margin-left:auto">
             <div class="stepper">
               <button class="step-btn" data-action="dec" data-target="roomCounts.rokka_wa">−</button>
               <div class="step-val" id="roomCounts_rokka_waVal">0</div>
