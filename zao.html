@@ -927,14 +927,13 @@
 
   // ── 住宿費計算 ─────────────────────────────────────────
   function calcRoomCost(roomTier) {
-    if (!S.checkIn || S.roomNights === 0) return 0;
+    if (S.roomNights === 0) return 0;
     const twin = S.roomCounts.twin;
     const family = S.roomCounts.family;
     if (twin === 0 && family === 0) return 0;
     let total = 0;
     for (let i = 0; i < S.roomNights; i++) {
-      const key = dateKey(S.checkIn, i);
-      const isHol = HOLIDAYS.has(key);
+      const isHol = S.checkIn ? HOLIDAYS.has(dateKey(S.checkIn, i)) : false;
       if (twin > 0) {
         const r = ROOM.twin[roomTier];
         total += (isHol ? r.holiday : r.weekday) * twin;
@@ -1046,7 +1045,7 @@
     const stats = getNightStats();
     const twin = S.roomCounts.twin;
     const family = S.roomCounts.family;
-    const hasRoom = (twin > 0 || family > 0) && S.roomNights > 0 && S.checkIn;
+    const hasRoom = (twin > 0 || family > 0) && S.roomNights > 0;
     if (hasRoom) {
       const parts = [];
       if (twin > 0) parts.push(`${ROOM.twin.name} × ${twin} 間`);
@@ -1055,7 +1054,8 @@
         if (S.extraPersons > 0) s += `（加 ${S.extraPersons} 人）`;
         parts.push(s);
       }
-      el('sumRoomSummary').innerHTML = `住宿：<b>${parts.join('、')} × ${S.roomNights} 晚</b>`;
+      const estNote = S.checkIn ? '' : '　<span style="font-size:11px;font-weight:400;color:var(--muted)">平日費率估算，選日期後更新</span>';
+      el('sumRoomSummary').innerHTML = `住宿：<b>${parts.join('、')} × ${S.roomNights} 晚</b>${estNote}`;
 
       // 夜晚明細
       if (stats) {
