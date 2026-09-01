@@ -610,50 +610,55 @@
 
   <!-- 取消退款規定 -->
   <div class="result-card" style="margin-top:16px">
-    <div class="result-header">取消退款規定</div>
-    <div style="padding:0 20px 16px; font-size:13px; line-height:1.8; color:var(--text)">
-      <div style="background:#fff8f0;border-left:3px solid var(--accent);border-radius:6px;padding:10px 14px;margin-bottom:12px;line-height:1.9">
-        <span style="color:var(--accent);font-weight:700">30% 訂金</span>於預約時收取以保留名額<br>
-        <span style="color:var(--accent);font-weight:700">70% 尾款</span>於開課前一個月結清，現場不收費
+    <button onclick="toggleCancel()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--border);border:none;border-radius:0;padding:14px 20px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);touch-action:manipulation">
+      <span>取消退款規定</span>
+      <span id="cancelArrow" style="font-size:12px;font-weight:400;letter-spacing:0;transition:transform .25s;text-transform:none">▾</span>
+    </button>
+    <div id="cancelBody" style="overflow:hidden;max-height:0;transition:max-height .35s ease">
+      <div style="padding:0 20px 16px; font-size:13px; line-height:1.8; color:var(--text)">
+        <div style="background:#fff8f0;border-left:3px solid var(--accent);border-radius:6px;padding:10px 14px;margin:12px 0;line-height:1.9">
+          <span style="color:var(--accent);font-weight:700">30% 訂金</span>於預約時收取以保留名額<br>
+          <span style="color:var(--accent);font-weight:700">70% 尾款</span>於開課前一個月結清，現場不收費
+        </div>
+        <strong>更改日期</strong><br>
+        純課程開課 30 天前可免費更改日期，需與客服協調調整，限當季雪季。<br><br>
+        <strong>純課程退款</strong>
+        <table style="width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:13px">
+          <thead>
+            <tr style="background:var(--muted);color:var(--text)">
+              <th style="padding:7px 10px;text-align:left;font-weight:600">取消時間</th>
+              <th style="padding:7px 10px;text-align:center;font-weight:600">退款比例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:7px 10px">30 天以前</td>
+              <td style="padding:7px 10px;text-align:center;font-weight:600">全額退款</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:7px 10px">15–29 天前</td>
+              <td style="padding:7px 10px;text-align:center">50%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:7px 10px">7–14 天前</td>
+              <td style="padding:7px 10px;text-align:center">30%</td>
+            </tr>
+            <tr style="border-bottom:1px solid var(--border)">
+              <td style="padding:7px 10px">1–6 天前</td>
+              <td style="padding:7px 10px;text-align:center">10%</td>
+            </tr>
+            <tr>
+              <td style="padding:7px 10px;color:var(--muted)">當天取消</td>
+              <td style="padding:7px 10px;text-align:center;color:var(--muted)">不退費</td>
+            </tr>
+          </tbody>
+        </table>
+        <strong>含住宿／雪具包套退款</strong><br>
+        開課前 61 天以前取消：退回已收款項 60%<br>
+        開課前 60 至 31 天取消：退回已收款項 40%<br>
+        開課前 30 天至當日：不接受取消（可轉讓給友人）<br><br>
+        所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。
       </div>
-      <strong>更改日期</strong><br>
-      純課程開課 30 天前可免費更改日期，需與客服協調調整，限當季雪季。<br><br>
-      <strong>純課程退款</strong>
-      <table style="width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:13px">
-        <thead>
-          <tr style="background:var(--muted);color:var(--text)">
-            <th style="padding:7px 10px;text-align:left;font-weight:600">取消時間</th>
-            <th style="padding:7px 10px;text-align:center;font-weight:600">退款比例</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px">30 天以前</td>
-            <td style="padding:7px 10px;text-align:center;font-weight:600">全額退款</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px">15–29 天前</td>
-            <td style="padding:7px 10px;text-align:center">50%</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px">7–14 天前</td>
-            <td style="padding:7px 10px;text-align:center">30%</td>
-          </tr>
-          <tr style="border-bottom:1px solid var(--border)">
-            <td style="padding:7px 10px">1–6 天前</td>
-            <td style="padding:7px 10px;text-align:center">10%</td>
-          </tr>
-          <tr>
-            <td style="padding:7px 10px;color:var(--muted)">當天取消</td>
-            <td style="padding:7px 10px;text-align:center;color:var(--muted)">不退費</td>
-          </tr>
-        </tbody>
-      </table>
-      <strong>含住宿／雪具包套退款</strong><br>
-      開課前 61 天以前取消：退回已收款項 60%<br>
-      開課前 60 至 31 天取消：退回已收款項 40%<br>
-      開課前 30 天至當日：不接受取消（可轉讓給友人）<br><br>
-      所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。
     </div>
   </div>
 
@@ -930,6 +935,14 @@
     btn.classList.add('active');
 
     btn.closest('.card').nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function toggleCancel() {
+    const body = el('cancelBody');
+    const arrow = el('cancelArrow');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+    arrow.style.transform = isOpen ? '' : 'rotate(180deg)';
   }
 
   function toggleItinerary() {
