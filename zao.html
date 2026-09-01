@@ -334,20 +334,26 @@
   <div class="card">
     <div class="card-title">行程怎麼安排？</div>
 
-    <!-- 方案選擇 -->
-    <div style="display:flex;gap:6px;margin-bottom:16px">
-      <button id="planBtn_p1" onclick="selectPlan('p1')" style="flex:1;background:var(--accent);border:none;border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
-        <div id="planTitle_p1" style="font-size:12px;font-weight:700;color:#fff">3天2夜</div>
-        <div id="planSub_p1" style="font-size:10px;color:rgba(255,255,255,.8);margin-top:2px">2天課</div>
+    <!-- 天數選擇（第一層） -->
+    <div style="display:flex;gap:8px;margin-bottom:10px">
+      <button id="durBtn_3d2n" onclick="selectDuration('3d2n')" style="flex:1;background:var(--accent);border:none;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="durTitle_3d2n" style="font-size:13px;font-weight:700;color:#fff">3天2夜</div>
       </button>
-      <button id="planBtn_p2" onclick="selectPlan('p2')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
-        <div id="planTitle_p2" style="font-size:12px;font-weight:700;color:var(--text)">4天3夜</div>
-        <div id="planSub_p2" style="font-size:10px;color:var(--muted);margin-top:2px">2課＋自滑</div>
+      <button id="durBtn_4d3n" onclick="selectDuration('4d3n')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="durTitle_4d3n" style="font-size:13px;font-weight:700;color:var(--text)">4天3夜</div>
       </button>
-      <button id="planBtn_p3" onclick="selectPlan('p3')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:10px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
-        <div id="planTitle_p3" style="font-size:12px;font-weight:700;color:var(--text)">4天3夜</div>
-        <div id="planSub_p3" style="font-size:10px;color:var(--muted);margin-top:2px">3天課</div>
+      <button id="durBtn_custom" onclick="selectDuration('custom')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="durTitle_custom" style="font-size:11px;font-weight:700;color:var(--muted)">我要自己規劃</div>
       </button>
+    </div>
+
+    <!-- 課程安排下拉（第二層，4天3夜才顯示） -->
+    <div id="subSelector" style="display:none;position:relative;margin-bottom:16px">
+      <select id="subPlanSelect" onchange="selectPlan(this.value)" style="width:100%;padding:10px 14px;padding-right:36px;border:1.5px solid var(--accent);border-radius:10px;font-size:13px;font-weight:600;color:var(--text);background:var(--surface);font-family:inherit;cursor:pointer;-webkit-appearance:none;appearance:none;outline:none">
+        <option value="p3">3天課（連續上課）</option>
+        <option value="p2">2天課＋1天自滑</option>
+      </select>
+      <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:11px">▾</div>
     </div>
 
     <!-- 行程公式（動態） -->
@@ -365,7 +371,7 @@
   </div>
 
   <!-- 快速試算 -->
-  <div class="card">
+  <div class="card" id="presetCard">
     <div class="card-title">快速試算</div>
     <div style="font-size:12px;color:var(--muted);margin-bottom:14px" id="presetDesc"></div>
     <div style="display:flex;gap:8px">
@@ -807,18 +813,44 @@
 
   let selectedPlan = 'p1';
 
+  const DUR_IDS = ['3d2n', '4d3n', 'custom'];
+
+  function selectDuration(dur) {
+    DUR_IDS.forEach(id => {
+      const active = id === dur;
+      const btn = el('durBtn_' + id);
+      const title = el('durTitle_' + id);
+      btn.style.background = active ? 'var(--accent)' : 'var(--surface)';
+      btn.style.border = active ? 'none' : '1.5px solid var(--border)';
+      title.style.color = active ? '#fff' : (id === 'custom' ? 'var(--muted)' : 'var(--text)');
+    });
+
+    if (dur === '3d2n') {
+      el('subSelector').style.display = 'none';
+      el('presetCard').style.display = '';
+      selectPlan('p1');
+    } else if (dur === '4d3n') {
+      el('subSelector').style.display = 'block';
+      el('presetCard').style.display = '';
+      selectPlan(el('subPlanSelect').value || 'p3');
+    } else {
+      el('subSelector').style.display = 'none';
+      el('presetCard').style.display = 'none';
+      el('itinFormula').style.display = 'none';
+      el('itinToggle').style.display = 'none';
+      el('itinBody').style.maxHeight = '0';
+      el('itinArrow').style.transform = '';
+      el('itinContent').innerHTML =
+        '<div style="font-size:12px;color:var(--muted);line-height:1.8;padding:4px 0">請直接使用下方各項目自行調整天數與人數。</div>';
+    }
+  }
+
   function selectPlan(planId) {
     selectedPlan = planId;
     const plan = PLANS[planId];
 
-    ['p1', 'p2', 'p3'].forEach(id => {
-      const active = id === planId;
-      const btn = el('planBtn_' + id);
-      btn.style.background = active ? 'var(--accent)' : 'var(--surface)';
-      btn.style.border = active ? 'none' : '1.5px solid var(--border)';
-      el('planTitle_' + id).style.color = active ? '#fff' : 'var(--text)';
-      el('planSub_' + id).style.color = active ? 'rgba(255,255,255,.8)' : 'var(--muted)';
-    });
+    el('itinFormula').style.display = '';
+    el('itinToggle').style.display = '';
 
     el('itinFormula').innerHTML =
       `<div style="background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:8px 14px;text-align:center">
@@ -1323,7 +1355,7 @@
   renderCalendar();
   renderCourseGroups();
   calculate();
-  selectPlan('p1');
+  selectDuration('3d2n');
 </script>
 </body>
 </html>
