@@ -307,8 +307,23 @@
     </nav>
   </header>
 
-  <!-- 行程流程說明 -->
+  <!-- 入口選擇 -->
   <div class="card">
+    <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:12px">你想怎麼開始？</div>
+    <div style="display:flex;gap:8px">
+      <button id="modeBtn_guided" onclick="selectMode('guided')" style="flex:1;background:var(--accent);border:none;border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="modeTitle_guided" style="font-size:13px;font-weight:700;color:#fff">幫我推薦行程安排</div>
+        <div id="modeSub_guided" style="font-size:10px;color:rgba(255,255,255,.8);margin-top:4px">選好日期自動帶入</div>
+      </button>
+      <button id="modeBtn_custom" onclick="selectMode('custom')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="modeTitle_custom" style="font-size:13px;font-weight:700;color:var(--text)">我想自己規劃</div>
+        <div id="modeSub_custom" style="font-size:10px;color:var(--muted);margin-top:4px">直接調整下方項目</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 行程流程說明 -->
+  <div class="card" id="itinCard">
     <div class="card-title">行程怎麼安排？</div>
 
     <!-- 天數選擇（第一層） -->
@@ -318,9 +333,6 @@
       </button>
       <button id="durBtn_4d3n" onclick="selectDuration('4d3n')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
         <div id="durTitle_4d3n" style="font-size:13px;font-weight:700;color:var(--text)">4天3夜</div>
-      </button>
-      <button id="durBtn_custom" onclick="selectDuration('custom')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
-        <div id="durTitle_custom" style="font-size:11px;font-weight:700;color:var(--muted)">我要自己規劃</div>
       </button>
     </div>
 
@@ -332,6 +344,14 @@
       </select>
       <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:11px">▾</div>
     </div>
+
+    <!-- 抵達日期 -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">預計抵達湯澤日期</div>
+      <input type="date" id="arrivalDateInput" min="2026-12-20" max="2027-03-29"
+        style="width:100%;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none;display:block">
+    </div>
+    <div id="arrivalSummary" style="display:none;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);overflow:hidden"></div>
 
     <!-- 行程公式（動態） -->
     <div id="itinFormula" style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap"></div>
@@ -368,19 +388,12 @@
   </div>
 
   <!-- 課程（英雄照片 + 卡片合體） -->
-  <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border)">
+  <div id="courseSection" style="border-radius:14px;overflow:hidden;border:1px solid var(--border)">
     <img src="images/hero_snow5.jpg" alt="雪坡合照" style="width:100%;height:260px;object-fit:cover;object-position:center 70%;display:block">
     <div class="card" style="border-radius:0;border:none">
       <div class="card-title">Seaya 單板滑雪課程</div>
       <div style="font-size:13px;color:var(--muted);margin-bottom:14px"><span style="color:var(--accent)">📍岩原滑雪場</span>（若因雪況或程度調整，可與教練討論）</div>
-      <div style="margin-bottom:16px">
-        <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">上課開始日期</div>
-        <input type="date" id="courseDateInput" min="2026-12-20" max="2027-03-29"
-          style="width:100%;box-sizing:border-box;
-                 border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;
-                 font-size:15px;font-family:inherit;background:var(--bg);color:var(--text);
-                 outline:none;cursor:pointer;-webkit-appearance:none;display:block">
-      </div>
+      <input type="date" id="courseDateInput" style="display:none">
       <div class="group-label" style="margin-bottom:10px">課程分組（可新增多組，各自選人數與天數）</div>
       <div class="toggle-sub" style="margin-bottom:12px">全日課 9:30–15:30・5＋1 小時，共 6H（含 1 小時午休）</div>
       <div id="courseGroupsContainer"></div>
@@ -412,7 +425,7 @@
       </div>
       <div class="shuttle">🚐 提供免費車站、雪場往返接駁</div>
     </div>
-    <div style="margin-top:16px;margin-bottom:16px">
+    <div id="checkInDateSection" style="margin-top:16px;margin-bottom:16px">
       <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px">
         入住日期 <span style="font-size:11px;font-weight:400;color:var(--muted)">（選填）</span>
       </div>
@@ -642,6 +655,17 @@
 
   <div class="note" style="margin-top:10px">主辦單位保留一切修改之權利，試算表供參考，確認預訂後將再次審核才收取訂金。若有其他客製化需求，請洽客服人工報價。</div>
 
+  <!-- 行程排程預覽 -->
+  <div class="result-card" style="margin-top:16px">
+    <button onclick="toggleItinPreview()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--border);border:none;border-radius:0;padding:14px 20px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);touch-action:manipulation">
+      <span>查看行程排程</span>
+      <span id="itinPreviewArrow" style="font-size:12px;font-weight:400;letter-spacing:0;transition:transform .25s;text-transform:none">▾</span>
+    </button>
+    <div id="itinPreviewBody" style="overflow:hidden;max-height:0;transition:max-height .35s ease">
+      <div id="itinPreviewContent" style="padding:16px 20px;font-size:13px;color:var(--muted)">請先選擇方案並輸入抵達日期，即可查看完整行程排程。</div>
+    </div>
+  </div>
+
   <!-- 取消退款規定 -->
   <div class="result-card" style="margin-top:16px">
     <button onclick="toggleCancel()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--border);border:none;border-radius:0;padding:14px 20px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);touch-action:manipulation">
@@ -828,7 +852,32 @@
 
   let selectedPlan = 'p1';
 
-  const DUR_IDS = ['3d2n', '4d3n', 'custom'];
+  const DUR_IDS = ['3d2n', '4d3n'];
+
+  function selectMode(mode) {
+    const guided = mode === 'guided';
+    el('modeBtn_guided').style.background = guided ? 'var(--accent)' : 'var(--surface)';
+    el('modeBtn_guided').style.border = guided ? 'none' : '1.5px solid var(--border)';
+    el('modeTitle_guided').style.color = guided ? '#fff' : 'var(--text)';
+    el('modeSub_guided').style.color = guided ? 'rgba(255,255,255,.8)' : 'var(--muted)';
+    el('modeBtn_custom').style.background = !guided ? 'var(--accent)' : 'var(--surface)';
+    el('modeBtn_custom').style.border = !guided ? 'none' : '1.5px solid var(--border)';
+    el('modeTitle_custom').style.color = !guided ? '#fff' : 'var(--text)';
+    el('modeSub_custom').style.color = !guided ? 'rgba(255,255,255,.8)' : 'var(--muted)';
+
+    if (guided) {
+      el('itinCard').style.display = '';
+      el('presetCard').style.display = '';
+      el('checkInDateSection').style.display = 'none';
+    } else {
+      el('itinCard').style.display = 'none';
+      el('presetCard').style.display = 'none';
+      el('checkInDateSection').style.display = '';
+      setTimeout(() => {
+        el('courseSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  }
 
   function selectDuration(dur) {
     DUR_IDS.forEach(id => {
@@ -837,26 +886,15 @@
       const title = el('durTitle_' + id);
       btn.style.background = active ? 'var(--accent)' : 'var(--surface)';
       btn.style.border = active ? 'none' : '1.5px solid var(--border)';
-      title.style.color = active ? '#fff' : (id === 'custom' ? 'var(--muted)' : 'var(--text)');
+      title.style.color = active ? '#fff' : 'var(--text)';
     });
 
     if (dur === '3d2n') {
       el('subSelector').style.display = 'none';
-      el('presetCard').style.display = '';
       selectPlan('p1');
-    } else if (dur === '4d3n') {
-      el('subSelector').style.display = 'block';
-      el('presetCard').style.display = '';
-      selectPlan(el('subPlanSelect').value || 'p3');
     } else {
-      el('subSelector').style.display = 'none';
-      el('presetCard').style.display = 'none';
-      el('itinFormula').style.display = 'none';
-      el('itinToggle').style.display = 'none';
-      el('itinBody').style.maxHeight = '0';
-      el('itinArrow').style.transform = '';
-      el('itinContent').innerHTML =
-        '<div style="font-size:12px;color:var(--muted);line-height:1.8;padding:4px 0">請直接使用下方各項目自行調整天數與人數。</div>';
+      el('subSelector').style.display = 'block';
+      selectPlan(el('subPlanSelect').value || 'p3');
     }
   }
 
@@ -915,6 +953,81 @@
       `選人數比，自動帶入「${plan.label}・${plan.roomNights} 晚住宿・${plan.gearDays} 天雪具」配置，可再調整下方細節。`;
 
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+
+    const arrVal = el('arrivalDateInput') ? el('arrivalDateInput').value : '';
+    if (arrVal) renderArrivalSummary(arrVal);
+  }
+
+  const DAYS_TW = ['日', '一', '二', '三', '四', '五', '六'];
+
+  function fmtDate(y, m, d) {
+    const date = new Date(y, m - 1, d);
+    return `${date.getMonth()+1}/${date.getDate()}（${DAYS_TW[date.getDay()]}）`;
+  }
+
+  function renderArrivalSummary(arrStr) {
+    const box = el('arrivalSummary');
+    if (!arrStr || !selectedPlan) { box.style.display = 'none'; return; }
+    const plan = PLANS[selectedPlan];
+    const [y, m, d] = arrStr.split('-').map(Number);
+    let html = '';
+    plan.days.forEach((day, i) => {
+      const tagStyle = day.accent
+        ? 'background:var(--accent);color:#fff'
+        : 'background:var(--surface);border:1px solid var(--border);color:var(--text)';
+      const border = i < plan.days.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
+      html += `<div style="display:flex;gap:10px;align-items:center;padding:9px 14px;${border}">
+        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px">${day.n}</div>
+        <div style="font-size:12px;color:var(--muted);min-width:80px;font-weight:500">${fmtDate(y, m, d + i)}</div>
+        <div style="font-size:12px;color:var(--text);font-weight:600">${day.title}</div>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = 'block';
+  }
+
+  function renderItinPreview() {
+    const content = el('itinPreviewContent');
+    const arrStr = el('arrivalDateInput').value;
+    if (!arrStr || !selectedPlan) {
+      content.innerHTML = '<div style="color:var(--muted)">請先選擇方案並輸入抵達日期，即可查看完整行程排程。</div>';
+      return;
+    }
+    const plan = PLANS[selectedPlan];
+    const [y, m, d] = arrStr.split('-').map(Number);
+    let html = '';
+    plan.days.forEach((day, i) => {
+      const tagStyle = day.accent
+        ? 'background:var(--accent);color:#fff'
+        : 'background:var(--surface);border:1px solid var(--border);color:var(--text)';
+      const border = i < plan.days.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
+      html += `<div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;${border}">
+        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;margin-top:2px">${day.n}</div>
+        <div>
+          <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px">${fmtDate(y, m, d + i)}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${day.title}</div>
+        </div>
+      </div>`;
+    });
+    content.innerHTML = html;
+    const body = el('itinPreviewBody');
+    if (body.style.maxHeight && body.style.maxHeight !== '0px') {
+      requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+    }
+  }
+
+  function toggleItinPreview() {
+    renderItinPreview();
+    const body = el('itinPreviewBody');
+    const arrow = el('itinPreviewArrow');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    if (isOpen) {
+      body.style.maxHeight = '0';
+      arrow.style.transform = '';
+    } else {
+      requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+      arrow.style.transform = 'rotate(180deg)';
+    }
   }
 
   function applyPreset(persons, btn) {
@@ -1301,6 +1414,7 @@
   renderCourseGroups();
   applyTierVisibility();
   calculate();
+  selectMode('guided');
   selectDuration('3d2n');
 
   // ── 住宿已滿日期（客人選到這些日期，住宿區鎖起來）──
@@ -1337,6 +1451,23 @@
     }
     calculate();
   }
+
+  el('arrivalDateInput').addEventListener('change', function() {
+    const val = this.value;
+    el('checkInDateInput').value = val;
+    if (val) {
+      const [y, m, d] = val.split('-').map(Number);
+      const cd = new Date(y, m - 1, d + 1);
+      el('courseDateInput').value =
+        `${cd.getFullYear()}-${String(cd.getMonth()+1).padStart(2,'0')}-${String(cd.getDate()).padStart(2,'0')}`;
+    } else {
+      el('courseDateInput').value = '';
+    }
+    applyRoomLock(isDateFull(val));
+    renderArrivalSummary(val);
+    renderItinPreview();
+    calculate();
+  });
 
   el('checkInDateInput').addEventListener('change', e => {
     applyRoomLock(isDateFull(e.target.value));
