@@ -326,7 +326,17 @@
   <div class="card" id="itinCard">
     <div class="card-title">行程怎麼安排？</div>
 
-    <!-- 天數選擇（第一層） -->
+    <!-- 抵達日期 -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">預計抵達湯澤日期</div>
+      <input type="date" id="arrivalDateInput" min="2026-12-20" max="2027-03-29"
+        style="width:100%;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none;display:block">
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6">抵達當天辦理入住・租借雪具，隔天起正式上課。建議 15:00 後到達、20:00 前完成雪具租借（18:00–21:00）。</div>
+    </div>
+    <div id="arrivalSummary" style="display:none;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);overflow:hidden"></div>
+
+    <!-- 行程天數 -->
+    <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.05em;margin-bottom:8px">行程天數</div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <button id="durBtn_3d2n" onclick="selectDuration('3d2n')" style="flex:1;background:var(--accent);border:none;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
         <div id="durTitle_3d2n" style="font-size:13px;font-weight:700;color:#fff">3天2夜</div>
@@ -344,14 +354,6 @@
       </select>
       <div style="position:absolute;right:14px;top:50%;transform:translateY(-50%);pointer-events:none;color:var(--muted);font-size:11px">▾</div>
     </div>
-
-    <!-- 抵達日期 -->
-    <div style="margin-bottom:16px">
-      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">預計抵達湯澤日期</div>
-      <input type="date" id="arrivalDateInput" min="2026-12-20" max="2027-03-29"
-        style="width:100%;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none;display:block">
-    </div>
-    <div id="arrivalSummary" style="display:none;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);overflow:hidden"></div>
 
     <!-- 行程公式（動態） -->
     <div id="itinFormula" style="display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap"></div>
@@ -792,11 +794,13 @@
   const _GS = '<a href="https://reserve.seayasnowclub.com/?store=yuzawa" target="_blank" style="color:var(--accent);text-decoration:none">雪具店</a>';
   const _D1 = {
     n: 'Day 1', accent: false, title: '入住・預備日',
+    sub: '15:00 辦理入住 ／ 18:00–21:00 租借雪具',
     body: `與六花旅館聯繫入住時間，抵達車站後六花旅館提供接駁接送。當天晚上前往${_GS}租借（在六花旅館地下一樓，18:00–21:00），隔天就可以一早出發。住宿期間，往返車站與雪場的接駁皆由六花旅館提供，可事先預約時段。`,
     notes: ['15:00 以後可以進房。', '建議 20:00 前抵達湯澤以利完成雪具租借。']
   };
   const _D2 = {
     n: 'Day 2', accent: true, title: '正式上課',
+    sub: '09:30 集合出發 ／ 15:30 下課・旅館接駁',
     body: '早上前往岩原雪場，與 Seaya 教練會合後開始全日課（9:30–15:30）。下課後由六花旅館接駁返回住宿；若需前往車站吃晚餐，可預約六花旅館接駁往返。'
   };
 
@@ -811,6 +815,7 @@
         _D1, _D2,
         {
           n: 'Day 3', accent: true, title: '正式上課・回程',
+          sub: '09:30 上課 ／ 15:30 下課後歸還雪具・搭接駁至車站',
           body: '早上上完全日課（9:30–15:30）後，返回六花旅館歸還雪具（地下一樓雪具店）。六花旅館提供接駁送至越後湯澤車站，踏上回程。',
           notes: ['建議選擇 18:00 以後的班次。若需提早離開，可與教練協調調整上課時間。']
         }
@@ -824,9 +829,10 @@
       formulaLast: { title: '自滑＋回程', sub: '還雪具・搭車' },
       days: [
         _D1, _D2,
-        { n: 'Day 3', accent: true, title: '正式上課', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
+        { n: 'Day 3', accent: true, title: '正式上課', sub: '09:30 集合出發 ／ 15:30 下課・旅館接駁', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
         {
           n: 'Day 4', accent: false, title: '自由滑雪・回程',
+          sub: '自由練習 ／ 15:30 前歸還雪具・搭接駁至車站',
           body: '今日無教練課程，自由在岩原雪場練習。結束後返回六花旅館，將雪具歸還至地下一樓雪具店。六花旅館提供接駁送至越後湯澤車站，踏上回程。',
           notes: ['建議選擇 18:00 以後的班次。']
         }
@@ -840,9 +846,10 @@
       formulaLast: { title: '課程＋回程', sub: '還雪具・搭車' },
       days: [
         _D1, _D2,
-        { n: 'Day 3', accent: true, title: '正式上課', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
+        { n: 'Day 3', accent: true, title: '正式上課', sub: '09:30 集合出發 ／ 15:30 下課・旅館接駁', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
         {
           n: 'Day 4', accent: true, title: '正式上課・回程',
+          sub: '09:30 上課 ／ 15:30 下課後歸還雪具・搭接駁至車站',
           body: '早上上完全日課（9:30–15:30）後，返回六花旅館歸還雪具（地下一樓雪具店）。六花旅館提供接駁送至越後湯澤車站，踏上回程。',
           notes: ['建議選擇 18:00 以後的班次。若需提早離開，可與教練協調調整上課時間。']
         }
@@ -976,10 +983,15 @@
         ? 'background:var(--accent);color:#fff'
         : 'background:var(--surface);border:1px solid var(--border);color:var(--text)';
       const border = i < plan.days.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
-      html += `<div style="display:flex;gap:10px;align-items:center;padding:9px 14px;${border}">
-        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px">${day.n}</div>
-        <div style="font-size:12px;color:var(--muted);min-width:80px;font-weight:500">${fmtDate(y, m, d + i)}</div>
-        <div style="font-size:12px;color:var(--text);font-weight:600">${day.title}</div>
+      html += `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;${border}">
+        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;margin-top:2px">${day.n}</div>
+        <div style="flex:1">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="font-size:12px;color:var(--muted);font-weight:500;min-width:76px">${fmtDate(y, m, d + i)}</div>
+            <div style="font-size:12px;color:var(--text);font-weight:600">${day.title}</div>
+          </div>
+          ${day.sub ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">${day.sub}</div>` : ''}
+        </div>
       </div>`;
     });
     box.innerHTML = html;
@@ -1006,6 +1018,7 @@
         <div>
           <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px">${fmtDate(y, m, d + i)}</div>
           <div style="font-size:13px;font-weight:700;color:var(--text)">${day.title}</div>
+          ${day.sub ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">${day.sub}</div>` : ''}
         </div>
       </div>`;
     });

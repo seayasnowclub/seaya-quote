@@ -330,20 +330,42 @@
     </nav>
   </header>
 
-  <!-- 行程流程說明 -->
+  <!-- 模式選擇 -->
   <div class="card">
+    <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.5px;margin-bottom:12px">你想怎麼開始？</div>
+    <div style="display:flex;gap:8px">
+      <button id="modeBtn_guided" onclick="selectMode('guided')" style="flex:1;background:var(--accent);border:none;border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="modeTitle_guided" style="font-size:13px;font-weight:700;color:#fff">幫我推薦行程安排</div>
+        <div id="modeSub_guided" style="font-size:10px;color:rgba(255,255,255,.8);margin-top:4px">選好日期自動帶入</div>
+      </button>
+      <button id="modeBtn_custom" onclick="selectMode('custom')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:16px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
+        <div id="modeTitle_custom" style="font-size:13px;font-weight:700;color:var(--text)">我想自己規劃</div>
+        <div id="modeSub_custom" style="font-size:10px;color:var(--muted);margin-top:4px">直接調整下方項目</div>
+      </button>
+    </div>
+  </div>
+
+  <!-- 行程流程說明 -->
+  <div class="card" id="itinCard">
     <div class="card-title">行程怎麼安排？</div>
 
-    <!-- 天數選擇（第一層） -->
+    <!-- 抵達日期 -->
+    <div style="margin-bottom:12px">
+      <div style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px">預計抵達藏王日期</div>
+      <input type="date" id="arrivalDateInput" min="2026-12-20" max="2027-03-31"
+        style="width:100%;box-sizing:border-box;border:1.5px solid var(--border);border-radius:10px;padding:11px 14px;font-size:15px;font-family:inherit;background:var(--surface);color:var(--text);outline:none;cursor:pointer;-webkit-appearance:none;display:block">
+      <div style="font-size:11px;color:var(--muted);margin-top:6px;line-height:1.6">抵達當天辦理入住・租借雪具，隔天起正式上課。建議 19:00 前到達、18:00–21:00 完成雪具租借。</div>
+    </div>
+    <div id="arrivalSummary" style="display:none;margin-bottom:16px;border-radius:10px;border:1px solid var(--border);overflow:hidden"></div>
+
+    <!-- 行程天數 -->
+    <div style="font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.05em;margin-bottom:8px">行程天數</div>
     <div style="display:flex;gap:8px;margin-bottom:10px">
       <button id="durBtn_3d2n" onclick="selectDuration('3d2n')" style="flex:1;background:var(--accent);border:none;border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
         <div id="durTitle_3d2n" style="font-size:13px;font-weight:700;color:#fff">3天2夜</div>
       </button>
       <button id="durBtn_4d3n" onclick="selectDuration('4d3n')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
         <div id="durTitle_4d3n" style="font-size:13px;font-weight:700;color:var(--text)">4天3夜</div>
-      </button>
-      <button id="durBtn_custom" onclick="selectDuration('custom')" style="flex:1;background:var(--surface);border:1.5px solid var(--border);border-radius:10px;padding:12px 8px;cursor:pointer;text-align:center;touch-action:manipulation;font-family:inherit">
-        <div id="durTitle_custom" style="font-size:11px;font-weight:700;color:var(--muted)">我要自己規劃</div>
       </button>
     </div>
 
@@ -391,7 +413,7 @@
   </div>
 
   <!-- 課程（英雄照片 + 卡片合體） -->
-  <div style="border-radius:14px;overflow:hidden;border:1px solid var(--border)">
+  <div id="courseSection" style="border-radius:14px;overflow:hidden;border:1px solid var(--border)">
     <img src="images/zao_hero.jpg" alt="藏王雪景" style="width:100%;height:260px;object-fit:cover;object-position:center 90%;display:block">
     <div class="card" style="border-radius:0;border:none;margin-top:0">
       <div class="card-title">Seaya 單板滑雪課程</div>
@@ -483,10 +505,12 @@
       </div>
     </div>
 
+    <div id="checkInDateSection">
     <div class="group-label" style="margin-bottom:6px">入住日期</div>
     <input type="date" class="date-input" id="checkInDate"
       min="2026-12-01" max="2027-03-31"
       placeholder="選擇入住日期">
+    </div>
 
     <div class="stepper-row">
       <label>住宿天數</label>
@@ -607,6 +631,17 @@
   </div>
 
   <div class="note" style="margin-top:10px">主辦單位保留一切修改之權利，試算表供參考，確認預訂後將再次審核才收取訂金。若有其他客製化需求，請洽客服人工報價。</div>
+
+  <!-- 行程排程預覽 -->
+  <div class="result-card" style="margin-top:16px">
+    <button onclick="toggleItinPreview()" style="width:100%;display:flex;align-items:center;justify-content:space-between;background:var(--border);border:none;border-radius:0;padding:14px 20px;cursor:pointer;font-family:inherit;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text);touch-action:manipulation">
+      <span>查看行程排程</span>
+      <span id="itinPreviewArrow" style="font-size:12px;font-weight:400;letter-spacing:0;transition:transform .25s;text-transform:none">▾</span>
+    </button>
+    <div id="itinPreviewBody" style="overflow:hidden;max-height:0;transition:max-height .35s ease">
+      <div id="itinPreviewContent" style="padding:16px 20px;font-size:13px;color:var(--muted)">請先選擇方案並輸入抵達日期，即可查看完整行程排程。</div>
+    </div>
+  </div>
 
   <!-- 取消退款規定 -->
   <div class="result-card" style="margin-top:16px">
@@ -765,14 +800,17 @@
 
   const _D1_Z = {
     n: 'Day 1', accent: false, title: '去程・入住',
+    sub: '15:00 辦理入住 ／ 18:00–21:00 租借雪具',
     body: '建議在 19:00 前抵達，方便辦理入住及租借雪具（可參考行前手冊，提前確認巴士上下車時段）。抵達藏王溫泉後，搭計程車前往 Sun Valley，15:00 後辦理入住。當天晚上前往好好雪倉租借雪具（18:00–21:00），隔天即可直接出發。'
   };
   const _D2_Z = {
     n: 'Day 2', accent: true, title: '正式上課',
+    sub: '09:30 集合出發 ／ 15:30 下課（步行 1 分鐘返回）',
     body: '早上下樓在「好好雪倉」門口與教練集合，開始全日課（9:30–15:30）。下課後自行返回旅館（走路約 1 分鐘），雪具可放在住宿的雪板架上寄存。'
   };
   const _RETURN_Z = (n, isLesson) => ({
     n: `Day ${n}`, accent: isLesson, title: isLesson ? '正式上課・回程' : '自由滑雪・回程',
+    sub: isLesson ? '09:30 上課 ／ 15:30 下課後歸還雪具・搭計程車下山' : '自由練習 ／ 15:30 前歸還雪具・搭計程車下山',
     body: isLesson
       ? '同前一天，前往好好雪倉門口集合後開始全日課（9:30–15:30）。下課後至好好雪倉歸還雪具（18:00 前），接著預約計程車前往公車站搭車下山，或自行安排下山方式。'
       : '今日無教練課程，自由在藏王溫泉滑雪場練習。結束後至好好雪倉歸還雪具（18:00 前），接著預約計程車前往公車站搭車下山，或自行安排下山方式。',
@@ -798,7 +836,7 @@
       formulaLast: { title: '自滑＋回程', sub: '還雪具・下山' },
       days: [
         _D1_Z, _D2_Z,
-        { n: 'Day 3', accent: true, title: '正式上課', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
+        { n: 'Day 3', accent: true, title: '正式上課', sub: '09:30 集合出發 ／ 15:30 下課（步行 1 分鐘返回）', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
         _RETURN_Z(4, false)
       ]
     },
@@ -810,7 +848,7 @@
       formulaLast: { title: '課程＋回程', sub: '還雪具・下山' },
       days: [
         _D1_Z, _D2_Z,
-        { n: 'Day 3', accent: true, title: '正式上課', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
+        { n: 'Day 3', accent: true, title: '正式上課', sub: '09:30 集合出發 ／ 15:30 下課（步行 1 分鐘返回）', body: '同 Day 2，繼續全日課程（9:30–15:30）。' },
         _RETURN_Z(4, true)
       ]
     }
@@ -818,7 +856,7 @@
 
   let selectedPlan = 'p1';
 
-  const DUR_IDS = ['3d2n', '4d3n', 'custom'];
+  const DUR_IDS = ['3d2n', '4d3n'];
 
   function selectDuration(dur) {
     DUR_IDS.forEach(id => {
@@ -827,26 +865,15 @@
       const title = el('durTitle_' + id);
       btn.style.background = active ? 'var(--accent)' : 'var(--surface)';
       btn.style.border = active ? 'none' : '1.5px solid var(--border)';
-      title.style.color = active ? '#fff' : (id === 'custom' ? 'var(--muted)' : 'var(--text)');
+      title.style.color = active ? '#fff' : 'var(--text)';
     });
 
     if (dur === '3d2n') {
       el('subSelector').style.display = 'none';
-      el('presetCard').style.display = '';
       selectPlan('p1');
-    } else if (dur === '4d3n') {
-      el('subSelector').style.display = 'block';
-      el('presetCard').style.display = '';
-      selectPlan(el('subPlanSelect').value || 'p3');
     } else {
-      el('subSelector').style.display = 'none';
-      el('presetCard').style.display = 'none';
-      el('itinFormula').style.display = 'none';
-      el('itinToggle').style.display = 'none';
-      el('itinBody').style.maxHeight = '0';
-      el('itinArrow').style.transform = '';
-      el('itinContent').innerHTML =
-        '<div style="font-size:12px;color:var(--muted);line-height:1.8;padding:4px 0">請直接使用下方各項目自行調整天數與人數。</div>';
+      el('subSelector').style.display = 'block';
+      selectPlan(el('subPlanSelect').value || 'p3');
     }
   }
 
@@ -906,6 +933,9 @@
       `選人數比，自動帶入「${plan.label}・${plan.roomNights} 晚住宿・${plan.gearDays} 天雪具」配置，可再調整下方細節。`;
 
     document.querySelectorAll('.preset-btn').forEach(b => b.classList.remove('active'));
+
+    const arrVal = el('arrivalDateInput') ? el('arrivalDateInput').value : '';
+    if (arrVal) renderArrivalSummary(arrVal);
   }
 
   function applyPreset(persons, btn) {
@@ -935,6 +965,108 @@
     btn.classList.add('active');
 
     btn.closest('.card').nextElementSibling.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  const DAYS_TW = ['日', '一', '二', '三', '四', '五', '六'];
+
+  function fmtDate(y, m, d) {
+    const date = new Date(y, m - 1, d);
+    return `${date.getMonth()+1}/${date.getDate()}（${DAYS_TW[date.getDay()]}）`;
+  }
+
+  function selectMode(mode) {
+    const guided = mode === 'guided';
+    el('modeBtn_guided').style.background = guided ? 'var(--accent)' : 'var(--surface)';
+    el('modeBtn_guided').style.border = guided ? 'none' : '1.5px solid var(--border)';
+    el('modeTitle_guided').style.color = guided ? '#fff' : 'var(--text)';
+    el('modeSub_guided').style.color = guided ? 'rgba(255,255,255,.8)' : 'var(--muted)';
+    el('modeBtn_custom').style.background = !guided ? 'var(--accent)' : 'var(--surface)';
+    el('modeBtn_custom').style.border = !guided ? 'none' : '1.5px solid var(--border)';
+    el('modeTitle_custom').style.color = !guided ? '#fff' : 'var(--text)';
+    el('modeSub_custom').style.color = !guided ? 'rgba(255,255,255,.8)' : 'var(--muted)';
+    if (guided) {
+      el('itinCard').style.display = '';
+      el('presetCard').style.display = '';
+      el('checkInDateSection').style.display = 'none';
+    } else {
+      el('itinCard').style.display = 'none';
+      el('presetCard').style.display = 'none';
+      el('checkInDateSection').style.display = '';
+      setTimeout(() => {
+        el('courseSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 80);
+    }
+  }
+
+  function renderArrivalSummary(arrStr) {
+    const box = el('arrivalSummary');
+    if (!arrStr || !selectedPlan) { box.style.display = 'none'; return; }
+    const plan = PLANS[selectedPlan];
+    const [y, m, d] = arrStr.split('-').map(Number);
+    let html = '';
+    plan.days.forEach((day, i) => {
+      const tagStyle = day.accent
+        ? 'background:var(--accent);color:#fff'
+        : 'background:var(--surface);border:1px solid var(--border);color:var(--text)';
+      const border = i < plan.days.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
+      html += `<div style="display:flex;gap:10px;align-items:flex-start;padding:10px 14px;${border}">
+        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:2px 6px;border-radius:5px;margin-top:2px">${day.n}</div>
+        <div style="flex:1">
+          <div style="display:flex;gap:10px;align-items:center">
+            <div style="font-size:12px;color:var(--muted);font-weight:500;min-width:76px">${fmtDate(y, m, d + i)}</div>
+            <div style="font-size:12px;color:var(--text);font-weight:600">${day.title}</div>
+          </div>
+          ${day.sub ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">${day.sub}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    box.innerHTML = html;
+    box.style.display = 'block';
+  }
+
+  function renderItinPreview() {
+    const content = el('itinPreviewContent');
+    const arrStr = el('arrivalDateInput').value;
+    if (!arrStr || !selectedPlan) {
+      content.innerHTML = '<div style="color:var(--muted)">請先選擇方案並輸入抵達日期，即可查看完整行程排程。</div>';
+      return;
+    }
+    const plan = PLANS[selectedPlan];
+    const [y, m, d] = arrStr.split('-').map(Number);
+    let html = '';
+    plan.days.forEach((day, i) => {
+      const tagStyle = day.accent
+        ? 'background:var(--accent);color:#fff'
+        : 'background:var(--surface);border:1px solid var(--border);color:var(--text)';
+      const border = i < plan.days.length - 1 ? 'border-bottom:1px solid var(--border)' : '';
+      html += `<div style="display:flex;gap:12px;align-items:flex-start;padding:12px 0;${border}">
+        <div style="flex-shrink:0;${tagStyle};font-size:10px;font-weight:700;padding:3px 7px;border-radius:5px;margin-top:2px">${day.n}</div>
+        <div>
+          <div style="font-size:12px;color:var(--accent);font-weight:600;margin-bottom:2px">${fmtDate(y, m, d + i)}</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">${day.title}</div>
+          ${day.sub ? `<div style="font-size:11px;color:var(--muted);margin-top:3px">${day.sub}</div>` : ''}
+        </div>
+      </div>`;
+    });
+    content.innerHTML = html;
+    const body = el('itinPreviewBody');
+    if (body.style.maxHeight && body.style.maxHeight !== '0px') {
+      requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+    }
+  }
+
+  function toggleItinPreview() {
+    renderItinPreview();
+    const body = el('itinPreviewBody');
+    const arrow = el('itinPreviewArrow');
+    const isOpen = body.style.maxHeight && body.style.maxHeight !== '0px';
+    if (isOpen) {
+      body.style.maxHeight = '0';
+      arrow.style.transform = '';
+    } else {
+      requestAnimationFrame(() => { body.style.maxHeight = body.scrollHeight + 'px'; });
+      arrow.style.transform = 'rotate(180deg)';
+    }
   }
 
   function toggleCancel() {
@@ -1325,7 +1457,21 @@
     renderCourseGroups(); calculate();
   });
 
-  // 日期選擇
+  // 抵達日期（guided 模式）→ 自動帶入入住日期
+  el('arrivalDateInput').addEventListener('change', function() {
+    const val = this.value;
+    el('checkInDate').value = val;
+    S.checkIn = val;
+    if (val && S.roomNights === 0) {
+      S.roomNights = 1;
+      el('roomNightsVal').textContent = 1;
+    }
+    renderArrivalSummary(val);
+    renderItinPreview();
+    calculate();
+  });
+
+  // 日期選擇（custom 模式）
   el('checkInDate').addEventListener('change', e => {
     S.checkIn = e.target.value;
     if (S.checkIn && S.roomNights === 0) {
@@ -1368,6 +1514,7 @@
   renderCalendar();
   renderCourseGroups();
   calculate();
+  selectMode('guided');
   selectDuration('3d2n');
 </script>
 </body>
