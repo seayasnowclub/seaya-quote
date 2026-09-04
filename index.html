@@ -1054,9 +1054,10 @@
       el('roomCounts_' + k + 'Val').textContent = 0;
       el('extraBeds_' + k + 'Val').textContent = 0;
     }
-    if (persons <= 3) {
+    if (persons <= 2) {
       S.roomCounts.rokka_6 = 1; el('roomCounts_rokka_6Val').textContent = 1;
     } else {
+      // 3 人優先八疽房；若八疽已滿，改選六疽 + 加床 1 張
       S.roomCounts.rokka_8 = 1; el('roomCounts_rokka_8Val').textContent = 1;
     }
     S.roomNights = plan.roomNights; el('roomNightsVal').textContent = plan.roomNights;
