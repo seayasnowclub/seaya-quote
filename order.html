@@ -216,15 +216,14 @@
         <input type="text" id="custLineNick" placeholder="例如：小明">
       </div>
       <div class="field">
-        <label>教練（選填）</label>
-        <select id="coachName">
-          <option value="">（無指定）</option>
-          <option value="Emma">Emma</option>
-          <option value="Allie">Allie</option>
-          <option value="嵐嵐">嵐嵐</option>
-          <option value="萱">萱</option>
-          <option value="Jerry">Jerry</option>
-        </select>
+        <label>教練（選填，可多選）</label>
+        <div id="coachCheckboxes" style="display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:6px">
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="Emma" style="width:auto;margin:0"> Emma</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="Allie" style="width:auto;margin:0"> Allie</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="嵐嵐" style="width:auto;margin:0"> 嵐嵐</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="萱" style="width:auto;margin:0"> 萱</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="Jerry" style="width:auto;margin:0"> Jerry</label>
+        </div>
       </div>
     </div>
 
@@ -487,8 +486,15 @@
 
 所有退款均扣除匯款手續費 NT$30。如需異動，請及早與客服聯繫。`;
 
+  function getCoachString() {
+    return [...document.querySelectorAll('.coach-cb:checked')].map(cb => cb.value).join('、');
+  }
+  function hasJerry() {
+    return [...document.querySelectorAll('.coach-cb:checked')].some(cb => cb.value === 'Jerry');
+  }
+
   function applyCoachMode() {
-    const jerry = el('coachName').value === 'Jerry';
+    const jerry = hasJerry();
     el('depositSection').style.display = jerry ? 'none' : '';
     el('balanceSection').style.display = jerry ? 'none' : '';
     el('jerryPaymentNote').style.display = jerry ? 'block' : 'none';
@@ -795,9 +801,9 @@
     const deposit = Number(el('depositAmount').value) || 0;
     el('balanceAmount').value = Math.max(total - deposit, 0);
   }
-  el('totalAmount').addEventListener('input', () => { autoBalance(); if (el('coachName').value === 'Jerry') { el('depositAmount').value = el('totalAmount').value; el('balanceAmount').value = 0; } });
+  el('totalAmount').addEventListener('input', () => { autoBalance(); if (hasJerry()) { el('depositAmount').value = el('totalAmount').value; el('balanceAmount').value = 0; } });
   el('depositAmount').addEventListener('input', autoBalance);
-  el('coachName').addEventListener('change', applyCoachMode);
+  document.querySelectorAll('.coach-cb').forEach(cb => cb.addEventListener('change', applyCoachMode));
 
   // 訂金快速計算（總金額 × 30% / 50%）
   document.querySelectorAll('[data-deposit-pct]').forEach(btn => {
@@ -838,7 +844,7 @@
 
   // 收據渲染（開立／查詢共用）
   function renderReceipt(data) {
-    const jerry = data.coach === 'Jerry';
+    const jerry = data.coach && data.coach.includes('Jerry');
     el('rcTitle').textContent = jerry ? '全額付款確認收據' : '訂金確認收據';
     el('rcNo').textContent = data.receiptNo;
     el('rcDate').textContent = data.createdAt;
@@ -926,7 +932,7 @@
       paymentMethod,
       paymentLast5: last5,
       note: customNote,
-      coach: el('coachName').value || ''
+      coach: getCoachString()
     };
 
     const btn = el('generateBtn');
