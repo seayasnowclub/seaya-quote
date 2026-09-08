@@ -223,6 +223,9 @@
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="嵐嵐" style="width:auto;margin:0"> 嵐嵐</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="萱" style="width:auto;margin:0"> 萱</label>
           <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="Jerry" style="width:auto;margin:0"> Jerry</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="橘子" style="width:auto;margin:0"> 橘子（藏王）</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="鴨鴨" style="width:auto;margin:0"> 鴨鴨（藏王）</label>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:400;text-transform:none;letter-spacing:0;cursor:pointer"><input type="checkbox" class="coach-cb" value="Ruby" style="width:auto;margin:0"> Ruby（藏王）</label>
         </div>
       </div>
     </div>
@@ -235,7 +238,7 @@
 
     <div class="card" style="margin-top:12px">
       <div class="card-title" style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0">
-        <span>住宿 — 六花 Rokka Inn</span>
+        <span id="roomCardTitle">住宿 — 六花 Rokka Inn</span>
         <label style="display:flex; align-items:center; gap:6px; font-size:12px; cursor:pointer; text-transform:none; letter-spacing:0; font-weight:600; color:var(--muted)">
           <input type="checkbox" id="includeRoom" style="width:auto; margin:0">
           包含住宿
@@ -243,10 +246,20 @@
       </div>
       <div id="roomBody" style="display:none; margin-top:16px">
         <div class="btn-group">
+          <div class="group-label">雪場</div>
+          <button class="opt-btn active" data-group="roomResort" data-val="yuzawa">湯澤</button>
+          <button class="opt-btn" data-group="roomResort" data-val="zao">藏王</button>
+        </div>
+        <div class="btn-group" data-room-resort="yuzawa">
           <div class="group-label">房型</div>
           <button class="opt-btn active" data-group="roomType" data-val="six">六疊房</button>
           <button class="opt-btn" data-group="roomType" data-val="eight">八疊房</button>
           <button class="opt-btn" data-group="roomType" data-val="washitsu">大和室</button>
+        </div>
+        <div class="btn-group" data-room-resort="zao" style="display:none">
+          <div class="group-label">房型</div>
+          <button class="opt-btn" data-group="roomType" data-val="twin">雙床小套房</button>
+          <button class="opt-btn" data-group="roomType" data-val="family">雙床家庭套房</button>
         </div>
         <div class="stepper-row">
           <label>間數</label>
@@ -513,7 +526,7 @@
 
   const O = {
     groups: [{ location: 'yuzawa', board: 'single', persons: 1, days: 1, isRange: false, date: '', dateStart: '', dateEnd: '' }],
-    includeRoom: false, roomType: 'six', roomCount: 1, roomNights: 2,
+    includeRoom: false, roomResort: 'yuzawa', roomType: 'six', roomCount: 1, roomNights: 2,
     includeGear: false, gearPersons: 1, gearDays: 2
   };
 
@@ -527,7 +540,8 @@
   const LOCATION_LABEL = { zao: '藏王', yuzawa: '湯澤' };
   const BOARD_LABEL = { single: '單板', double: '雙板' };
   const PERSON_LABEL = { 1: '一對一', 2: '一對二', 3: '一對三', 4: '一對四', 5: '一對五' };
-  const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室' };
+  const ROOM_NAME    = { six: '六疊房', eight: '八疊房', washitsu: '大和室', twin: '雙床小套房', family: '雙床家庭套房' };
+  const ROOM_LODGE_LABEL = { yuzawa: '六花 Rokka Inn', zao: 'SunValley Zao' };
 
   function el(id) { return document.getElementById(id); }
   function fmt(n) { return 'NT$ ' + (Number(n) || 0).toLocaleString('zh-TW'); }
@@ -778,6 +792,24 @@
       document.querySelectorAll(`.opt-btn[data-group="${group}"]`).forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       O[group] = btn.dataset.val;
+    });
+  });
+
+  // 住宿雪場切換：藏王之前完全沒有房型可選（只有湯澤的六疊房/八疊房/大和室），
+  // 切換雪場時要換掉可選房型清單、重設房型成新雪場的第一個選項，並更新卡片標題的旅館名稱
+  document.querySelectorAll('.opt-btn[data-group="roomResort"]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const resort = btn.dataset.val;
+      document.querySelectorAll('.btn-group[data-room-resort]').forEach(g => {
+        g.style.display = g.dataset.roomResort === resort ? '' : 'none';
+      });
+      document.querySelectorAll('.opt-btn[data-group="roomType"]').forEach(b => b.classList.remove('active'));
+      const firstBtn = document.querySelector(`.btn-group[data-room-resort="${resort}"] .opt-btn[data-group="roomType"]`);
+      if (firstBtn) {
+        firstBtn.classList.add('active');
+        O.roomType = firstBtn.dataset.val;
+      }
+      el('roomCardTitle').textContent = `住宿 — ${ROOM_LODGE_LABEL[resort]}`;
     });
   });
 
