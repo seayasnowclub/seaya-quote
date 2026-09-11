@@ -505,9 +505,15 @@
   function hasJerry() {
     return [...document.querySelectorAll('.coach-cb:checked')].some(cb => cb.value === 'Jerry');
   }
+  // Jerry 全額付款模式只在「只有 Jerry 一人」時成立——如果同時搭配其他教練，
+  // 代表只有 Jerry 的部分收全額，其他教練的部分還是走正常訂金/尾款，不能整張單當全額處理。
+  function isJerryOnly() {
+    const checked = [...document.querySelectorAll('.coach-cb:checked')].map(cb => cb.value);
+    return checked.length === 1 && checked[0] === 'Jerry';
+  }
 
   function applyCoachMode() {
-    const jerry = hasJerry();
+    const jerry = isJerryOnly();
     el('depositSection').style.display = jerry ? 'none' : '';
     el('balanceSection').style.display = jerry ? 'none' : '';
     el('jerryPaymentNote').style.display = jerry ? 'block' : 'none';
@@ -833,7 +839,7 @@
     const deposit = Number(el('depositAmount').value) || 0;
     el('balanceAmount').value = Math.max(total - deposit, 0);
   }
-  el('totalAmount').addEventListener('input', () => { autoBalance(); if (hasJerry()) { el('depositAmount').value = el('totalAmount').value; el('balanceAmount').value = 0; } });
+  el('totalAmount').addEventListener('input', () => { autoBalance(); if (isJerryOnly()) { el('depositAmount').value = el('totalAmount').value; el('balanceAmount').value = 0; } });
   el('depositAmount').addEventListener('input', autoBalance);
   document.querySelectorAll('.coach-cb').forEach(cb => cb.addEventListener('change', applyCoachMode));
 
@@ -874,9 +880,17 @@
     return `SEA${d.getFullYear()}${pad(d.getMonth()+1)}${pad(d.getDate())}-${pad(d.getHours())}${pad(d.getMinutes())}`;
   }
 
+  // 教練欄字串（例如 "Jerry" 或 "Emma、Jerry"）判斷是否為「只有 Jerry」的全額付款情境，
+  // 開立與查詢兩條路徑（本機當下產生 / 從 Sheet 查回來）共用同一份判斷邏輯
+  function coachStringIsJerryOnly(coachStr) {
+    if (!coachStr) return false;
+    const list = coachStr.split('、').map(s => s.trim()).filter(Boolean);
+    return list.length === 1 && list[0] === 'Jerry';
+  }
+
   // 收據渲染（開立／查詢共用）
   function renderReceipt(data) {
-    const jerry = data.coach && data.coach.includes('Jerry');
+    const jerry = coachStringIsJerryOnly(data.coach);
     el('rcTitle').textContent = jerry ? '全額付款確認收據' : '訂金確認收據';
     el('rcNo').textContent = data.receiptNo;
     el('rcDate').textContent = data.createdAt;
