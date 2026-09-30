@@ -964,9 +964,11 @@
       coursePersons: courseSummary,
       courseDays: totalCourseDays,
       courseDateInfo: courseDateSummary,
-      roomType: ROOM_NAME[O.roomType],
-      roomCount: O.includeRoom ? O.roomCount : 0,
-      roomNights: O.includeRoom ? O.roomNights : 0,
+      // 沒勾「包含住宿」就完全不送房型/間數/晚數——之前不管有沒有勾都會把目前選到的
+      // 房型按鈕（預設六疊房）送出去，藏王的單也會被寫上一個湯澤限定的房型名稱
+      roomType: O.includeRoom ? ROOM_NAME[O.roomType] : '',
+      roomCount: O.includeRoom ? O.roomCount : '',
+      roomNights: O.includeRoom ? O.roomNights : '',
       checkInDate: O.includeRoom ? ci : '',
       checkOutDate: O.includeRoom ? co : '',
       gearPersons: O.includeGear ? O.gearPersons : 0,
