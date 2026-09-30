@@ -947,7 +947,9 @@
     const courseSummary = O.groups.map(g =>
       `${LOCATION_LABEL[g.location]}・${BOARD_LABEL[g.board] || ''}・${PERSON_LABEL[g.persons] || '一對'+g.persons}・${formatDays(g.days)}`
     ).join('；');
-    const totalCourseDays = +O.groups.reduce((s, g) => s + g.days, 0).toFixed(1);
+    // 多組課程分開寫「2+2」而不是加總成「4」——加總看不出來是兩組各上 2 天，
+    // 還是同一組連續上 4 天，容易誤會成天數算錯
+    const courseDaysDisplay = O.groups.map(g => g.days).join('+');
     const courseDateSummary = O.groups.map(g => {
       if (g.isRange) {
         const s = formatDate(g.dateStart), en = formatDate(g.dateEnd);
@@ -962,7 +964,7 @@
       location: O.groups[0].location,
       contactType, contact, lineNick,
       coursePersons: courseSummary,
-      courseDays: totalCourseDays,
+      courseDays: courseDaysDisplay,
       courseDateInfo: courseDateSummary,
       // 沒勾「包含住宿」就完全不送房型/間數/晚數——之前不管有沒有勾都會把目前選到的
       // 房型按鈕（預設六疊房）送出去，藏王的單也會被寫上一個湯澤限定的房型名稱
