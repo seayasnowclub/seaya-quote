@@ -1355,17 +1355,20 @@
     lines.push('【Seaya Snow Club 包套試算】');
     lines.push('');
 
-    const courseDate = el('courseDateInput').value;
-    const checkInDate = el('checkInDateInput').value;
-    if (courseDate) {
-      const [, m, d] = courseDate.split('-');
-      lines.push(`上課日期：${+m}/${+d} 起`);
+    const arrivalVal = el('arrivalDateInput').value;
+    if (arrivalVal) {
+      const [ay, am, ad] = arrivalVal.split('-').map(Number);
+      const arrDate = new Date(ay, am - 1, ad);
+      const arrStr = fmtDate(ay, am, ad);
+      if (S.roomNights > 0) {
+        const depDate = new Date(ay, am - 1, ad + S.roomNights);
+        const depStr = fmtDate(depDate.getFullYear(), depDate.getMonth() + 1, depDate.getDate());
+        lines.push(`入住：${arrStr} － ${depStr}（${S.roomNights} 晚）`);
+      } else {
+        lines.push(`抵達日期：${arrStr}`);
+      }
+      lines.push('');
     }
-    if (checkInDate) {
-      const [, m, d] = checkInDate.split('-');
-      lines.push(`入住日期：${+m}/${+d}`);
-    }
-    if (courseDate || checkInDate) lines.push('');
 
     const activeGroups = S.courseGroups.filter(g => g.fullDays > 0);
     if (activeGroups.length > 0) {

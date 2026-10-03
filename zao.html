@@ -1400,6 +1400,21 @@
   // ── LINE 訊息 ──────────────────────────────────────────
   function buildQuoteSummary() {
     const lines = ['【Seaya Snow Club 藏王包套試算】', ''];
+
+    const arrivalVal = el('arrivalDateInput').value;
+    if (arrivalVal) {
+      const [ay, am, ad] = arrivalVal.split('-').map(Number);
+      const arrStr = fmtDate(ay, am, ad);
+      if (S.roomNights > 0) {
+        const depDate = new Date(ay, am - 1, ad + S.roomNights);
+        const depStr = fmtDate(depDate.getFullYear(), depDate.getMonth() + 1, depDate.getDate());
+        lines.push(`入住：${arrStr} － ${depStr}（${S.roomNights} 晚）`);
+      } else {
+        lines.push(`抵達日期：${arrStr}`);
+      }
+      lines.push('');
+    }
+
     const activeGroups = S.courseGroups.filter(g => g.fullDays > 0);
     if (activeGroups.length === 1) {
       lines.push(`課程：${PERSONS_LABEL[activeGroups[0].persons-1]} × ${activeGroups[0].fullDays} 天全日課`);
