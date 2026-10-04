@@ -621,8 +621,8 @@
 
     <div class="tier-row super-row" id="earlyTierRow">
       <div class="tier-left">
-        <div class="tier-name" id="earlyTierName">早鳥 <span class="badge badge-red">最優惠</span></div>
-        <div class="tier-date">7/1–9/30 預訂</div>
+        <div class="tier-name" id="earlyTierName">初雪優惠 <span class="badge badge-red">現正優惠</span></div>
+        <div class="tier-date">10/1–11/5 預訂</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" id="earlyTotal">—</div>
@@ -634,7 +634,7 @@
     <div class="tier-row">
       <div class="tier-left">
         <div class="tier-name" style="color:var(--muted)">原價</div>
-        <div class="tier-date">9/30 後</div>
+        <div class="tier-date">11/5 後</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" style="color:var(--muted);font-size:16px" id="regularTotal">—</div>
@@ -642,7 +642,7 @@
       </div>
     </div>
     <div id="depositRow" style="display:none;padding:14px 20px;background:var(--bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:2">
-      以早鳥價計算：<br>
+      以初雪優惠價計算：<br>
       <span style="color:var(--text)">30% 訂金</span>　<b id="depositAmt" style="color:var(--accent)">—</b><br>
       <span style="color:var(--text)">70% 尾款</span>　<b id="balanceAmt" style="color:var(--text)">—</b>
     </div>
@@ -745,15 +745,17 @@
 <script>
   const COURSE = {
     full: {
-      earlyBird: [13900, 15100, 16300, 17500],
-      regular:   [14900, 16100, 17500, 18500]
+      earlyBird:  [13900, 15100, 16300, 17500],
+      firstSnow:  [14400, 15600, 17000, 18000],
+      regular:    [14900, 16100, 17500, 18500]
     }
   };
 
   const ROOM = {
-    super:     { rokka_6: 5600, rokka_8: 6400,  rokka_wa: 11000 },
-    earlyBird: { rokka_6: 6000, rokka_8: 7000,  rokka_wa: 12000 },
-    regular:   { rokka_6: 6500, rokka_8: 7500,  rokka_wa: 13000 }
+    super:      { rokka_6: 5600, rokka_8: 6400,  rokka_wa: 11000 },
+    earlyBird:  { rokka_6: 6000, rokka_8: 7000,  rokka_wa: 12000 },
+    firstSnow:  { rokka_6: 6200, rokka_8: 7200,  rokka_wa: 12500 },
+    regular:    { rokka_6: 6500, rokka_8: 7500,  rokka_wa: 13000 }
   };
 
   const ROOM_STOCK = { rokka_6: 8, rokka_8: 1, rokka_wa: 1 };
@@ -1146,7 +1148,7 @@
     const gearOk = superGearOk();
     const superGearPrice = gearOk ? GEAR_SUPER : GEAR_REGULAR;
     const superTotal   = calcTier('regular',  'super',   superGearPrice);
-    const earlyTotal   = calcTier('earlyBird','earlyBird', GEAR_PREPAY);
+    const earlyTotal   = calcTier('firstSnow', 'firstSnow', GEAR_PREPAY);
     const regularTotal = calcTier('regular',  'regular',  GEAR_REGULAR);
 
     // 省了多少（vs 原價）
@@ -1187,7 +1189,7 @@
     const suggBox = el('suggestionBox');
     const singleDayGroups = S.courseGroups.filter(g => g.fullDays === 1);
     if (singleDayGroups.length > 0) {
-      const extraCost = singleDayGroups.reduce((s, g) => s + COURSE.full.earlyBird[g.persons - 1], 0);
+      const extraCost = singleDayGroups.reduce((s, g) => s + COURSE.full.regular[g.persons - 1], 0);
       const tp2 = singleDayGroups.reduce((s, g) => s + g.persons, 0);
       const extraPP = Math.round(extraCost / tp2);
       const ppText = tp2 > 1 ? `，每人平均多 NT$ ${extraPP.toLocaleString('zh-TW')}` : '';
@@ -1393,12 +1395,12 @@
       lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
     }
 
-    const earlyTotal = calcTier('earlyBird', 'earlyBird', GEAR_PREPAY);
+    const earlyTotal = calcTier('firstSnow', 'firstSnow', GEAR_PREPAY);
     const tp = S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0) || totalPersons();
 
     lines.push('');
     if (earlyTotal > 0) {
-      lines.push(`早鳥總價：${fmt(earlyTotal)}`);
+      lines.push(`初雪優惠總價：${fmt(earlyTotal)}`);
       if (tp > 1) {
         lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / tp))}）`);
       }
