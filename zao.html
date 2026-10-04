@@ -313,6 +313,23 @@
       font-size: 12px; color: var(--muted); line-height: 2;
     }
     .cal-price-info b { color: var(--text); }
+
+    .marquee-wrap {
+      overflow: hidden; background: var(--accent); border-radius: 8px;
+      padding: 7px 0; margin: 10px 0 0;
+    }
+    .marquee-track {
+      display: inline-flex; white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+    .marquee-track span {
+      font-size: 13px; font-weight: 600; color: #fff;
+      padding: 0 32px; letter-spacing: 0.04em;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
   </style>
 </head>
 <body>
@@ -329,6 +346,13 @@
       <a href="zao.html" class="dest-btn active">藏王</a>
     </nav>
   </header>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>初雪優惠 10/1–10/31 預訂享課程限時折扣　★　初雪優惠 10/1–10/31 預訂享課程限時折扣　★　</span>
+      <span>初雪優惠 10/1–10/31 預訂享課程限時折扣　★　初雪優惠 10/1–10/31 預訂享課程限時折扣　★　</span>
+    </div>
+  </div>
 
   <!-- 模式選擇 -->
   <div class="card">
@@ -594,8 +618,8 @@
 
     <div class="tier-row super-row" id="earlyTierRow">
       <div class="tier-left">
-        <div class="tier-name" id="earlyTierName">早鳥 <span class="badge badge-green">最優惠</span></div>
-        <div class="tier-date">7/1–9/30 預訂</div>
+        <div class="tier-name" id="earlyTierName">初雪優惠 <span class="badge badge-green">現正優惠</span></div>
+        <div class="tier-date">10/1–10/31 預訂</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" id="earlyTotal">—</div>
@@ -607,7 +631,7 @@
     <div class="tier-row">
       <div class="tier-left">
         <div class="tier-name" style="color:var(--muted)">原價</div>
-        <div class="tier-date">9/30 後</div>
+        <div class="tier-date">11/1 後</div>
       </div>
       <div class="tier-right">
         <div class="tier-price" style="color:var(--muted);font-size:16px" id="regularTotal">—</div>
@@ -616,7 +640,7 @@
     </div>
 
     <div id="depositRow" style="display:none;padding:14px 20px;background:var(--bg);border-top:1px solid var(--border);font-size:12px;color:var(--muted);line-height:2">
-      以早鳥價計算：<br>
+      以初雪優惠價計算：<br>
       <span style="color:var(--text)">30% 訂金</span>　<b id="depositAmt" style="color:var(--accent)">—</b><br>
       <span style="color:var(--text)">70% 尾款</span>　<b id="balanceAmt" style="color:var(--text)">—</b>
     </div>
@@ -724,6 +748,7 @@
   // ── 常數 ──────────────────────────────────────────────
   const COURSE = {
     full: {
+      firstSnow: [13900, 15100, 16500, 17500],
       earlyBird: [13900, 15100, 16300, 17500],
       regular:   [14900, 16100, 17500, 18500]
     }
@@ -1357,7 +1382,7 @@
     el('sumGear').textContent = S.gearPersons > 0 ? `${S.gearPersons} 人 × ${S.gearDays} 天` : '未加購';
 
     // 報價
-    const earlyTotal   = calcTotal('earlyBird', 'earlyBird', GEAR_PREPAY);
+    const earlyTotal   = calcTotal('firstSnow', 'earlyBird', GEAR_PREPAY);
     const regularTotal = calcTotal('regular',   'regular',   GEAR_REGULAR);
     const earlySave    = regularTotal - earlyTotal;
     const earlyPct     = regularTotal > 0 ? Math.round(earlySave / regularTotal * 100) : 0;
@@ -1435,11 +1460,11 @@
     }
     if (S.gearPersons > 0) lines.push(`雪具：${S.gearPersons} 人 × ${S.gearDays} 天`);
 
-    const earlyTotal = calcTotal('earlyBird', GEAR_PREPAY);
+    const earlyTotal = calcTotal('firstSnow', 'earlyBird', GEAR_PREPAY);
     const tp = S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0) || totalPersons();
     lines.push('');
     if (earlyTotal > 0) {
-      lines.push(`早鳥總價：${fmt(earlyTotal)}`);
+      lines.push(`初雪優惠總價：${fmt(earlyTotal)}`);
       if (tp > 1) lines.push(`（平均每人約 ${fmt(Math.round(earlyTotal / tp))}）`);
     } else {
       lines.push('（尚未選擇項目）');
