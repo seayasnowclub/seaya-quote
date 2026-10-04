@@ -37,6 +37,22 @@
     .brand-logo { height: 52px; display: block; margin-bottom: 12px; }
     header h1 { font-size: 22px; font-weight: 700; color: var(--text); }
     header p { margin-top: 6px; font-size: 13px; color: var(--muted); }
+    .marquee-wrap {
+      overflow: hidden; background: var(--accent); border-radius: 8px;
+      padding: 7px 0; margin: 10px 0 0;
+    }
+    .marquee-track {
+      display: inline-flex; white-space: nowrap;
+      animation: marquee 18s linear infinite;
+    }
+    .marquee-track span {
+      font-size: 13px; font-weight: 600; color: #fff;
+      padding: 0 32px; letter-spacing: 0.04em;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
 
     .gallery-scroll {
       display: flex; gap: 10px; overflow-x: auto;
@@ -306,6 +322,13 @@
       <a href="zao.html" class="dest-btn">藏王</a>
     </nav>
   </header>
+
+  <div class="marquee-wrap">
+    <div class="marquee-track">
+      <span>初雪優惠 10/1–10/31 預訂享課程、住宿、雪具限時折扣　★　初雪優惠 10/1–10/31 預訂享課程、住宿、雪具限時折扣　★　</span>
+      <span>初雪優惠 10/1–10/31 預訂享課程、住宿、雪具限時折扣　★　初雪優惠 10/1–10/31 預訂享課程、住宿、雪具限時折扣　★　</span>
+    </div>
+  </div>
 
   <!-- 入口選擇 -->
   <div class="card">
