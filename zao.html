@@ -469,6 +469,11 @@
 
     <div class="gallery-scroll" id="roomGallery"></div>
 
+    <div id="roomFullNotice" style="display:none;margin:12px 0 14px;padding:12px 14px;background:rgba(192,57,43,0.08);border:1.5px solid #c0392b;border-radius:10px;font-size:13px;color:#c0392b;font-weight:600">
+      此日期住宿已無空房，無法加入住宿。如需協助請洽客服。
+    </div>
+
+    <div id="roomPickerSection">
     <div class="group-label" style="margin-bottom:10px;margin-top:16px">房型<span style="font-weight:400;font-size:11px;color:var(--muted);margin-left:6px;letter-spacing:0">（均為套房，並附有浴缸）</span></div>
 
     <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
@@ -528,6 +533,7 @@
         <span class="unit">人</span>
       </div>
     </div>
+    </div><!-- /roomPickerSection -->
 
     <div id="checkInDateSection">
     <div class="group-label" style="margin-bottom:6px">入住日期</div>
@@ -774,7 +780,10 @@
     '2026-12-01','2026-12-02','2026-12-03','2026-12-04','2026-12-05',
     '2026-12-06','2026-12-07','2026-12-08','2026-12-09','2026-12-10',
     '2026-12-11','2026-12-12','2026-12-13','2026-12-14',
-    '2027-01-16','2027-01-17','2027-01-18','2027-01-19','2027-01-20'
+    '2027-01-09','2027-01-10','2027-01-11','2027-01-12',
+    '2027-01-16','2027-01-17','2027-01-18','2027-01-19','2027-01-20',
+    '2027-01-21','2027-01-22','2027-01-23','2027-01-24','2027-01-25','2027-01-26',
+    '2027-02-10','2027-02-11','2027-02-12'
   ]);
 
   const HOLIDAYS = new Set([
@@ -818,6 +827,41 @@
     gearPersons:  { min: 0, max: 8  },
     gearDays:     { min: 1, max: 14 }
   };
+
+  // ── 住宿已滿日期 ──────────────────────────────────────
+  const ZAO_FULL_DATE_RANGES = [
+    { from: '2027-01-09', to: '2027-01-12' },
+    { from: '2027-01-16', to: '2027-01-26' },
+    { from: '2027-02-10', to: '2027-02-12' },
+  ];
+
+  function isDateFull(dateStr) {
+    if (!dateStr) return false;
+    return ZAO_FULL_DATE_RANGES.some(r => dateStr >= r.from && dateStr <= r.to);
+  }
+
+  function applyRoomLock(locked) {
+    const notice = el('roomFullNotice');
+    const section = el('roomPickerSection');
+    if (locked) {
+      notice.style.display = 'block';
+      section.style.opacity = '0.35';
+      section.style.pointerEvents = 'none';
+      for (const k of ['twinCount', 'familyCount', 'extraPersons']) {
+        stepCfg[k].max = 0;
+        if (k === 'twinCount') { S.roomCounts.twin = 0; el('twinCountVal').textContent = 0; }
+        else if (k === 'familyCount') { S.roomCounts.family = 0; el('familyCountVal').textContent = 0; }
+        else { S.extraPersons = 0; el('extraPersonsVal').textContent = 0; }
+      }
+    } else {
+      notice.style.display = 'none';
+      section.style.opacity = '';
+      section.style.pointerEvents = '';
+      stepCfg['twinCount'].max = 4;
+      stepCfg['familyCount'].max = 4;
+      stepCfg['extraPersons'].max = 6;
+    }
+  }
 
   // ── 工具函式 ───────────────────────────────────────────
   function fmt(n) { return 'NT$ ' + n.toLocaleString('zh-TW'); }
@@ -1514,7 +1558,8 @@
   // 日期選擇（custom 模式）
   el('checkInDate').addEventListener('change', e => {
     S.checkIn = e.target.value;
-    if (S.checkIn && S.roomNights === 0) {
+    applyRoomLock(isDateFull(S.checkIn));
+    if (S.checkIn && S.roomNights === 0 && !isDateFull(S.checkIn)) {
       S.roomNights = 1;
       el('roomNightsVal').textContent = 1;
     }
