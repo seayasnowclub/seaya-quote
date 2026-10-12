@@ -816,7 +816,11 @@
     checkIn: '',
     roomNights: 0,
     gearPersons: 0,
-    gearDays: 2
+    gearDays: 2,
+    // 課程人數跟「加人數」是分開的欄位，客人只調課程人數（不是點「選人數比」卡片）很容易忘記
+    // 把加人數跟著調上去，費用會少算——這個旗標追蹤加人數是不是還維持系統自動算出來的狀態，
+    // 客人自己動過加人數步進器就關掉，之後不會再被自動覆蓋
+    extraAutoFilled: true
   };
 
   const stepCfg = {
@@ -1007,6 +1011,26 @@
     if (arrVal) renderArrivalSummary(arrVal);
   }
 
+  function activeCoursePersons() {
+    return S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0);
+  }
+
+  function totalRoomCapacity() {
+    return (S.roomCounts.twin + S.roomCounts.family) * 2;
+  }
+
+  // 家庭套房基本 2 人，超過要加人數才會算對價錢——只要加人數還是系統自動帶入的狀態
+  // （客人沒自己動過那個步進器），課程人數一變就重新算一次需要的加人數
+  function applyMinExtraPersons() {
+    if (!S.extraAutoFilled) return;
+    const needed = Math.max(0, activeCoursePersons() - totalRoomCapacity());
+    if (S.extraPersons !== needed) {
+      S.extraPersons = needed;
+      el('extraPersonsVal').textContent = needed;
+    }
+    el('extraPersonRow').classList.toggle('show', needed > 0 || S.roomCounts.family > 0);
+  }
+
   function applyPreset(persons, btn) {
     const plan = PLANS[selectedPlan];
     S.courseGroups = [{ persons: persons, fullDays: plan.fullDays }];
@@ -1022,6 +1046,9 @@
       S.roomCounts.family = 1; el('familyCountVal').textContent = 1;
     }
     S.roomNights = plan.roomNights; el('roomNightsVal').textContent = plan.roomNights;
+
+    S.extraAutoFilled = true;
+    applyMinExtraPersons();
 
     // 雪具
     S.gearPersons = persons; S.gearDays = plan.gearDays;
@@ -1326,7 +1353,7 @@
         const delBtn = document.createElement('button');
         delBtn.className = 'del-group-btn';
         delBtn.textContent = '刪除';
-        delBtn.addEventListener('click', () => { S.courseGroups.splice(i, 1); renderCourseGroups(); calculate(); });
+        delBtn.addEventListener('click', () => { S.courseGroups.splice(i, 1); applyMinExtraPersons(); renderCourseGroups(); calculate(); });
         header.appendChild(delBtn);
       }
       card.appendChild(header);
@@ -1337,7 +1364,7 @@
         const btn = document.createElement('button');
         btn.className = 'opt-btn' + (group.persons === p ? ' active' : '');
         btn.textContent = PERSONS_LABEL[p - 1];
-        btn.addEventListener('click', () => { S.courseGroups[i].persons = p; renderCourseGroups(); calculate(); });
+        btn.addEventListener('click', () => { S.courseGroups[i].persons = p; applyMinExtraPersons(); renderCourseGroups(); calculate(); });
         btnWrap.appendChild(btn);
       });
       card.appendChild(btnWrap);
@@ -1354,12 +1381,12 @@
       stepper.className = 'stepper';
       const decBtn = document.createElement('button');
       decBtn.className = 'step-btn'; decBtn.textContent = '−';
-      decBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.max(0, group.fullDays - 1); renderCourseGroups(); calculate(); });
+      decBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.max(0, group.fullDays - 1); applyMinExtraPersons(); renderCourseGroups(); calculate(); });
       const valDiv = document.createElement('div');
       valDiv.className = 'step-val'; valDiv.textContent = group.fullDays;
       const incBtn = document.createElement('button');
       incBtn.className = 'step-btn'; incBtn.textContent = '+';
-      incBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.min(14, group.fullDays + 1); renderCourseGroups(); calculate(); });
+      incBtn.addEventListener('click', () => { S.courseGroups[i].fullDays = Math.min(14, group.fullDays + 1); applyMinExtraPersons(); renderCourseGroups(); calculate(); });
       stepper.appendChild(decBtn); stepper.appendChild(valDiv); stepper.appendChild(incBtn);
       const unit = document.createElement('span'); unit.className = 'unit'; unit.textContent = '天';
       daysCtrl.appendChild(stepper); daysCtrl.appendChild(unit);
@@ -1538,6 +1565,7 @@
   // ── 事件綁定 ───────────────────────────────────────────
   el('addGroupBtn').addEventListener('click', () => {
     S.courseGroups.push({ persons: 1, fullDays: 0 });
+    applyMinExtraPersons();
     renderCourseGroups(); calculate();
   });
 
@@ -1579,12 +1607,15 @@
         S.roomCounts[key] = val;
         el(t + 'Val').textContent = val;
         if (t === 'familyCount') el('extraPersonRow').classList.toggle('show', val > 0);
+        applyMinExtraPersons();
         renderGallery();
       } else {
         const cur = S[t];
         const val = btn.dataset.action === 'inc' ? Math.min(cur+1, cfg.max) : Math.max(cur-1, cfg.min);
         S[t] = val;
         el(t + 'Val').textContent = val;
+        // 客人自己動了加人數的步進器，之後課程人數再變就不要再蓋掉她自己調的數字
+        if (t === 'extraPersons') S.extraAutoFilled = false;
       }
       const totalRooms = S.roomCounts.twin + S.roomCounts.family;
       if (totalRooms > 0 && S.roomNights === 0) {
