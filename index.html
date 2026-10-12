@@ -798,7 +798,11 @@
     roomCounts: { rokka_6: 0, rokka_8: 0, rokka_wa: 0 },
     extraBeds:  { rokka_6: 0, rokka_8: 0, rokka_wa: 0 },
     roomNights: 0,
-    gearPersons: 0, gearDays: 2
+    gearPersons: 0, gearDays: 2,
+    // 客人只調「課程人數」按鈕（不是點上面的「選人數比」卡片）時，住宿常常被忘記選，
+    // 滑到最下面才發現「未選擇」——這個旗標追蹤房型是不是還維持系統自動帶入的狀態，
+    // 只要客人自己動過房型/加床的步進器就關掉，之後課程人數再變就不會蓋掉她自己選的房型
+    roomsAutoFilled: true
   };
 
   const stepCfg = {
@@ -1068,22 +1072,55 @@
     }
   }
 
+  // 房型推薦：八疊房只有 1 間、現在幾乎都客滿，不能再當成預設選項——
+  // 3 人改六疊房加床、4 人（一對四）直接配兩間六疊房分攤，5 人以上才推薦大和室
+  function recommendYuzawaRooms(persons) {
+    const counts = { rokka_6: 0, rokka_8: 0, rokka_wa: 0 };
+    const beds = { rokka_6: 0, rokka_8: 0, rokka_wa: 0 };
+    if (persons <= 0) {
+      // 沒有有效課程人數（組別都還沒填天數）時不推薦房型，維持「未選擇」
+    } else if (persons <= 2) {
+      counts.rokka_6 = 1;
+    } else if (persons === 3) {
+      counts.rokka_6 = 1; beds.rokka_6 = 1;
+    } else if (persons === 4) {
+      counts.rokka_6 = 2;
+    } else {
+      counts.rokka_wa = 1;
+    }
+    return { counts, beds };
+  }
+
+  function activeCoursePersons() {
+    return S.courseGroups.filter(g => g.fullDays > 0).reduce((s, g) => s + g.persons, 0);
+  }
+
+  // 只有在房型還是系統自動帶入的狀態（客人沒自己動過步進器）才會跟著課程人數重新推薦，
+  // 不然客人好不容易自己調整的房型組合，一改課程天數又被蓋掉會很困擾
+  function applyAutoRooms() {
+    if (!S.roomsAutoFilled) return;
+    const { counts, beds } = recommendYuzawaRooms(activeCoursePersons());
+    for (const k of ['rokka_6', 'rokka_8', 'rokka_wa']) {
+      S.roomCounts[k] = counts[k]; S.extraBeds[k] = beds[k];
+      el('roomCounts_' + k + 'Val').textContent = counts[k];
+      el('extraBeds_' + k + 'Val').textContent = beds[k];
+    }
+    if (totalRooms() > 0 && S.roomNights === 0) {
+      S.roomNights = 1; el('roomNightsVal').textContent = 1;
+    }
+  }
+
   function applyPreset(persons, btn) {
     const plan = PLANS[selectedPlan];
     S.courseGroups = [{ persons: persons, fullDays: plan.fullDays }];
     renderCourseGroups();
 
-    // 重置住宿
+    S.roomsAutoFilled = true;
+    const { counts, beds } = recommendYuzawaRooms(persons);
     for (const k of ['rokka_6', 'rokka_8', 'rokka_wa']) {
-      S.roomCounts[k] = 0; S.extraBeds[k] = 0;
-      el('roomCounts_' + k + 'Val').textContent = 0;
-      el('extraBeds_' + k + 'Val').textContent = 0;
-    }
-    if (persons <= 2) {
-      S.roomCounts.rokka_6 = 1; el('roomCounts_rokka_6Val').textContent = 1;
-    } else {
-      // 3 人優先八疽房；若八疽已滿，改選六疽 + 加床 1 張
-      S.roomCounts.rokka_8 = 1; el('roomCounts_rokka_8Val').textContent = 1;
+      S.roomCounts[k] = counts[k]; S.extraBeds[k] = beds[k];
+      el('roomCounts_' + k + 'Val').textContent = counts[k];
+      el('extraBeds_' + k + 'Val').textContent = beds[k];
     }
     S.roomNights = plan.roomNights; el('roomNightsVal').textContent = plan.roomNights;
 
@@ -1250,6 +1287,7 @@
         delBtn.textContent = '刪除';
         delBtn.addEventListener('click', () => {
           S.courseGroups.splice(i, 1);
+          applyAutoRooms();
           renderCourseGroups();
           calculate();
         });
@@ -1266,6 +1304,7 @@
         btn.textContent = PERSONS_LABEL[p - 1];
         btn.addEventListener('click', () => {
           S.courseGroups[i].persons = p;
+          applyAutoRooms();
           renderCourseGroups();
           calculate();
         });
@@ -1291,6 +1330,7 @@
       decBtn.textContent = '−';
       decBtn.addEventListener('click', () => {
         S.courseGroups[i].fullDays = Math.max(0, group.fullDays - 1);
+        applyAutoRooms();
         renderCourseGroups();
         calculate();
       });
@@ -1304,6 +1344,7 @@
       incBtn.textContent = '+';
       incBtn.addEventListener('click', () => {
         S.courseGroups[i].fullDays = Math.min(14, group.fullDays + 1);
+        applyAutoRooms();
         renderCourseGroups();
         calculate();
       });
@@ -1326,6 +1367,7 @@
 
   el('addGroupBtn').addEventListener('click', () => {
     S.courseGroups.push({ persons: 1, fullDays: 0 });
+    applyAutoRooms();
     renderCourseGroups();
     calculate();
   });
@@ -1344,6 +1386,10 @@
           : Math.max(cur - 1, cfg.min);
         S[obj][key] = val;
         el(t.replace('.', '_') + 'Val').textContent = val;
+        // 客人自己動了房型或加床的步進器，之後課程人數再變就不要再蓋掉她自己選的組合
+        if (obj === 'roomCounts' || obj === 'extraBeds') {
+          S.roomsAutoFilled = false;
+        }
         // 選了房間但天數還是 0 → 自動帶入 1 晚
         if (obj === 'roomCounts' && val > 0 && S.roomNights === 0) {
           S.roomNights = 1;
